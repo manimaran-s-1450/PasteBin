@@ -188,4 +188,4 @@ GitHub: https://github.com/manimaran-s-1450
 
 ## License
 
-This project was developed as part of the **DEVS Club Round 2 Full Stack Development Recruitment Challenge**.
+This project was developed as part of the **DEVS Club recruitment process to demonstrate full-stack development skills.**
