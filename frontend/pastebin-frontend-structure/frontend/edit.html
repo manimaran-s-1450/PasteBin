@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PasteBin - Edit Paste</title>
+  <meta name="description" content="Edit and update your existing text or code snippets on PasteBin.">
+  
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/landing.css">
+  <link rel="stylesheet" href="css/create.css">
+  <link rel="stylesheet" href="css/edit.css">
+</head>
+<body>
+
+  <!-- Ambient Particles Background Container -->
+  <div id="particles-container" class="particles-container" aria-hidden="true"></div>
+
+  <!-- Sticky Glass Navigation Bar -->
+  <header class="navbar-wrapper">
+    <div class="container navbar-container">
+      
+      <!-- Brand Logo -->
+      <a href="index.html" class="nav-brand">
+        <div class="logo-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="16 18 22 12 16 6"></polyline>
+            <polyline points="8 6 2 12 8 18"></polyline>
+          </svg>
+        </div>
+        <span class="logo-text">Paste<span class="logo-highlight">Bin</span></span>
+      </a>
+
+      <!-- Navigation Links (Desktop Horizontal) -->
+      <nav id="nav-links" class="nav-links">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="create.html" class="nav-link">Create Paste</a>
+        <a href="view.html" class="nav-link">Receive Paste</a>
+        <a href="history.html" class="nav-link">History</a>
+        <a href="docs.html" class="nav-link">Documentation</a>
+        <a href="about.html" class="nav-link">About</a>
+      </nav>
+
+      <!-- Right Side Actions -->
+      <div class="nav-actions">
+        <!-- Theme Toggle -->
+        <div class="theme-pill" id="theme-toggle-btn" role="button" tabindex="0" aria-label="Toggle Theme">
+          <button class="theme-btn light-btn" title="Light Mode" type="button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="4"></circle>
+              <path d="M12 2v2"></path>
+              <path d="M12 20v2"></path>
+              <path d="m4.93 4.93 1.41 1.41"></path>
+              <path d="m17.66 17.66 1.41 1.41"></path>
+              <path d="M2 12h2"></path>
+              <path d="M20 12h2"></path>
+              <path d="m6.34 17.66-1.41 1.41"></path>
+              <path d="m19.07 4.93-1.41 1.41"></path>
+            </svg>
+          </button>
+          <button class="theme-btn dark-btn active" title="Dark Mode" type="button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Mobile Hamburger Button -->
+        <button id="mobile-menu-btn" class="mobile-menu-btn" type="button" aria-label="Open Navigation Menu">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="4" x2="20" y1="6" y2="6"></line>
+            <line x1="4" x2="20" y1="12" y2="12"></line>
+            <line x1="4" x2="20" y1="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <main>
+
+    <!-- HERO SECTION -->
+    <section class="create-hero-section">
+      <div class="create-hero-bg-glow"></div>
+      <div class="container create-hero-container">
+        <h1 class="create-hero-title">
+          <span>Edit <span class="text-gradient">Paste</span></span>
+          <div class="hero-title-icon-box">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+            </svg>
+          </div>
+        </h1>
+        <p class="create-hero-description">
+          Update your existing code snippet.
+        </p>
+      </div>
+    </section>
+
+    <!-- MAIN EDIT PASTE CARD -->
+    <section class="create-main-section">
+      <div class="container create-card-wrapper">
+        <div class="create-glass-card">
+          
+          <form id="edit-paste-form" class="create-form" action="#" method="POST" onsubmit="return false;">
+            
+            <!-- Hidden ID and Code -->
+            <input type="hidden" id="edit-paste-id" value="PASTE-1001">
+            <input type="hidden" id="edit-paste-code" value="BS8901">
+
+            <!-- 1. PASTE TITLE -->
+            <div class="form-group">
+              <label for="paste-title" class="form-label">
+                <span class="form-label-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                  </svg>
+                </span>
+                <span>Paste Title</span>
+              </label>
+              <input 
+                type="text" 
+                id="paste-title" 
+                name="title" 
+                class="form-control-input" 
+                placeholder="Enter your paste title..."
+                value="Binary Search Implementation"
+                autocomplete="off"
+                required
+              >
+            </div>
+
+            <!-- 2. GRID ROW: PROGRAMMING LANGUAGE & EXPIRES IN -->
+            <div class="form-grid-2">
+              
+              <!-- Programming Language -->
+              <div class="form-group">
+                <label for="paste-language" class="form-label">
+                  <span class="form-label-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="16 18 22 12 16 6"></polyline>
+                      <polyline points="8 6 2 12 8 18"></polyline>
+                    </svg>
+                  </span>
+                  <span>Programming Language</span>
+                </label>
+                <div class="select-wrapper">
+                  <select id="paste-language" name="language" class="form-control-select">
+                    <option value="JavaScript" selected>JavaScript</option>
+                    <option value="TypeScript">TypeScript</option>
+                    <option value="Python">Python</option>
+                    <option value="Java">Java</option>
+                    <option value="C">C</option>
+                    <option value="C++">C++</option>
+                    <option value="HTML">HTML</option>
+                    <option value="CSS">CSS</option>
+                    <option value="SQL">SQL</option>
+                    <option value="JSON">JSON</option>
+                    <option value="Plain Text">Plain Text</option>
+                  </select>
+                  <div class="select-arrow">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Expires In -->
+              <div class="form-group">
+                <label for="paste-expiration" class="form-label">
+                  <span class="form-label-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                  </span>
+                  <span>Expires In</span>
+                </label>
+                <div class="select-wrapper">
+                  <select id="paste-expiration" name="expiresIn" class="form-control-select">
+                    <option value="never" selected>Never</option>
+                    <option value="1h">1 Hour</option>
+                    <option value="24h">24 Hours</option>
+                    <option value="7d">7 Days</option>
+                    <option value="30d">30 Days</option>
+                  </select>
+                  <div class="select-arrow">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- 3. PASTE VISIBILITY (SELECTABLE CARDS) -->
+            <div class="form-group">
+              <label class="form-label">
+                <span class="form-label-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                </span>
+                <span>Paste Visibility</span>
+              </label>
+
+              <!-- Hidden Radio Value for API Compatibility -->
+              <input type="hidden" id="paste-visibility-input" name="visibility" value="public">
+
+              <div class="visibility-options-grid" role="radiogroup" aria-label="Paste Visibility Options">
+                
+                <!-- Card 1: Public -->
+                <div class="visibility-card selected" data-value="public" role="radio" aria-checked="true" tabindex="0">
+                  <div class="visibility-icon-box">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="2" y1="12" x2="22" y2="12"></line>
+                      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                    </svg>
+                  </div>
+                  <div class="visibility-text-group">
+                    <div class="visibility-card-title">
+                      <span>Public</span>
+                      <span class="visibility-check-mark">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                          <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                      </span>
+                    </div>
+                    <p class="visibility-card-desc">Anyone with the link can view this paste</p>
+                  </div>
+                </div>
+
+                <!-- Card 2: Private -->
+                <div class="visibility-card" data-value="private" role="radio" aria-checked="false" tabindex="0">
+                  <div class="visibility-icon-box">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                  </div>
+                  <div class="visibility-text-group">
+                    <div class="visibility-card-title">
+                      <span>Private</span>
+                      <span class="visibility-check-mark">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                          <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                      </span>
+                    </div>
+                    <p class="visibility-card-desc">Only people with the secret link or share code can view</p>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- 4. PASTE CONTENT (VS CODE STYLE CODE EDITOR) -->
+            <div class="form-group">
+              <label for="paste-content" class="form-label">
+                <span class="form-label-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                  </svg>
+                </span>
+                <span>Paste Content</span>
+              </label>
+
+              <div class="editor-container">
+                
+                <!-- Toolbar Header -->
+                <div class="editor-toolbar">
+                  <div class="editor-left-controls">
+                    <div class="editor-dots">
+                      <span class="editor-dot dot-red"></span>
+                      <span class="editor-dot dot-yellow"></span>
+                      <span class="editor-dot dot-green"></span>
+                    </div>
+                    <div class="editor-file-info">
+                      <span class="editor-file-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                          <polyline points="14 2 14 8 20 8"></polyline>
+                        </svg>
+                      </span>
+                      <span id="editor-file-ext">binary-search.js</span>
+                    </div>
+                  </div>
+
+                  <div class="editor-right-tools">
+                    <span class="editor-badge" id="editor-lang-badge">JavaScript</span>
+                  </div>
+                </div>
+
+                <!-- Editor Body Workspace -->
+                <div class="editor-workspace">
+                  <div class="editor-line-numbers" id="editor-line-numbers" aria-hidden="true">
+                    <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+                    <span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+                    <span>11</span><span>12</span><span>13</span><span>14</span><span>15</span>
+                  </div>
+                  <div class="editor-textarea-wrapper">
+                    <textarea 
+                      id="paste-content" 
+                      name="content" 
+                      class="editor-textarea" 
+                      placeholder="// Enter or paste your code or text here..." 
+                      spellcheck="false"
+                      required
+                    >// Binary Search Implementation in JavaScript
+function binarySearch(arr, target) {
+  let left = 0;
+  let right = arr.length - 1;
+
+  while (left <= right) {
+    const mid = Math.floor((left + right) / 2);
+    
+    if (arr[mid] === target) {
+      return mid; // Target index found
+    } else if (arr[mid] < target) {
+      left = mid + 1;
+    } else {
+      right = mid - 1;
+    }
+  }
+
+  return -1; // Target element not found
+}</textarea>
+                  </div>
+                </div>
+
+                <!-- Statusbar Footer -->
+                <div class="editor-statusbar">
+                  <div class="editor-status-item">
+                    <span class="editor-status-active">● UTF-8</span>
+                  </div>
+                  <div class="editor-status-item">
+                    <span id="editor-cursor-pos">Ln 1, Col 1</span>
+                    <span>&nbsp;|&nbsp;</span>
+                    <span id="editor-char-count">364 chars</span>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- 5. ACTION BUTTONS ROW -->
+            <div class="form-actions-row">
+              <button type="button" id="btn-reset" class="btn btn-secondary btn-clear-reset" title="Reset fields to original values">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="1 4 1 10 7 10"></polyline>
+                  <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                </svg>
+                <span>Reset</span>
+              </button>
+
+              <button type="button" id="btn-cancel" class="btn btn-secondary" title="Cancel editing">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+                <span>Cancel</span>
+              </button>
+
+              <button type="submit" id="btn-update-paste" class="btn btn-primary btn-create-submit">
+                <span>Update Paste</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                  <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+              </button>
+            </div>
+
+          </form>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-content">
+      
+      <!-- Brand column -->
+      <div class="footer-brand">
+        <a href="index.html" class="nav-brand">
+          <div class="logo-icon small">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="16 18 22 12 16 6"></polyline>
+              <polyline points="8 6 2 12 8 18"></polyline>
+            </svg>
+          </div>
+          <span class="logo-text">Paste<span class="logo-highlight">Bin</span></span>
+        </a>
+        <p class="footer-tagline">The simplest way to share text<br>and code instantly.</p>
+      </div>
+
+      <!-- Links Column 1: Product -->
+      <div class="footer-col">
+        <h4 class="footer-heading">Product</h4>
+        <a href="index.html" class="footer-link">Home</a>
+        <a href="create.html" class="footer-link">Create Paste</a>
+        <a href="history.html" class="footer-link">History</a>
+      </div>
+
+      <!-- Links Column 2: Resources -->
+      <div class="footer-col">
+        <h4 class="footer-heading">Resources</h4>
+        <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="footer-link">
+          <span>GitHub</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <line x1="10" y1="14" x2="21" y2="3"></line>
+          </svg>
+        </a>
+        <a href="docs.html" class="footer-link">
+          <span>Swagger API</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <line x1="10" y1="14" x2="21" y2="3"></line>
+          </svg>
+        </a>
+      </div>
+
+      <!-- Links Column 3: About -->
+      <div class="footer-col">
+        <h4 class="footer-heading">About</h4>
+        <a href="about.html" class="footer-link">About PasteBin</a>
+        <a href="about.html#contact" class="footer-link">Contact</a>
+      </div>
+
+      <!-- Links Column 4: Stay Connected -->
+      <div class="footer-col">
+        <h4 class="footer-heading">Stay connected</h4>
+        <div class="social-icons">
+          <a href="https://github.com" target="_blank" aria-label="GitHub" class="social-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+            </svg>
+          </a>
+          <a href="#" aria-label="Website" class="social-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="2" y1="12" x2="22" y2="12"></line>
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Copyright Bottom Bar -->
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <p>&copy; 2026 PasteBin. All rights reserved. <span class="heart">💜</span></p>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="components/navbar.js"></script>
+  <script type="module" src="components/footer.js"></script>
+  <script type="module" src="js/theme.js"></script>
+  <script type="module" src="js/api.js"></script>
+  <script type="module" src="js/edit.js"></script>
+</body>
+</html>

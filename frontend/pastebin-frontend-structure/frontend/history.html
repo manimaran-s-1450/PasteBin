@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PasteBin - Paste History</title>
+  <meta name="description" content="Manage, organize, search and edit all your created pastes from your PasteBin history dashboard.">
+  
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/landing.css">
+  <link rel="stylesheet" href="css/history.css">
+</head>
+<body>
+
+  <!-- Ambient Particles Background Container -->
+  <div id="particles-container" class="particles-container" aria-hidden="true"></div>
+
+  <!-- Sticky Glass Navigation Bar -->
+  <header class="navbar-wrapper">
+    <div class="container navbar-container">
+      
+      <!-- Brand Logo -->
+      <a href="index.html" class="nav-brand">
+        <div class="logo-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="16 18 22 12 16 6"></polyline>
+            <polyline points="8 6 2 12 8 18"></polyline>
+          </svg>
+        </div>
+        <span class="logo-text">Paste<span class="logo-highlight">Bin</span></span>
+      </a>
+
+      <!-- Navigation Links (Desktop Horizontal) -->
+      <nav id="nav-links" class="nav-links">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="create.html" class="nav-link">Create Paste</a>
+        <a href="view.html" class="nav-link">Receive Paste</a>
+        <a href="history.html" class="nav-link active">History</a>
+        <a href="docs.html" class="nav-link">Documentation</a>
+        <a href="about.html" class="nav-link">About</a>
+      </nav>
+
+      <!-- Right Side Actions -->
+      <div class="nav-actions">
+        <!-- Theme Toggle -->
+        <div class="theme-pill" id="theme-toggle-btn" role="button" tabindex="0" aria-label="Toggle Theme">
+          <button class="theme-btn light-btn" title="Light Mode" type="button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="4"></circle>
+              <path d="M12 2v2"></path>
+              <path d="M12 20v2"></path>
+              <path d="m4.93 4.93 1.41 1.41"></path>
+              <path d="m17.66 17.66 1.41 1.41"></path>
+              <path d="M2 12h2"></path>
+              <path d="M20 12h2"></path>
+              <path d="m6.34 17.66-1.41 1.41"></path>
+              <path d="m19.07 4.93-1.41 1.41"></path>
+            </svg>
+          </button>
+          <button class="theme-btn dark-btn active" title="Dark Mode" type="button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Mobile Hamburger Button -->
+        <button id="mobile-menu-btn" class="mobile-menu-btn" type="button" aria-label="Open Navigation Menu">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="4" x2="20" y1="6" y2="6"></line>
+            <line x1="4" x2="20" y1="12" y2="12"></line>
+            <line x1="4" x2="20" y1="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <!-- Main History Dashboard Section -->
+  <main id="main-content" class="history-main-section">
+    <div class="container history-layout-wrapper">
+      
+      <!-- Hero Header Section -->
+      <header class="history-hero-header">
+        <div class="history-hero-glow" aria-hidden="true"></div>
+        
+        <h1 class="history-hero-title">
+          <span>Paste <span class="text-gradient">History</span></span>
+          <span class="hero-title-icon-box" title="History Dashboard">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 8v4l3 3"></path>
+              <path d="M3.05 11a9 9 0 1 1 .5 4m-.5 5v-5h5"></path>
+            </svg>
+          </span>
+        </h1>
+
+        <p class="history-hero-subtitle">
+          Manage, organize, search and edit all your created pastes from one place.
+        </p>
+      </header>
+
+      <!-- Statistics Section (4 Cards) -->
+      <section class="stats-container" aria-label="Paste Statistics">
+        
+        <!-- Total Pastes -->
+        <div class="stat-card" id="stat-total-card">
+          <div class="stat-icon-wrapper icon-purple">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="16 18 22 12 16 6"></polyline>
+              <polyline points="8 6 2 12 8 18"></polyline>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value" id="stat-total-count">0</div>
+            <div class="stat-label">Total Pastes</div>
+            <div class="stat-desc">All created pastes</div>
+          </div>
+        </div>
+
+        <!-- Languages Used -->
+        <div class="stat-card" id="stat-languages-card">
+          <div class="stat-icon-wrapper icon-blue">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+              <polyline points="2 17 12 22 22 17"></polyline>
+              <polyline points="2 12 12 17 22 12"></polyline>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value" id="stat-languages-count">0</div>
+            <div class="stat-label">Languages Used</div>
+            <div class="stat-desc">Unique syntaxes</div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- Search & Filter Section -->
+      <section class="controls-section" id="search">
+        
+        <!-- Large Search Bar -->
+        <div class="search-bar-wrapper">
+          <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input 
+            type="text" 
+            id="history-search-input" 
+            class="search-input" 
+            placeholder="Search by title, code or programming language..." 
+            aria-label="Search pastes"
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <button type="button" id="search-clear-btn" class="search-clear-btn hidden" aria-label="Clear search text">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Filter Chips & Sorting Row -->
+        <div class="filter-sort-row">
+          <div class="filter-chips-scroll" role="tablist" aria-label="Filter pastes by type or language">
+            <button type="button" class="filter-chip active" data-filter="all" role="tab" aria-selected="true">All</button>
+            <button type="button" class="filter-chip" data-filter="Java" role="tab" aria-selected="false">Java</button>
+            <button type="button" class="filter-chip" data-filter="Python" role="tab" aria-selected="false">Python</button>
+            <button type="button" class="filter-chip" data-filter="C++" role="tab" aria-selected="false">C++</button>
+            <button type="button" class="filter-chip" data-filter="JavaScript" role="tab" aria-selected="false">JavaScript</button>
+            <button type="button" class="filter-chip" data-filter="SQL" role="tab" aria-selected="false">SQL</button>
+            <button type="button" class="filter-chip" data-filter="Plain Text" role="tab" aria-selected="false">Plain Text</button>
+            <button type="button" class="filter-chip" data-filter="Go" role="tab" aria-selected="false">Go</button>
+            <button type="button" class="filter-chip" data-filter="Rust" role="tab" aria-selected="false">Rust</button>
+          </div>
+
+          <div class="sort-dropdown-wrapper">
+            <label for="sort-select" class="sort-label">Sort by:</label>
+            <div class="select-relative">
+              <select id="sort-select" class="sort-select" aria-label="Sort pastes">
+                <option value="newest">Newest</option>
+                <option value="oldest">Oldest</option>
+                <option value="updated">Recently Updated</option>
+                <option value="title-asc">Title A-Z</option>
+                <option value="title-desc">Title Z-A</option>
+              </select>
+              <svg class="select-chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- Paste Grid Section -->
+      <section class="pastes-grid-section">
+        
+        <!-- Active Paste Grid (Desktop 3 columns, Tablet 2 columns, Mobile 1 column) -->
+        <div id="pastes-grid" class="pastes-grid" aria-live="polite">
+          <!-- Dynamically populated paste cards -->
+        </div>
+
+        <!-- Empty State Container -->
+        <div id="empty-state" class="empty-state hidden">
+          <div class="empty-icon-box">
+            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="9" y1="15" x2="15" y2="15"></line>
+            </svg>
+          </div>
+          <h3 class="empty-title">No Pastes Found</h3>
+          <p class="empty-desc">Create your first paste to start building your history.</p>
+          <a href="create.html" class="btn-primary create-first-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>Create New Paste</span>
+          </a>
+        </div>
+
+        <!-- Pagination Controls -->
+        <div id="pagination-wrapper" class="pagination-wrapper">
+          <button type="button" id="prev-page-btn" class="pagination-btn page-arrow" disabled aria-label="Previous Page">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+            <span>Previous</span>
+          </button>
+
+          <div id="pagination-numbers" class="pagination-numbers">
+            <!-- Dynamic page numbers (e.g. 1 2 3 4) -->
+          </div>
+
+          <button type="button" id="next-page-btn" class="pagination-btn page-arrow" aria-label="Next Page">
+            <span>Next</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
+        </div>
+
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Delete Confirmation Modal (Glassmorphism & Backdrop Blur) -->
+  <div id="delete-modal-backdrop" class="modal-backdrop hidden" aria-hidden="true">
+    <div class="modal-container" role="dialog" aria-modal="true" aria-labelledby="delete-modal-title">
+      <div class="modal-accent-line danger-accent"></div>
+      
+      <div class="modal-icon-wrapper danger-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+          <line x1="12" y1="9" x2="12" y2="13"></line>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+      </div>
+
+      <h3 id="delete-modal-title" class="modal-title">Delete this Paste?</h3>
+      <p class="modal-desc">This action cannot be undone. The paste and its share link will be permanently removed.</p>
+
+      <div class="modal-paste-preview">
+        <span class="preview-label">Selected Paste:</span>
+        <div class="preview-info-row">
+          <span class="preview-title" id="delete-target-title">Binary Search Implementation</span>
+          <span class="preview-code" id="delete-target-code">MANINS</span>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" id="cancel-delete-btn" class="btn-secondary modal-btn">Cancel</button>
+        <button type="button" id="confirm-delete-btn" class="btn-danger modal-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          </svg>
+          <span>Delete Permanently</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sticky Glass Footer -->
+  <footer class="footer">
+    <div class="container footer-content">
+      
+      <!-- Brand column -->
+      <div class="footer-brand">
+        <a href="index.html" class="nav-brand">
+          <div class="logo-icon small">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="16 18 22 12 16 6"></polyline>
+              <polyline points="8 6 2 12 8 18"></polyline>
+            </svg>
+          </div>
+          <span class="logo-text">Paste<span class="logo-highlight">Bin</span></span>
+        </a>
+        <p class="footer-tagline">The simplest way to share text<br>and code instantly.</p>
+      </div>
+
+      <!-- Links Column 1: Product -->
+      <div class="footer-col">
+        <h4 class="footer-heading">Product</h4>
+        <a href="index.html" class="footer-link">Home</a>
+        <a href="create.html" class="footer-link">Create Paste</a>
+        <a href="history.html" class="footer-link">History</a>
+      </div>
+
+      <!-- Links Column 2: Resources -->
+      <div class="footer-col">
+        <h4 class="footer-heading">Resources</h4>
+        <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="footer-link">
+          <span>GitHub</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <line x1="10" y1="14" x2="21" y2="3"></line>
+          </svg>
+        </a>
+        <a href="docs.html" class="footer-link">
+          <span>Swagger API</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <line x1="10" y1="14" x2="21" y2="3"></line>
+          </svg>
+        </a>
+      </div>
+
+      <!-- Links Column 3: About -->
+      <div class="footer-col">
+        <h4 class="footer-heading">About</h4>
+        <a href="about.html" class="footer-link">About PasteBin</a>
+        <a href="about.html#contact" class="footer-link">Contact</a>
+      </div>
+
+      <!-- Links Column 4: Stay Connected -->
+      <div class="footer-col">
+        <h4 class="footer-heading">Stay connected</h4>
+        <div class="social-icons">
+          <a href="https://github.com" target="_blank" aria-label="GitHub" class="social-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+            </svg>
+          </a>
+          <a href="#" aria-label="Website" class="social-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="2" y1="12" x2="22" y2="12"></line>
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Copyright Bottom Bar -->
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <p>&copy; 2026 PasteBin. All rights reserved. <span class="heart">💜</span></p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script type="module" src="components/navbar.js"></script>
+  <script type="module" src="components/footer.js"></script>
+  <script type="module" src="js/theme.js"></script>
+  <script type="module" src="js/api.js"></script>
+  <script type="module" src="js/history.js"></script>
+</body>
+</html>

@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PasteBin - Create New Paste</title>
+  <meta name="description" content="Create and securely share your text or code with a unique share code using PasteBin.">
+  
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/landing.css">
+  <link rel="stylesheet" href="css/create.css">
+  <link rel="stylesheet" href="css/history.css">
+</head>
+<body>
+
+  <!-- Ambient Particles Background Container -->
+  <div id="particles-container" class="particles-container" aria-hidden="true"></div>
+
+  <!-- ==========================================
+       1. STICKY GLASS NAVIGATION BAR
+       ========================================== -->
+  <header class="navbar-wrapper">
+    <div class="container navbar-container">
+      
+      <!-- Brand Logo -->
+      <a href="index.html" class="nav-brand">
+        <div class="logo-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="16 18 22 12 16 6"></polyline>
+            <polyline points="8 6 2 12 8 18"></polyline>
+          </svg>
+        </div>
+        <span class="logo-text">Paste<span class="logo-highlight">Bin</span></span>
+      </a>
+
+      <!-- Navigation Links (Desktop Horizontal) -->
+      <nav id="nav-links" class="nav-links">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="create.html" class="nav-link active">Create Paste</a>
+        <a href="view.html" class="nav-link">Receive Paste</a>
+        <a href="history.html" class="nav-link">History</a>
+        <a href="docs.html" class="nav-link">Documentation</a>
+        <a href="about.html" class="nav-link">About</a>
+      </nav>
+
+      <!-- Right Side Actions -->
+      <div class="nav-actions">
+        <!-- Theme Toggle -->
+        <div class="theme-pill" id="theme-toggle-btn" role="button" tabindex="0" aria-label="Toggle Theme">
+          <button class="theme-btn light-btn" title="Light Mode" type="button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="4"></circle>
+              <path d="M12 2v2"></path>
+              <path d="M12 20v2"></path>
+              <path d="m4.93 4.93 1.41 1.41"></path>
+              <path d="m17.66 17.66 1.41 1.41"></path>
+              <path d="M2 12h2"></path>
+              <path d="M20 12h2"></path>
+              <path d="m6.34 17.66-1.41 1.41"></path>
+              <path d="m19.07 4.93-1.41 1.41"></path>
+            </svg>
+          </button>
+          <button class="theme-btn dark-btn active" title="Dark Mode" type="button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Mobile Hamburger Button -->
+        <button id="mobile-menu-btn" class="mobile-menu-btn" type="button" aria-label="Open Navigation Menu">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="4" x2="20" y1="6" y2="6"></line>
+            <line x1="4" x2="20" y1="12" y2="12"></line>
+            <line x1="4" x2="20" y1="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Mobile Slide-out Drawer Backdrop Overlay -->
+  <div id="nav-drawer-backdrop" class="nav-drawer-backdrop" aria-hidden="true"></div>
+
+  <!-- Mobile Slide-out Drawer Container -->
+  <aside id="nav-drawer" class="nav-drawer" aria-label="Mobile Navigation">
+    <div class="nav-drawer-header">
+      <a href="index.html" class="nav-brand">
+        <div class="logo-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="16 18 22 12 16 6"></polyline>
+            <polyline points="8 6 2 12 8 18"></polyline>
+          </svg>
+        </div>
+        <span class="logo-text">Paste<span class="logo-highlight">Bin</span></span>
+      </a>
+      <button id="nav-drawer-close" class="nav-drawer-close" type="button" aria-label="Close Navigation">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <div class="nav-drawer-body">
+      <nav class="nav-drawer-links">
+        <a href="index.html" class="nav-drawer-link">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+          Home
+        </a>
+        <a href="create.html" class="nav-drawer-link active">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          Create Paste
+        </a>
+        <a href="view.html" class="nav-drawer-link">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          Receive Paste
+        </a>
+        <a href="history.html" class="nav-drawer-link">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          History
+        </a>
+        <a href="docs.html" class="nav-drawer-link">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+          Documentation
+        </a>
+        <a href="about.html" class="nav-drawer-link">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+          About
+        </a>
+      </nav>
+    </div>
+  </aside>
+
+  <!-- ==========================================
+       MAIN CONTENT
+       ========================================== -->
+  <main>
+
+    <!-- HERO SECTION -->
+    <section class="create-hero-section">
+      <div class="create-hero-bg-glow"></div>
+      <div class="container create-hero-container">
+        <h1 class="create-hero-title">
+          Create New <span class="text-gradient">Paste</span>
+        </h1>
+        <p class="create-hero-description">
+          Create and securely share your text or code with a unique share code.
+        </p>
+      </div>
+    </section>
+
+    <!-- MAIN CREATE PASTE CARD -->
+    <section class="create-main-section">
+      <div class="container create-card-wrapper">
+        <div class="create-glass-card">
+          
+          <form id="create-paste-form" class="create-form" action="#" method="POST" onsubmit="return false;">
+            
+            <!-- 1. PASTE TITLE -->
+            <div class="form-group">
+              <label for="paste-title" class="form-label">
+                <span class="form-label-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                  </svg>
+                </span>
+                <span>Paste Title</span>
+              </label>
+              <input 
+                type="text" 
+                id="paste-title" 
+                name="title" 
+                class="form-control-input" 
+                placeholder="Enter your paste title..."
+                autocomplete="off"
+                required
+              >
+            </div>
+
+            <!-- 2. GRID ROW: PROGRAMMING LANGUAGE & EXPIRES IN -->
+            <div class="form-grid-2">
+              
+              <!-- Programming Language -->
+              <div class="form-group">
+                <label for="paste-language" class="form-label">
+                  <span class="form-label-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="16 18 22 12 16 6"></polyline>
+                      <polyline points="8 6 2 12 8 18"></polyline>
+                    </svg>
+                  </span>
+                  <span>Programming Language</span>
+                </label>
+                <div class="select-wrapper">
+                  <select id="paste-language" name="language" class="form-control-select">
+                    <option value="JavaScript" selected>JavaScript</option>
+                    <option value="TypeScript">TypeScript</option>
+                    <option value="Python">Python</option>
+                    <option value="Java">Java</option>
+                    <option value="C">C</option>
+                    <option value="C++">C++</option>
+                    <option value="HTML">HTML</option>
+                    <option value="CSS">CSS</option>
+                    <option value="SQL">SQL</option>
+                    <option value="JSON">JSON</option>
+                    <option value="Plain Text">Plain Text</option>
+                  </select>
+                  <div class="select-arrow">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Expires In -->
+              <div class="form-group">
+                <label for="paste-expiration" class="form-label">
+                  <span class="form-label-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                  </span>
+                  <span>Expires In</span>
+                </label>
+                <div class="select-wrapper">
+                  <select id="paste-expiration" name="expiresIn" class="form-control-select">
+                    <option value="never">Never</option>
+                    <option value="1h">1 Hour</option>
+                    <option value="24h" selected>24 Hours</option>
+                    <option value="7d">7 Days</option>
+                    <option value="30d">30 Days</option>
+                  </select>
+                  <div class="select-arrow">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Hidden Radio Value for API Compatibility -->
+            <input type="hidden" id="paste-visibility-input" name="visibility" value="public">
+
+            <!-- 4. PASTE CONTENT (VS CODE STYLE CODE EDITOR) -->
+            <div class="form-group">
+              <label for="paste-content" class="form-label">
+                <span class="form-label-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                  </svg>
+                </span>
+                <span>Paste Content</span>
+              </label>
+
+              <div class="editor-container">
+                
+                <!-- Toolbar Header -->
+                <div class="editor-toolbar">
+                  <div class="editor-left-controls">
+                    <div class="editor-dots">
+                      <span class="editor-dot dot-red"></span>
+                      <span class="editor-dot dot-yellow"></span>
+                      <span class="editor-dot dot-green"></span>
+                    </div>
+                    <div class="editor-file-info">
+                      <span class="editor-file-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                          <polyline points="14 2 14 8 20 8"></polyline>
+                        </svg>
+                      </span>
+                      <span id="editor-file-ext">untitled.js</span>
+                    </div>
+                  </div>
+
+                  <div class="editor-right-tools">
+                    <span class="editor-badge" id="editor-lang-badge">JavaScript</span>
+                  </div>
+                </div>
+
+                <!-- Editor Body Workspace -->
+                <div class="editor-workspace">
+                  <div class="editor-line-numbers" id="editor-line-numbers" aria-hidden="true">
+                    <span>1</span>
+                    <span>2</span>
+                    <span>3</span>
+                    <span>4</span>
+                    <span>5</span>
+                    <span>6</span>
+                    <span>7</span>
+                    <span>8</span>
+                    <span>9</span>
+                    <span>10</span>
+                    <span>11</span>
+                    <span>12</span>
+                  </div>
+                  <div class="editor-textarea-wrapper">
+                    <textarea 
+                      id="paste-content" 
+                      name="content" 
+                      class="editor-textarea" 
+                      placeholder="// Enter or paste your code or text here..." 
+                      spellcheck="false"
+                      required
+                    ></textarea>
+                  </div>
+                </div>
+
+                <!-- Statusbar Footer -->
+                <div class="editor-statusbar">
+                  <div class="editor-status-item">
+                    <span class="editor-status-active">● UTF-8</span>
+                  </div>
+                  <div class="editor-status-item">
+                    <span id="editor-cursor-pos">Ln 1, Col 1</span>
+                    <span>&nbsp;|&nbsp;</span>
+                    <span id="editor-char-count">0 chars</span>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- 5. ACTION BUTTONS ROW -->
+            <div class="form-actions-row">
+              <button type="button" id="btn-clear" class="btn btn-secondary btn-clear-reset">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="1 4 1 10 7 10"></polyline>
+                  <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                </svg>
+                <span>Clear</span>
+              </button>
+
+              <button type="submit" id="btn-create-paste" class="btn btn-primary btn-create-submit">
+                <span>Create Paste</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                  <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+              </button>
+            </div>
+
+          </form>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- RECENT PASTES SECTION (SHOWS TOP 3 RECENT PASTES) -->
+    <section class="recent-pastes-section" style="max-width: 1200px; margin: 3rem auto 1rem; padding: 0 1.5rem;">
+      <div class="recent-pastes-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;">
+        <h2 style="font-size: 1.25rem; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 0.5rem; margin: 0;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #8B5CF6;">
+            <path d="M12 8v4l3 3"></path>
+            <path d="M3.05 11a9 9 0 1 1 .5 4m-.5 5v-5h5"></path>
+          </svg>
+          Recent Pastes
+        </h2>
+        <a href="history.html" class="view-all-link" style="color: #A78BFA; font-size: 0.875rem; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 0.35rem; transition: all 0.2s ease;">
+          <span>View All in History</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </a>
+      </div>
+
+      <div id="recent-pastes-grid" class="pastes-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem;">
+        <!-- Dynamically rendered 3 recent pastes -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==========================================
+       FOOTER SECTION
+       ========================================== -->
+  <footer class="footer">
+    <div class="container footer-content">
+      
+      <!-- Brand column -->
+      <div class="footer-brand">
+        <a href="index.html" class="nav-brand">
+          <div class="logo-icon small">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="16 18 22 12 16 6"></polyline>
+              <polyline points="8 6 2 12 8 18"></polyline>
+            </svg>
+          </div>
+          <span class="logo-text">Paste<span class="logo-highlight">Bin</span></span>
+        </a>
+        <p class="footer-tagline">The simplest way to share text<br>and code instantly.</p>
+      </div>
+
+      <!-- Links Column 1: Product -->
+      <div class="footer-col">
+        <h4 class="footer-heading">Product</h4>
+        <a href="index.html" class="footer-link">Home</a>
+        <a href="create.html" class="footer-link">Create Paste</a>
+        <a href="history.html" class="footer-link">History</a>
+      </div>
+
+      <!-- Links Column 2: Resources -->
+      <div class="footer-col">
+        <h4 class="footer-heading">Resources</h4>
+        <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="footer-link">
+          <span>GitHub</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <line x1="10" y1="14" x2="21" y2="3"></line>
+          </svg>
+        </a>
+        <a href="docs.html" class="footer-link">
+          <span>Swagger API</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <line x1="10" y1="14" x2="21" y2="3"></line>
+          </svg>
+        </a>
+      </div>
+
+      <!-- Links Column 3: About -->
+      <div class="footer-col">
+        <h4 class="footer-heading">About</h4>
+        <a href="about.html" class="footer-link">About PasteBin</a>
+        <a href="about.html#contact" class="footer-link">Contact</a>
+      </div>
+
+      <!-- Links Column 4: Stay Connected -->
+      <div class="footer-col">
+        <h4 class="footer-heading">Stay connected</h4>
+        <div class="social-icons">
+          <a href="https://github.com" target="_blank" aria-label="GitHub" class="social-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+            </svg>
+          </a>
+          <a href="#" aria-label="Website" class="social-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="2" y1="12" x2="22" y2="12"></line>
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Copyright Bottom Bar -->
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <p>&copy; 2026 PasteBin. All rights reserved. <span class="heart">💜</span></p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- SUCCESS MODAL OVERLAY -->
+  <div id="success-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    
+    <!-- Soft Low-Ambient Radial Background Glow -->
+    <div class="modal-ambient-glow"></div>
+
+    <div class="modal-card">
+      <div class="modal-top-line"></div>
+      <button type="button" id="modal-close-btn" class="modal-close-btn" aria-label="Close modal">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+      
+      <!-- Animated Circular Success Badge (Vector SVG) -->
+      <div class="modal-badge-wrapper">
+        <div class="modal-circle-badge">
+          <div class="modal-circle-badge-inner">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h2 id="modal-title" class="modal-title">Paste Created Successfully</h2>
+        <p class="modal-subtitle">Your code snippet has been securely created and is ready to share.</p>
+      </div>
+
+      <!-- HERO SECTION: GENERATED PASTE CODE -->
+      <div class="modal-code-box">
+        <span class="modal-code-label">YOUR UNIQUE PASTE CODE</span>
+        <div class="modal-code-hero-card" id="btn-modal-hero-copy">
+          <code id="modal-paste-code" class="modal-code-text">GT5WAQFI</code>
+          <div class="modal-code-icon-box" id="modal-hero-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- PASTE INFORMATION BADGES (VECTOR SVGS) -->
+      <div class="modal-info-badges">
+        <span class="badge-item badge-purple">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+          <span id="modal-badge-lang">JavaScript</span>
+        </span>
+        <span class="badge-item badge-emerald">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+          <span id="modal-badge-vis">Public</span>
+        </span>
+        <span class="badge-item badge-slate">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          <span>Just Now</span>
+        </span>
+      </div>
+
+      <!-- QUICK ACTIONS & VISUAL HIERARCHY -->
+      <div class="modal-quick-actions">
+        <div class="modal-actions-heading">Quick Actions</div>
+        
+        <!-- Primary Action Button -->
+        <button type="button" id="btn-modal-copy-code" class="modal-btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          <span>Copy Code</span>
+        </button>
+
+        <!-- Secondary Actions Grid -->
+        <div class="modal-grid-2">
+          <button type="button" id="btn-modal-whatsapp" class="modal-btn-secondary btn-green-glass">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+            <span>Share via WhatsApp</span>
+          </button>
+
+          <button type="button" id="btn-modal-view-paste" class="modal-btn-secondary btn-purple-glass">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            <span>View Paste</span>
+          </button>
+        </div>
+
+        <!-- Outline Actions Grid -->
+        <div class="modal-grid-3">
+          <button type="button" id="btn-modal-copy-link" class="modal-btn-outline">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+            <span>Copy Link</span>
+          </button>
+
+          <button type="button" id="btn-modal-history" class="modal-btn-outline">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+            <span>History</span>
+          </button>
+
+          <button type="button" id="btn-modal-create-another" class="modal-btn-outline">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <span>Create</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- SUBTLE GLASS HELP BANNER -->
+      <div class="modal-help-banner">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        <span>Save this paste code. You'll need it later to retrieve or edit your paste.</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script type="module" src="js/theme.js"></script>
+  <script type="module" src="js/create.js"></script>
+</body>
+</html>

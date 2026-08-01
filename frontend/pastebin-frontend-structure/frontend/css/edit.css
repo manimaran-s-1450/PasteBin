@@ -1,0 +1,25 @@
+/* ==========================================================================
+   Edit Page CSS
+   ========================================================================== */
+
+/* Extends create.css layout with specific tweaks for edit mode */
+
+.form-actions-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-subtle);
+}
+
+@media (max-width: 640px) {
+  .form-actions-row {
+    flex-direction: column-reverse;
+  }
+  .form-actions-row .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

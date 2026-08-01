@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PasteBin - Receive & View Paste</title>
+  <meta name="description" content="Receive, view, copy, download, and share code snippets securely using unique paste codes on PasteBin.">
+  
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/landing.css">
+  <link rel="stylesheet" href="css/view.css">
+</head>
+<body>
+
+  <!-- Ambient Particles Background Container -->
+  <div id="particles-container" class="particles-container" aria-hidden="true"></div>
+
+  <!-- Sticky Glass Navigation Bar -->
+  <header class="navbar-wrapper">
+    <div class="container navbar-container">
+      
+      <!-- Brand Logo -->
+      <a href="index.html" class="nav-brand">
+        <div class="logo-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="16 18 22 12 16 6"></polyline>
+            <polyline points="8 6 2 12 8 18"></polyline>
+          </svg>
+        </div>
+        <span class="logo-text">Paste<span class="logo-highlight">Bin</span></span>
+      </a>
+
+      <!-- Navigation Links (Desktop Horizontal) -->
+      <nav id="nav-links" class="nav-links">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="create.html" class="nav-link">Create Paste</a>
+        <a href="view.html" class="nav-link active">Receive Paste</a>
+        <a href="history.html" class="nav-link">History</a>
+        <a href="docs.html" class="nav-link">Documentation</a>
+        <a href="about.html" class="nav-link">About</a>
+      </nav>
+
+      <!-- Right Side Actions -->
+      <div class="nav-actions">
+        <!-- Theme Toggle -->
+        <div class="theme-pill" id="theme-toggle-btn" role="button" tabindex="0" aria-label="Toggle Theme">
+          <button class="theme-btn light-btn" title="Light Mode" type="button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="4"></circle>
+              <path d="M12 2v2"></path>
+              <path d="M12 20v2"></path>
+              <path d="m4.93 4.93 1.41 1.41"></path>
+              <path d="m17.66 17.66 1.41 1.41"></path>
+              <path d="M2 12h2"></path>
+              <path d="M20 12h2"></path>
+              <path d="m6.34 17.66-1.41 1.41"></path>
+              <path d="m19.07 4.93-1.41 1.41"></path>
+            </svg>
+          </button>
+          <button class="theme-btn dark-btn active" title="Dark Mode" type="button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Mobile Hamburger Button -->
+        <button id="mobile-menu-btn" class="mobile-menu-btn" type="button" aria-label="Open Navigation Menu">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="4" x2="20" y1="6" y2="6"></line>
+            <line x1="4" x2="20" y1="12" y2="12"></line>
+            <line x1="4" x2="20" y1="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <!-- Main View & Receive Paste Section -->
+  <main id="main-content" class="view-main-section">
+    <div class="container view-layout-wrapper">
+      
+      <!-- Receive & View Paste Hero Header -->
+      <header class="view-hero-header">
+        <div class="view-hero-glow" aria-hidden="true"></div>
+        
+        <h1 class="view-hero-title">
+          <span>Receive &amp; View <span class="text-gradient">Paste</span></span>
+          <span class="hero-title-icon-box" title="Receive & View Paste">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+          </span>
+        </h1>
+
+        <p class="view-hero-subtitle">
+          Enter a unique code to receive a paste, or view, copy, and share your code securely.
+        </p>
+
+        <!-- Two Column Layout Container: Code Card on Left, Quick Tips on Right -->
+        <div class="lookup-side-grid">
+          
+          <!-- LEFT CARD: Code Lookup Form -->
+          <div class="receive-code-card">
+            
+            <!-- Top Badge Pill -->
+            <div class="lookup-pill-header">
+              <span class="lookup-pill">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                Instant Code Lookup
+              </span>
+            </div>
+
+            <!-- Field Label -->
+            <div class="lookup-field-label">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                <line x1="7" y1="7" x2="7.01" y2="7"></line>
+              </svg>
+              <span>Paste Code</span>
+            </div>
+
+            <form id="receive-paste-form" class="receive-form">
+              <div class="receive-input-wrapper">
+                <input 
+                  type="text" 
+                  id="receive-code-input" 
+                  class="receive-input" 
+                  placeholder="E.g. GT5WAQFI" 
+                  maxlength="8"
+                  autocomplete="off"
+                  spellcheck="false"
+                />
+                
+                <div class="receive-input-actions">
+                  <button type="button" id="receive-clear-btn" class="receive-clear-btn hidden" title="Clear Input">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                      <line x1="18" y1="6" x2="6" y2="18"></line>
+                      <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                  </button>
+                  <span id="code-char-counter" class="code-char-counter">0/8</span>
+                </div>
+              </div>
+
+              <!-- Caption -->
+              <p class="lookup-caption">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="16" x2="12" y2="12"></line>
+                  <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>
+                <span>Paste codes are 8-character unique identifiers.</span>
+              </p>
+
+              <div class="lookup-card-divider"></div>
+
+              <!-- Bottom Action Row -->
+              <div class="receive-actions-row">
+                <button type="submit" id="btn-submit-receive" class="btn btn-primary receive-submit-btn">
+                  <span>Receive Paste</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                  </svg>
+                </button>
+
+                <button type="button" id="btn-reset-lookup" class="btn btn-secondary receive-secondary-btn">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M23 4v6h-6"></path>
+                    <path d="M1 20v-6h6"></path>
+                    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                  </svg>
+                  <span>Clear</span>
+                </button>
+              </div>
+            </form>
+
+          </div>
+
+          <!-- RIGHT CARD: Quick Tips -->
+          <aside class="quick-tips-card">
+            <div class="tips-header">
+              <div class="tips-icon-box">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path>
+                </svg>
+              </div>
+              <h3 class="tips-title">Quick Tips</h3>
+            </div>
+
+            <div class="tips-divider"></div>
+
+            <ul class="tips-list">
+              <li>
+                <svg class="tip-check-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>Paste codes contain exactly 6 characters.</span>
+              </li>
+              <li>
+                <svg class="tip-check-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>Codes are not case-sensitive.</span>
+              </li>
+              <li>
+                <svg class="tip-check-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>Keep your code secure.</span>
+              </li>
+              <li>
+                <svg class="tip-check-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>Share only with trusted users.</span>
+              </li>
+            </ul>
+
+            <div class="tips-divider"></div>
+
+            <div class="demo-codes-section">
+              <span class="demo-codes-label">TRY DEMO CODES:</span>
+              <div class="demo-chips-grid">
+                <button type="button" class="sample-chip" data-code="AB12CD">AB12CD</button>
+                <button type="button" class="sample-chip" data-code="XZ91QP">XZ91QP</button>
+                <button type="button" class="sample-chip demo-chip-danger" data-code="404404">404404</button>
+              </div>
+            </div>
+          </aside>
+
+        </div>
+
+      </header>
+
+      <!-- Paste Content Viewer Container -->
+      <section id="paste-viewer-container" class="paste-viewer-container">
+        <!-- Loaded dynamically via js/view.js -->
+        <div class="view-loading-state">
+          <div class="loading-spinner"></div>
+          <p>Retrieving paste content...</p>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Raw Code Modal -->
+  <div id="raw-code-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="raw-modal-title">
+    <div class="modal-card raw-modal-card">
+      <div class="modal-header">
+        <h3 id="raw-modal-title" class="modal-title">Raw Snippet Content</h3>
+        <button type="button" id="raw-modal-close" class="modal-close-btn" aria-label="Close Modal">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <textarea id="raw-modal-textarea" class="raw-textarea" readonly spellcheck="false"></textarea>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="raw-modal-copy-btn" class="btn btn-secondary">Copy Raw Code</button>
+        <button type="button" id="raw-modal-download-btn" class="btn btn-primary">Download File</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer Container -->
+  <footer class="footer">
+    <div class="container footer-content">
+      
+      <!-- Brand column -->
+      <div class="footer-brand">
+        <a href="index.html" class="nav-brand">
+          <div class="logo-icon small">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="16 18 22 12 16 6"></polyline>
+              <polyline points="8 6 2 12 8 18"></polyline>
+            </svg>
+          </div>
+          <span class="logo-text">Paste<span class="logo-highlight">Bin</span></span>
+        </a>
+        <p class="footer-tagline">The simplest way to share text<br>and code instantly.</p>
+      </div>
+
+      <!-- Links Column 1: Product -->
+      <div class="footer-col">
+        <h4 class="footer-heading">Product</h4>
+        <a href="index.html" class="footer-link">Home</a>
+        <a href="create.html" class="footer-link">Create Paste</a>
+        <a href="history.html" class="footer-link">History</a>
+      </div>
+
+      <!-- Links Column 2: Resources -->
+      <div class="footer-col">
+        <h4 class="footer-heading">Resources</h4>
+        <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="footer-link">
+          <span>GitHub</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <line x1="10" y1="14" x2="21" y2="3"></line>
+          </svg>
+        </a>
+        <a href="docs.html" class="footer-link">
+          <span>Swagger API</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <line x1="10" y1="14" x2="21" y2="3"></line>
+          </svg>
+        </a>
+      </div>
+
+      <!-- Links Column 3: About -->
+      <div class="footer-col">
+        <h4 class="footer-heading">About</h4>
+        <a href="about.html" class="footer-link">About PasteBin</a>
+        <a href="about.html#contact" class="footer-link">Contact</a>
+      </div>
+
+      <!-- Links Column 4: Stay Connected -->
+      <div class="footer-col">
+        <h4 class="footer-heading">Stay connected</h4>
+        <div class="social-icons">
+          <a href="https://github.com" target="_blank" aria-label="GitHub" class="social-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+            </svg>
+          </a>
+          <a href="#" aria-label="Website" class="social-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="2" y1="12" x2="22" y2="12"></line>
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Copyright Bottom Bar -->
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <p>&copy; 2026 PasteBin. All rights reserved. <span class="heart">💜</span></p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script type="module" src="components/navbar.js"></script>
+  <script type="module" src="components/footer.js"></script>
+  <script type="module" src="js/theme.js"></script>
+  <script type="module" src="js/api.js"></script>
+  <script type="module" src="js/view.js"></script>
+</body>
+</html>

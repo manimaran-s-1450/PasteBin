@@ -1,0 +1,6 @@
+{
+  "name": "PasteBin Frontend Structure",
+  "description": "Vanilla HTML, CSS, and JS frontend folder structure and starter files for PasteBin.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

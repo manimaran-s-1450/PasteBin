@@ -6,7 +6,7 @@ const pasteModel = require('../models/pasteModel');
  */
 async function createPaste(req, res, next) {
   try {
-    const { title, content, language } = req.body;
+    const { title, content, language, visibility, expires_in } = req.body;
 
     // Validate required content field
     if (!content || typeof content !== 'string' || content.trim() === '') {
@@ -25,10 +25,16 @@ async function createPaste(req, res, next) {
       ? language.trim()
       : 'Plain Text';
 
+    const formattedVisibility = visibility && typeof visibility === 'string' && visibility.trim() !== ''
+      ? visibility.trim().toLowerCase()
+      : 'public';
+
     // Call pasteModel to insert record into MySQL database
     const newPaste = await pasteModel.createPaste({
       title: formattedTitle,
       language: formattedLanguage,
+      visibility: formattedVisibility,
+      expires_in,
       content: content.trim()
     });
 

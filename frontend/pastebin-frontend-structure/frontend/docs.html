@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PasteBin - Documentation & API Reference</title>
+  <meta name="description" content="Developer resources, system architecture, technology stack, and REST API documentation for PasteBin.">
+  
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/landing.css">
+  <link rel="stylesheet" href="css/docs.css">
+</head>
+<body>
+
+  <!-- Ambient Particles Background Container -->
+  <div id="particles-container" class="particles-container" aria-hidden="true"></div>
+
+  <!-- Sticky Glass Navigation Bar -->
+  <header class="navbar-wrapper">
+    <div class="container navbar-container">
+      
+      <!-- Brand Logo -->
+      <a href="index.html" class="nav-brand">
+        <div class="logo-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="16 18 22 12 16 6"></polyline>
+            <polyline points="8 6 2 12 8 18"></polyline>
+          </svg>
+        </div>
+        <span class="logo-text">Paste<span class="logo-highlight">Bin</span></span>
+      </a>
+
+      <!-- Navigation Links (Desktop Horizontal) -->
+      <nav id="nav-links" class="nav-links">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="create.html" class="nav-link">Create Paste</a>
+        <a href="view.html" class="nav-link">Receive Paste</a>
+        <a href="history.html" class="nav-link">History</a>
+        <a href="docs.html" class="nav-link active">Documentation</a>
+        <a href="about.html" class="nav-link">About</a>
+      </nav>
+
+      <!-- Right Side Actions -->
+      <div class="nav-actions">
+        <!-- Theme Toggle -->
+        <div class="theme-pill" id="theme-toggle-btn" role="button" tabindex="0" aria-label="Toggle Theme">
+          <button class="theme-btn light-btn" title="Light Mode" type="button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="4"></circle>
+              <path d="M12 2v2"></path>
+              <path d="M12 20v2"></path>
+              <path d="m4.93 4.93 1.41 1.41"></path>
+              <path d="m17.66 17.66 1.41 1.41"></path>
+              <path d="M2 12h2"></path>
+              <path d="M20 12h2"></path>
+              <path d="m6.34 17.66-1.41 1.41"></path>
+              <path d="m19.07 4.93-1.41 1.41"></path>
+            </svg>
+          </button>
+          <button class="theme-btn dark-btn active" title="Dark Mode" type="button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Mobile Hamburger Button -->
+        <button id="mobile-menu-btn" class="mobile-menu-btn" type="button" aria-label="Open Navigation Menu">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="4" x2="20" y1="6" y2="6"></line>
+            <line x1="4" x2="20" y1="12" y2="12"></line>
+            <line x1="4" x2="20" y1="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <main>
+
+    <!-- HERO SECTION -->
+    <section class="docs-hero-section">
+      <div class="docs-hero-bg-glow"></div>
+      <div class="container docs-hero-container">
+        <h1 class="docs-hero-title">
+          <span class="text-gradient">Documentation</span>
+          <div class="hero-title-icon-box">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+            </svg>
+          </div>
+        </h1>
+        <p class="docs-hero-description">
+          Developer resources and API reference for PasteBin.
+        </p>
+      </div>
+    </section>
+
+    <!-- MAIN DOCUMENTATION WORKSPACE -->
+    <section class="docs-main-section">
+      <div class="container docs-layout-container">
+        
+        <!-- STICKY SIDEBAR NAVIGATION (DESKTOP) -->
+        <aside class="docs-sidebar">
+          <div class="docs-sidebar-header">Quick Links</div>
+          <a href="#overview" class="docs-nav-link active">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+            Overview
+          </a>
+          <a href="#tech-stack" class="docs-nav-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+            Technology Stack
+          </a>
+          <a href="#rest-api" class="docs-nav-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+            REST APIs
+          </a>
+          <a href="#swagger" class="docs-nav-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="9" x2="15" y2="15"></line><line x1="15" y1="9" x2="9" y2="15"></line></svg>
+            Swagger
+          </a>
+          <a href="#architecture" class="docs-nav-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
+            Architecture
+          </a>
+          <a href="#project-structure" class="docs-nav-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+            Project Structure
+          </a>
+        </aside>
+
+        <!-- MAIN CONTENT SECTIONS -->
+        <div class="docs-content">
+          
+          <!-- MOBILE SECTION SELECTOR (ACCORDION / SELECT) -->
+          <div class="docs-mobile-nav">
+            <select id="docs-mobile-select" class="docs-mobile-nav-select" aria-label="Jump to Documentation Section">
+              <option value="#overview">Jump to: Overview</option>
+              <option value="#tech-stack">Jump to: Technology Stack</option>
+              <option value="#rest-api">Jump to: REST APIs</option>
+              <option value="#swagger">Jump to: Swagger API</option>
+              <option value="#architecture">Jump to: System Architecture</option>
+              <option value="#project-structure">Jump to: Project Structure</option>
+            </select>
+          </div>
+
+          <!-- SECTION 1: OVERVIEW -->
+          <section id="overview" class="docs-section">
+            <h2 class="docs-section-title">
+              <span class="docs-section-icon">📌</span>
+              <span>Project Overview</span>
+            </h2>
+            <div class="docs-glass-card">
+              <p class="overview-text">
+                <strong>PasteBin</strong> is a modern platform for securely creating, retrieving, viewing, editing and managing code snippets through a fast, responsive and developer-friendly interface.
+              </p>
+              <div class="overview-badges">
+                <span class="overview-tag">⚡ Fast Response</span>
+                <span class="overview-tag">🔒 Secure Storage</span>
+                <span class="overview-tag">🐬 MySQL Database</span>
+                <span class="overview-tag">🎨 Dark Glassmorphism</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- SECTION 2: TECHNOLOGY STACK -->
+          <section id="tech-stack" class="docs-section">
+            <h2 class="docs-section-title">
+              <span class="docs-section-icon">⚡</span>
+              <span>Technology Stack</span>
+            </h2>
+            <div class="tech-stack-grid">
+              
+              <!-- React -->
+              <div class="tech-card">
+                <div class="tech-header">
+                  <div class="tech-icon-box">⚛️</div>
+                  <span class="tech-badge">Frontend</span>
+                </div>
+                <div class="tech-name">React</div>
+                <div class="tech-desc">Component-driven UI library for building dynamic web apps.</div>
+              </div>
+
+              <!-- Vite -->
+              <div class="tech-card">
+                <div class="tech-header">
+                  <div class="tech-icon-box">⚡</div>
+                  <span class="tech-badge">Bundler</span>
+                </div>
+                <div class="tech-name">Vite</div>
+                <div class="tech-desc">Next-generation frontend tooling with instant HMR.</div>
+              </div>
+
+              <!-- JavaScript -->
+              <div class="tech-card">
+                <div class="tech-header">
+                  <div class="tech-icon-box">📜</div>
+                  <span class="tech-badge">Language</span>
+                </div>
+                <div class="tech-name">JavaScript</div>
+                <div class="tech-desc">Core programming language powering frontend logic.</div>
+              </div>
+
+              <!-- CSS -->
+              <div class="tech-card">
+                <div class="tech-header">
+                  <div class="tech-icon-box">🎨</div>
+                  <span class="tech-badge">Styling</span>
+                </div>
+                <div class="tech-name">CSS Modules</div>
+                <div class="tech-desc">Custom glassmorphism theme system & design tokens.</div>
+              </div>
+
+              <!-- Node.js -->
+              <div class="tech-card">
+                <div class="tech-header">
+                  <div class="tech-icon-box">🟢</div>
+                  <span class="tech-badge">Runtime</span>
+                </div>
+                <div class="tech-name">Node.js</div>
+                <div class="tech-desc">Asynchronous event-driven JavaScript runtime engine.</div>
+              </div>
+
+              <!-- Express.js -->
+              <div class="tech-card">
+                <div class="tech-header">
+                  <div class="tech-icon-box">🚀</div>
+                  <span class="tech-badge">Backend</span>
+                </div>
+                <div class="tech-name">Express.js</div>
+                <div class="tech-desc">Fast, unopinionated web framework for Node.js APIs.</div>
+              </div>
+
+              <!-- MySQL -->
+              <div class="tech-card">
+                <div class="tech-header">
+                  <div class="tech-icon-box">🐬</div>
+                  <span class="tech-badge">Database</span>
+                </div>
+                <div class="tech-name">MySQL</div>
+                <div class="tech-desc">Relational database management for persistent snippet storage.</div>
+              </div>
+
+              <!-- Swagger -->
+              <div class="tech-card">
+                <div class="tech-header">
+                  <div class="tech-icon-box">📖</div>
+                  <span class="tech-badge">API Spec</span>
+                </div>
+                <div class="tech-name">Swagger</div>
+                <div class="tech-desc">OpenAPI specification & interactive API documentation.</div>
+              </div>
+
+              <!-- Git & GitHub -->
+              <div class="tech-card">
+                <div class="tech-header">
+                  <div class="tech-icon-box">🐙</div>
+                  <span class="tech-badge">VCS</span>
+                </div>
+                <div class="tech-name">Git & GitHub</div>
+                <div class="tech-desc">Distributed version control and source code management.</div>
+              </div>
+
+            </div>
+          </section>
+
+          <!-- SECTION 3: REST API ENDPOINTS -->
+          <section id="rest-api" class="docs-section">
+            <h2 class="docs-section-title">
+              <span class="docs-section-icon">🌐</span>
+              <span>REST API Endpoints</span>
+            </h2>
+            <div class="api-endpoints-list">
+              
+              <!-- POST /api/pastes -->
+              <div class="api-card">
+                <div class="api-left-group">
+                  <span class="method-badge method-post">POST</span>
+                  <code class="api-url">/api/pastes</code>
+                </div>
+                <span class="api-desc">Create a new paste.</span>
+              </div>
+
+              <!-- GET /api/pastes -->
+              <div class="api-card">
+                <div class="api-left-group">
+                  <span class="method-badge method-get">GET</span>
+                  <code class="api-url">/api/pastes</code>
+                </div>
+                <span class="api-desc">Retrieve all pastes.</span>
+              </div>
+
+              <!-- GET /api/pastes/:id -->
+              <div class="api-card">
+                <div class="api-left-group">
+                  <span class="method-badge method-get">GET</span>
+                  <code class="api-url">/api/pastes/:id</code>
+                </div>
+                <span class="api-desc">Retrieve a specific paste.</span>
+              </div>
+
+              <!-- PUT /api/pastes/:id -->
+              <div class="api-card">
+                <div class="api-left-group">
+                  <span class="method-badge method-put">PUT</span>
+                  <code class="api-url">/api/pastes/:id</code>
+                </div>
+                <span class="api-desc">Update an existing paste.</span>
+              </div>
+
+              <!-- DELETE /api/pastes/:id -->
+              <div class="api-card">
+                <div class="api-left-group">
+                  <span class="method-badge method-delete">DELETE</span>
+                  <code class="api-url">/api/pastes/:id</code>
+                </div>
+                <span class="api-desc">Delete an existing paste.</span>
+              </div>
+
+            </div>
+          </section>
+
+          <!-- SECTION 4: SWAGGER DOCUMENTATION -->
+          <section id="swagger" class="docs-section">
+            <h2 class="docs-section-title">
+              <span class="docs-section-icon">📑</span>
+              <span>Swagger API Documentation</span>
+            </h2>
+            <div class="swagger-highlight-card">
+              <h3 class="swagger-title">
+                <span>Swagger API Reference</span>
+              </h3>
+              <p class="swagger-desc">
+                Explore and test every REST endpoint through the interactive Swagger interface.
+              </p>
+              <button type="button" id="btn-swagger-demo" class="swagger-btn">
+                <span>Open Swagger Documentation</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                  <polyline points="15 3 21 3 21 9"></polyline>
+                  <line x1="10" y1="14" x2="21" y2="3"></line>
+                </svg>
+              </button>
+            </div>
+          </section>
+
+          <!-- SECTION 5: SYSTEM ARCHITECTURE -->
+          <section id="architecture" class="docs-section">
+            <h2 class="docs-section-title">
+              <span class="docs-section-icon">🧱</span>
+              <span>System Architecture</span>
+            </h2>
+            <div class="arch-pipeline">
+              
+              <!-- Step 1 -->
+              <div class="arch-step-card">
+                <span class="arch-step-num">STEP 01</span>
+                <span class="arch-step-icon">👤</span>
+                <h3 class="arch-step-title">Client Layer</h3>
+                <p class="arch-step-desc">Developer user interacts with modern web UI controls.</p>
+              </div>
+
+              <!-- Step 2 -->
+              <div class="arch-step-card">
+                <span class="arch-step-num">STEP 02</span>
+                <span class="arch-step-icon">⚛️</span>
+                <h3 class="arch-step-title">React / Vite App</h3>
+                <p class="arch-step-desc">Component-driven frontend handles dynamic rendering & state.</p>
+              </div>
+
+              <!-- Step 3 -->
+              <div class="arch-step-card">
+                <span class="arch-step-num">STEP 03</span>
+                <span class="arch-step-icon">🚀</span>
+                <h3 class="arch-step-title">Express REST API</h3>
+                <p class="arch-step-desc">Node.js routes & controllers process requests & payload validation.</p>
+              </div>
+
+              <!-- Step 4 -->
+              <div class="arch-step-card">
+                <span class="arch-step-num">STEP 04</span>
+                <span class="arch-step-icon">🐬</span>
+                <h3 class="arch-step-title">MySQL Database</h3>
+                <p class="arch-step-desc">Relational DB model persists code snippets & metadata safely.</p>
+              </div>
+
+            </div>
+          </section>
+
+          <!-- SECTION 6: PROJECT STRUCTURE -->
+          <section id="project-structure" class="docs-section">
+            <h2 class="docs-section-title">
+              <span class="docs-section-icon">📂</span>
+              <span>Project Structure</span>
+            </h2>
+            <div class="tree-code-wrapper">
+<pre>PasteBin
+├── frontend
+│   ├── src
+│   ├── components
+│   ├── pages
+│   ├── assets
+│   ├── hooks
+│   ├── utils
+│   └── styles
+│
+└── backend
+    ├── controllers
+    ├── models
+    ├── routes
+    ├── middleware
+    ├── config
+    ├── swagger
+    └── server.js</pre>
+            </div>
+          </section>
+
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-content">
+      
+      <!-- Brand column -->
+      <div class="footer-brand">
+        <a href="index.html" class="nav-brand">
+          <div class="logo-icon small">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="16 18 22 12 16 6"></polyline>
+              <polyline points="8 6 2 12 8 18"></polyline>
+            </svg>
+          </div>
+          <span class="logo-text">Paste<span class="logo-highlight">Bin</span></span>
+        </a>
+        <p class="footer-tagline">The simplest way to share text<br>and code instantly.</p>
+      </div>
+
+      <!-- Links Column 1: Product -->
+      <div class="footer-col">
+        <h4 class="footer-heading">Product</h4>
+        <a href="index.html" class="footer-link">Home</a>
+        <a href="create.html" class="footer-link">Create Paste</a>
+        <a href="history.html" class="footer-link">History</a>
+      </div>
+
+      <!-- Links Column 2: Resources -->
+      <div class="footer-col">
+        <h4 class="footer-heading">Resources</h4>
+        <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="footer-link">
+          <span>GitHub</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <line x1="10" y1="14" x2="21" y2="3"></line>
+          </svg>
+        </a>
+        <a href="docs.html" class="footer-link">
+          <span>Swagger API</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <line x1="10" y1="14" x2="21" y2="3"></line>
+          </svg>
+        </a>
+      </div>
+
+      <!-- Links Column 3: About -->
+      <div class="footer-col">
+        <h4 class="footer-heading">About</h4>
+        <a href="about.html" class="footer-link">About PasteBin</a>
+        <a href="about.html#contact" class="footer-link">Contact</a>
+      </div>
+
+      <!-- Links Column 4: Stay Connected -->
+      <div class="footer-col">
+        <h4 class="footer-heading">Stay connected</h4>
+        <div class="social-icons">
+          <a href="https://github.com" target="_blank" aria-label="GitHub" class="social-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+            </svg>
+          </a>
+          <a href="#" aria-label="Website" class="social-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="2" y1="12" x2="22" y2="12"></line>
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1 4-10z"></path>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Copyright Bottom Bar -->
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <p>&copy; 2026 PasteBin. All rights reserved. <span class="heart">💜</span></p>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="components/navbar.js"></script>
+  <script type="module" src="components/footer.js"></script>
+  <script type="module" src="js/theme.js"></script>
+  <script type="module" src="js/docs.js"></script>
+</body>
+</html>
