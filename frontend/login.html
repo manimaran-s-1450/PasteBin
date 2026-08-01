@@ -11,14 +11,16 @@
   <link rel="stylesheet" href="css/create.css">
   <link rel="stylesheet" href="css/auth.css">
 </head>
-<body class="auth-wrapper">
+<body class="auth-page-wrapper">
 
-  <div class="auth-bg-glow" aria-hidden="true"></div>
+  <!-- Reduced 40% Soft Ambient Purple Glows -->
+  <div class="auth-ambient-glow" aria-hidden="true"></div>
+  <div class="auth-ambient-glow-right" aria-hidden="true"></div>
   <div id="particles-container" class="particles-container" aria-hidden="true"></div>
 
   <!-- Header Navigation -->
-  <header class="navbar-wrapper">
-    <div class="container navbar-container">
+  <header class="auth-header">
+    <div class="auth-header-container">
       <a href="index.html" class="nav-brand">
         <div class="logo-icon">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -29,7 +31,7 @@
         <span class="logo-text">Paste<span class="logo-highlight">Bin</span></span>
       </a>
 
-      <div class="nav-actions" style="display: flex; align-items: center; gap: 1rem;">
+      <div style="display: flex; align-items: center; gap: 1rem;">
         <div class="theme-pill" id="theme-toggle-btn" role="button" tabindex="0" aria-label="Toggle Theme">
           <button class="theme-btn light-btn" title="Light Mode" type="button">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path></svg>
@@ -38,97 +40,147 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
           </button>
         </div>
-        <a href="index.html" class="btn btn-secondary" style="padding: 0.4rem 0.85rem; font-size: 0.85rem; text-decoration: none;">← Home</a>
+        <a href="index.html" class="btn btn-secondary" style="padding: 0.45rem 0.95rem; font-size: 0.85rem; text-decoration: none; border-radius: 12px;">← Home</a>
       </div>
     </div>
   </header>
 
-  <!-- Main Auth Form Workspace -->
-  <main class="auth-main-container">
-    <div class="auth-glass-card">
-      <div class="auth-card-top-line"></div>
-      
-      <div class="auth-header-icon">
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
-          <polyline points="10 17 15 12 10 7"></polyline>
-          <line x1="15" y1="12" x2="3" y2="12"></line>
-        </svg>
+  <!-- Split-Screen Main Workspace -->
+  <main class="auth-split-container">
+    
+    <!-- LEFT SIDE: BRANDING (~45%) -->
+    <section class="auth-left-branding">
+      <div class="auth-pill-badge">
+        <span class="auth-pill-dot"></span>
+        <span>Developer First. Secure Always.</span>
       </div>
 
-      <h1 style="font-size: 1.65rem; font-weight: 800; color: var(--text-primary, #FFFFFF); margin-bottom: 0.35rem;">Welcome Back</h1>
-      <p style="font-size: 0.85rem; color: #94A3B8; margin-bottom: 1.5rem;">Access your code snippets, manage history, and sync across devices.</p>
+      <h1 class="auth-hero-heading">
+        Share Code.
+        <span class="auth-hero-gradient">Instantly. Securely.</span>
+      </h1>
 
-      <!-- Auth Mode Tab Switcher -->
-      <div class="auth-tabs-switcher">
-        <a href="login.html" class="auth-tab-btn active">Sign In</a>
-        <a href="signup.html" class="auth-tab-btn">Create Account</a>
-      </div>
+      <p class="auth-hero-subtitle">
+        Create, share and manage your code snippets with unique short links and instant real-time synchronization.
+      </p>
 
-      <form id="login-form">
-        <!-- Identity Field -->
-        <div class="auth-form-group">
-          <label for="login-identity" class="auth-label">
-            <span>Email or Username</span>
-          </label>
-          <div class="auth-input-wrapper">
-            <span class="auth-input-icon">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-            </span>
-            <input type="text" id="login-identity" class="auth-input" placeholder="name@example.com or username" required autocomplete="username">
+      <!-- ONLY THREE FEATURE CARDS (NO TESTIMONIALS / NO REVIEWS) -->
+      <div class="auth-features-grid">
+        <div class="auth-feature-card">
+          <div class="auth-feature-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
           </div>
+          <div class="auth-feature-title">Instant Sharing</div>
+          <div class="auth-feature-desc">Share your code or text in a single click.</div>
         </div>
 
-        <!-- Password Field -->
-        <div class="auth-form-group">
-          <div class="auth-label">
-            <span>Password</span>
-            <a href="#" id="forgot-password-link" style="color: #A78BFA; font-size: 0.775rem; text-decoration: none; font-weight: 600;">Forgot Password?</a>
+        <div class="auth-feature-card">
+          <div class="auth-feature-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
           </div>
-          <div class="auth-input-wrapper">
-            <span class="auth-input-icon">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-            </span>
-            <input type="password" id="login-password" class="auth-input" placeholder="••••••••••••" required autocomplete="current-password">
-            <button type="button" class="auth-password-toggle" id="toggle-password-btn" aria-label="Toggle password visibility">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-            </button>
-          </div>
+          <div class="auth-feature-title">Secure & Private</div>
+          <div class="auth-feature-desc">Your data is encrypted and always protected.</div>
         </div>
 
-        <!-- Remember Me Checkbox -->
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; text-align: left;">
-          <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.825rem; color: #94A3B8;">
-            <input type="checkbox" id="remember-me" checked style="accent-color: #8B5CF6; width: 15px; height: 15px; cursor: pointer;">
-            <span>Remember me for 30 days</span>
-          </label>
+        <div class="auth-feature-card">
+          <div class="auth-feature-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+          </div>
+          <div class="auth-feature-title">Dev Friendly</div>
+          <div class="auth-feature-desc">Clean, fast and built for developers.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT SIDE: SAAS AUTH CARD (~55%) -->
+    <section class="auth-right-workspace">
+      <div class="auth-card-container">
+        
+        <div class="auth-card-icon-badge">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+            <polyline points="10 17 15 12 10 7"></polyline>
+            <line x1="15" y1="12" x2="3" y2="12"></line>
+          </svg>
         </div>
 
-        <!-- Primary Action Button -->
-        <button type="submit" id="btn-login-submit" class="auth-submit-btn">
-          <span>Sign In to Account</span>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-        </button>
-      </form>
+        <h2 class="auth-card-title">Welcome Back</h2>
+        <p class="auth-card-subtitle">Sign in to continue to your account</p>
 
-      <!-- Social Login Options -->
-      <div class="auth-divider">
-        <span>OR CONTINUE WITH</span>
+        <!-- Animated Tab Switcher -->
+        <div class="auth-tab-bar">
+          <a href="login.html" class="auth-tab-item active">Sign In</a>
+          <a href="signup.html" class="auth-tab-item">Create Account</a>
+        </div>
+
+        <form id="login-form">
+          <!-- Email or Username Field -->
+          <div class="auth-field-group">
+            <div class="auth-field-header">
+              <span>Email or Username</span>
+            </div>
+            <div class="auth-input-container">
+              <span class="auth-field-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+              </span>
+              <input type="text" id="login-identity" class="auth-text-input" placeholder="Enter your email or username" required autocomplete="username">
+            </div>
+          </div>
+
+          <!-- Password Field -->
+          <div class="auth-field-group">
+            <div class="auth-field-header">
+              <span>Password</span>
+              <a href="#" style="color: #A855F7; text-decoration: none; font-size: 0.775rem;">Forgot Password?</a>
+            </div>
+            <div class="auth-input-container">
+              <span class="auth-field-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+              </span>
+              <input type="password" id="login-password" class="auth-text-input" placeholder="Enter your password" required autocomplete="current-password">
+              <button type="button" id="toggle-password-btn" class="auth-eye-button" aria-label="Toggle Password Visibility">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Remember Me Checkbox -->
+          <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem;">
+            <input type="checkbox" id="remember-me" checked style="accent-color: #8B5CF6; width: 16px; height: 16px; cursor: pointer;">
+            <label for="remember-me" style="font-size: 0.825rem; color: #9CA3AF; cursor: pointer;">Remember me for 30 days</label>
+          </div>
+
+          <!-- Primary Submit Button -->
+          <button type="submit" id="btn-login-submit" class="auth-primary-btn">
+            <span>Sign In</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </button>
+        </form>
+
+        <!-- Social Login Options -->
+        <div class="auth-or-divider">
+          <span>or continue with</span>
+        </div>
+
+        <div class="auth-social-grid">
+          <button type="button" class="auth-social-button" id="btn-social-google">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"/></svg>
+            <span>Continue with Google</span>
+          </button>
+
+          <button type="button" class="auth-social-button" id="btn-social-github">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+            <span>Continue with GitHub</span>
+          </button>
+        </div>
+
+        <p style="text-align: center; margin-top: 1.75rem; font-size: 0.85rem; color: #9CA3AF;">
+          Don't have an account? <a href="signup.html" style="color: #A855F7; text-decoration: none; font-weight: 600;">Create Account</a>
+        </p>
+
       </div>
+    </section>
 
-      <div class="auth-social-row">
-        <button type="button" class="auth-social-btn" id="btn-social-github">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-          <span>GitHub</span>
-        </button>
-
-        <button type="button" class="auth-social-btn" id="btn-social-google">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"/></svg>
-          <span>Google</span>
-        </button>
-      </div>
-
-    </div>
   </main>
 
   <script type="module" src="js/theme.js"></script>
