@@ -59,19 +59,26 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate }) => {
         }
       }
 
-      // Guest user fallback -> LocalStorage
+      // Guest user fallback -> Guest LocalStorage only
       try {
-        const guestCreated = localStorage.getItem('pastebin_guest_created_v1') || localStorage.getItem('pastebin_local_history_v1');
+        const guestCreated = localStorage.getItem('pastebin_guest_created_v1');
         if (guestCreated) {
           const parsed = JSON.parse(guestCreated);
           if (Array.isArray(parsed)) setMyPastes(parsed);
+        } else {
+          setMyPastes([]);
         }
         const guestRec = localStorage.getItem('pastebin_guest_received_v1');
         if (guestRec) {
           const parsed = JSON.parse(guestRec);
           if (Array.isArray(parsed)) setReceivedPastes(parsed);
+        } else {
+          setReceivedPastes([]);
         }
-      } catch (e) {}
+      } catch (e) {
+        setMyPastes([]);
+        setReceivedPastes([]);
+      }
 
       setLoading(false);
     }

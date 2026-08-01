@@ -179,14 +179,46 @@
           avatarBox.textContent = initials;
         }
 
-        // Populate stats from localStorage history
-        try {
-          const historyRaw = localStorage.getItem('pastebin_local_history_v1');
-          if (historyRaw) {
-            const pastes = JSON.parse(historyRaw);
-            document.getElementById('profile-stat-created').textContent = pastes.length;
-          }
-        } catch (e) {}
+        // Populate stats strictly matching History page
+        const token = localStorage.getItem('pastebin_jwt_token_v1');
+        if (token) {
+          try {
+            const getApiBaseUrl = () => (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'))
+              ? 'http://localhost:5000/api'
+              : 'https://pastebin-production-6477.up.railway.app/api';
+            fetch(`${getApiBaseUrl()}/pastes/my`, {
+              headers: { 'Authorization': `Bearer ${token}` }
+            }).then(r => r.json()).then(resData => {
+              if (resData && resData.success && Array.isArray(resData.data)) {
+                document.getElementById('profile-stat-created').textContent = resData.data.length;
+              }
+            });
+            fetch(`${getApiBaseUrl()}/pastes/received`, {
+              headers: { 'Authorization': `Bearer ${token}` }
+            }).then(r => r.json()).then(resData => {
+              if (resData && resData.success && Array.isArray(resData.data)) {
+                document.getElementById('profile-stat-received').textContent = resData.data.length;
+              }
+            });
+          } catch (e) {}
+        } else {
+          try {
+            const guestCreated = localStorage.getItem('pastebin_guest_created_v1');
+            if (guestCreated) {
+              const pastes = JSON.parse(guestCreated);
+              document.getElementById('profile-stat-created').textContent = pastes.length;
+            } else {
+              document.getElementById('profile-stat-created').textContent = 0;
+            }
+            const guestRec = localStorage.getItem('pastebin_guest_received_v1');
+            if (guestRec) {
+              const pastes = JSON.parse(guestRec);
+              document.getElementById('profile-stat-received').textContent = pastes.length;
+            } else {
+              document.getElementById('profile-stat-received').textContent = 0;
+            }
+          } catch (e) {}
+        }
       }
 
       document.getElementById('profile-page-signout-btn').onclick = () => {
