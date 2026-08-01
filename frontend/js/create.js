@@ -275,7 +275,10 @@ function initCreatePasteButton() {
       showToast('Creating paste...', 'info');
 
       // Real API POST request to Express.js + MySQL backend
-      const response = await fetch('http://localhost:5000/api/pastes', {
+      const getApiBaseUrl = () => (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+        ? 'http://localhost:5000/api'
+        : 'https://pastebin-production-6477.up.railway.app/api';
+      const response = await fetch(`${getApiBaseUrl()}/pastes`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -322,7 +325,7 @@ function initCreatePasteButton() {
       }
     } catch (err) {
       console.error('[Create Paste API Error]:', err);
-      showToast('Failed to connect to backend server on http://localhost:5000', 'error');
+      showToast('Failed to connect to backend server. Please try again.', 'error');
       // Fallback modal display
       showSuccessModal('GT5WAQFI');
     }
@@ -524,7 +527,10 @@ async function loadRecentPastes() {
   if (!container) return;
 
   try {
-    const apiUrl = window.location.origin.includes('5000') ? '/api/pastes' : 'http://localhost:5000/api/pastes';
+    const getApiBaseUrl = () => (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+      ? 'http://localhost:5000/api'
+      : 'https://pastebin-production-6477.up.railway.app/api';
+    const apiUrl = `${getApiBaseUrl()}/pastes`;
     const response = await fetch(apiUrl);
     const resData = await response.json();
 

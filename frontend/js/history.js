@@ -35,7 +35,10 @@ async function initHistoryDashboard() {
  */
 async function loadPastesFromStorage() {
   try {
-    const apiUrl = window.location.origin.includes('5000') ? '/api/pastes' : 'http://localhost:5000/api/pastes';
+    const getApiBaseUrl = () => (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+      ? 'http://localhost:5000/api'
+      : 'https://pastebin-production-6477.up.railway.app/api';
+    const apiUrl = `${getApiBaseUrl()}/pastes`;
     const response = await fetch(apiUrl);
     const resData = await response.json();
 
@@ -637,7 +640,10 @@ async function handleConfirmDelete() {
 
   try {
     // Real API DELETE request to Express + MySQL backend
-    await fetch(`http://localhost:5000/api/pastes/${encodeURIComponent(deleteCode)}`, {
+    const getApiBaseUrl = () => (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+      ? 'http://localhost:5000/api'
+      : 'https://pastebin-production-6477.up.railway.app/api';
+    await fetch(`${getApiBaseUrl()}/pastes/${encodeURIComponent(deleteCode)}`, {
       method: 'DELETE'
     });
   } catch (err) {

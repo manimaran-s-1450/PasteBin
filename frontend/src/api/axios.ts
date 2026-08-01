@@ -26,9 +26,18 @@ import axios from 'axios';
  * ============================================================================
  */
 
+const getApiBaseUrl = () => {
+  if (typeof window !== 'undefined') {
+    return (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+      ? 'http://localhost:5000/api'
+      : 'https://pastebin-production-6477.up.railway.app/api';
+  }
+  return 'https://pastebin-production-6477.up.railway.app/api';
+};
+
 const apiClient = axios.create({
   // Express.js Backend Base API URL
-  baseURL: 'http://localhost:5000/api',
+  baseURL: getApiBaseUrl(),
 
   // Default headers sent with every JSON request
   headers: {

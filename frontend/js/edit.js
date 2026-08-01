@@ -55,7 +55,10 @@ async function processEditUrlParams() {
     const searchKey = codeParam.trim();
     try {
       // Real API GET request to Express + MySQL backend
-      const response = await fetch(`http://localhost:5000/api/pastes/${encodeURIComponent(searchKey)}`);
+      const getApiBaseUrl = () => (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+        ? 'http://localhost:5000/api'
+        : 'https://pastebin-production-6477.up.railway.app/api';
+      const response = await fetch(`${getApiBaseUrl()}/pastes/${encodeURIComponent(searchKey)}`);
       const resData = await response.json();
       if (resData && resData.success && resData.data) {
         const pData = resData.data;
@@ -142,7 +145,10 @@ function initEditForm() {
         const codeOrId = currentEditPaste.code || currentEditPaste.id;
         try {
           // Real API PUT request to Express + MySQL backend
-          const response = await fetch(`http://localhost:5000/api/pastes/${encodeURIComponent(codeOrId)}`, {
+          const getApiBaseUrl = () => (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+            ? 'http://localhost:5000/api'
+            : 'https://pastebin-production-6477.up.railway.app/api';
+          const response = await fetch(`${getApiBaseUrl()}/pastes/${encodeURIComponent(codeOrId)}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
