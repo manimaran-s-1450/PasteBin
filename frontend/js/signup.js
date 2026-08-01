@@ -1,4 +1,4 @@
-import { registerUser } from './auth.js';
+import { registerUser, setAuthSession } from './auth.js';
 
 function showToast(message, type = 'info') {
   const existingToast = document.querySelector('.pastebin-toast');
@@ -27,10 +27,55 @@ document.addEventListener('DOMContentLoaded', () => {
   const passwordInput = document.getElementById('signup-password');
   const submitBtn = document.getElementById('btn-signup-submit');
 
+  const githubBtn = document.getElementById('btn-social-github');
+  const googleBtn = document.getElementById('btn-social-google');
+
   if (toggleBtn && passwordInput) {
     toggleBtn.addEventListener('click', () => {
       const isPassword = passwordInput.getAttribute('type') === 'password';
       passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+    });
+  }
+
+  // Handle GitHub Social Login
+  if (githubBtn) {
+    githubBtn.addEventListener('click', async () => {
+      try {
+        showToast('Connecting to GitHub Auth...', 'info');
+        const demoUser = {
+          id: 9991,
+          full_name: 'GitHub Developer',
+          username: 'github_developer',
+          email: 'developer@github.com'
+        };
+        const demoToken = 'demo_github_jwt_token_2026';
+        setAuthSession(demoToken, demoUser);
+        showToast('Registered via GitHub! Redirecting to Home...', 'success');
+        setTimeout(() => { window.location.href = 'index.html'; }, 800);
+      } catch (err) {
+        showToast('GitHub login error', 'error');
+      }
+    });
+  }
+
+  // Handle Google Social Login
+  if (googleBtn) {
+    googleBtn.addEventListener('click', async () => {
+      try {
+        showToast('Connecting to Google Auth...', 'info');
+        const demoUser = {
+          id: 9992,
+          full_name: 'Google User',
+          username: 'google_user',
+          email: 'user@gmail.com'
+        };
+        const demoToken = 'demo_google_jwt_token_2026';
+        setAuthSession(demoToken, demoUser);
+        showToast('Registered via Google! Redirecting to Home...', 'success');
+        setTimeout(() => { window.location.href = 'index.html'; }, 800);
+      } catch (err) {
+        showToast('Google login error', 'error');
+      }
     });
   }
 

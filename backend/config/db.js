@@ -39,6 +39,7 @@ async function testConnection() {
         username VARCHAR(50) NOT NULL UNIQUE,
         email VARCHAR(255) NOT NULL UNIQUE,
         password VARCHAR(255) NOT NULL,
+        password_hash VARCHAR(255) NULL,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
@@ -46,16 +47,17 @@ async function testConnection() {
     // Ensure full_name column exists
     try {
       await connection.query(`ALTER TABLE users ADD COLUMN full_name VARCHAR(255) NULL AFTER id;`);
-    } catch (e) {
-      // Column already exists
-    }
+    } catch (e) {}
 
-    // Ensure password column exists (if password_hash was used previously)
+    // Ensure password column exists
     try {
-      await connection.query(`ALTER TABLE users ADD COLUMN password VARCHAR(255) NOT NULL AFTER email;`);
-    } catch (e) {
-      // Column already exists
-    }
+      await connection.query(`ALTER TABLE users ADD COLUMN password VARCHAR(255) NULL AFTER email;`);
+    } catch (e) {}
+
+    // Ensure password_hash column is NULLABLE
+    try {
+      await connection.query(`ALTER TABLE users MODIFY COLUMN password_hash VARCHAR(255) NULL;`);
+    } catch (e) {}
 
     // 2. Create pastes table
     await connection.query(`
@@ -74,9 +76,7 @@ async function testConnection() {
     // 3. Add user_id column to pastes if not exists
     try {
       await connection.query(`ALTER TABLE pastes ADD COLUMN user_id INT NULL AFTER paste_code;`);
-    } catch (e) {
-      // Column user_id already exists
-    }
+    } catch (e) {}
 
     // 4. Create received_pastes table
     await connection.query(`

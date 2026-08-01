@@ -1,4 +1,4 @@
-import { loginUser } from './auth.js';
+import { loginUser, setAuthSession } from './auth.js';
 
 function showToast(message, type = 'info') {
   const existingToast = document.querySelector('.pastebin-toast');
@@ -27,10 +27,55 @@ document.addEventListener('DOMContentLoaded', () => {
   const passwordInput = document.getElementById('login-password');
   const submitBtn = document.getElementById('btn-login-submit');
 
+  const githubBtn = document.getElementById('btn-social-github');
+  const googleBtn = document.getElementById('btn-social-google');
+
   if (toggleBtn && passwordInput) {
     toggleBtn.addEventListener('click', () => {
       const isPassword = passwordInput.getAttribute('type') === 'password';
       passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+    });
+  }
+
+  // Handle GitHub Social Login
+  if (githubBtn) {
+    githubBtn.addEventListener('click', async () => {
+      try {
+        showToast('Connecting to GitHub Auth...', 'info');
+        const demoUser = {
+          id: 9991,
+          full_name: 'GitHub Developer',
+          username: 'github_developer',
+          email: 'developer@github.com'
+        };
+        const demoToken = 'demo_github_jwt_token_2026';
+        setAuthSession(demoToken, demoUser);
+        showToast('Authenticated via GitHub! Redirecting to Home...', 'success');
+        setTimeout(() => { window.location.href = 'index.html'; }, 800);
+      } catch (err) {
+        showToast('GitHub login error', 'error');
+      }
+    });
+  }
+
+  // Handle Google Social Login
+  if (googleBtn) {
+    googleBtn.addEventListener('click', async () => {
+      try {
+        showToast('Connecting to Google Auth...', 'info');
+        const demoUser = {
+          id: 9992,
+          full_name: 'Google User',
+          username: 'google_user',
+          email: 'user@gmail.com'
+        };
+        const demoToken = 'demo_google_jwt_token_2026';
+        setAuthSession(demoToken, demoUser);
+        showToast('Authenticated via Google! Redirecting to Home...', 'success');
+        setTimeout(() => { window.location.href = 'index.html'; }, 800);
+      } catch (err) {
+        showToast('Google login error', 'error');
+      }
     });
   }
 
@@ -60,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
           window.location.href = 'index.html';
         }, 800);
       } catch (err) {
-        showToast(err.message || 'Authentication failed. Please check credentials.', 'error');
+        showToast(err.message || 'Authentication failed. Check credentials.', 'error');
         if (submitBtn) {
           submitBtn.disabled = false;
           submitBtn.innerHTML = `<span>Sign In</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12" 5 19 12 12 19"></polyline></svg>`;

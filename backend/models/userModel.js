@@ -2,11 +2,12 @@ const { pool } = require('../config/db');
 
 async function createUser({ fullName, username, email, password }) {
   const [result] = await pool.execute(
-    'INSERT INTO users (full_name, username, email, password) VALUES (?, ?, ?, ?)',
+    'INSERT INTO users (full_name, username, email, password, password_hash) VALUES (?, ?, ?, ?, ?)',
     [
       fullName ? fullName.trim() : null,
       username.toLowerCase().trim(),
       email.toLowerCase().trim(),
+      password,
       password
     ]
   );
