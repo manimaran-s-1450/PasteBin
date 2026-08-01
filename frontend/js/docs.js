@@ -1,6 +1,6 @@
 /**
  * Documentation Page Interactive Controller (js/docs.js)
- * Scroll spy active section highlighting & mobile jump selector.
+ * Scroll spy active section highlighting & sidebar click handling.
  */
 
 function initDocsPage() {
@@ -16,7 +16,7 @@ if (document.readyState === 'loading') {
 }
 
 /**
- * Scroll Spy Active Link Highlighting
+ * Scroll Spy & Sidebar Click Link Highlighting
  */
 function initScrollSpy() {
   const sections = document.querySelectorAll('.docs-section');
@@ -24,9 +24,43 @@ function initScrollSpy() {
 
   if (!sections.length || !navLinks.length) return;
 
+  let isClickScrolling = false;
+  let clickTimeout = null;
+
+  // 1. Click Listener for Immediate Purple Active Bar Feedback
+  navLinks.forEach((link) => {
+    link.addEventListener('click', (e) => {
+      const href = link.getAttribute('href');
+      if (href && href.startsWith('#')) {
+        const targetSec = document.querySelector(href);
+        if (targetSec) {
+          e.preventDefault();
+          
+          // Immediately set purple active bar on clicked link
+          navLinks.forEach(l => l.classList.remove('active'));
+          link.classList.add('active');
+
+          // Prevent scroll listener from overriding active state during smooth scroll
+          isClickScrolling = true;
+          if (clickTimeout) clearTimeout(clickTimeout);
+
+          const targetTop = targetSec.getBoundingClientRect().top + window.pageYOffset - 100;
+          window.scrollTo({ top: Math.max(0, targetTop), behavior: 'smooth' });
+
+          clickTimeout = setTimeout(() => {
+            isClickScrolling = false;
+          }, 800);
+        }
+      }
+    });
+  });
+
+  // 2. Scroll Spy Listener
   function onScroll() {
+    if (isClickScrolling) return;
+
     let currentSectionId = '';
-    const scrollPos = window.scrollY + 140;
+    const scrollPos = window.scrollY + 160;
 
     sections.forEach((sec) => {
       const top = sec.offsetTop;
@@ -64,7 +98,8 @@ function initMobileJumpSelector() {
     if (targetHash) {
       const targetElement = document.querySelector(targetHash);
       if (targetElement) {
-        targetElement.scrollIntoView({ behavior: 'smooth' });
+        const targetTop = targetElement.getBoundingClientRect().top + window.pageYOffset - 100;
+        window.scrollTo({ top: Math.max(0, targetTop), behavior: 'smooth' });
       }
     }
   });
