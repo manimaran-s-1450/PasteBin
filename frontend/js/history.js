@@ -127,17 +127,47 @@ function renderDashboard() {
  * Recalculate and update top statistics cards
  */
 function updateStats() {
-  const totalCountEl = document.getElementById('stat-total-pastes');
-  const totalViewsEl = document.getElementById('stat-total-views');
-  const publicCountEl = document.getElementById('stat-public-pastes');
+  const totalCountEl = document.getElementById('stat-total-count') || document.getElementById('stat-total-pastes');
+  const receivedCountEl = document.getElementById('stat-received-count');
+  const languagesCountEl = document.getElementById('stat-languages-count');
+  const linesCountEl = document.getElementById('stat-lines-count');
 
   const totalPastes = pastesState.length;
-  const totalViews = pastesState.reduce((acc, p) => acc + (p.views || 1), 0);
-  const publicPastes = pastesState.filter(p => p.visibility === 'public' || !p.visibility).length;
+  const uniqueLangs = new Set(pastesState.map(p => (p.language || '').trim()).filter(Boolean)).size;
+  const totalLines = pastesState.reduce((sum, p) => {
+    if (!p.content) return sum;
+    return sum + p.content.split('\n').length;
+  }, 0);
 
   if (totalCountEl) totalCountEl.textContent = totalPastes;
-  if (totalViewsEl) totalViewsEl.textContent = totalViews;
-  if (publicCountEl) publicCountEl.textContent = publicPastes;
+  if (languagesCountEl) languagesCountEl.textContent = uniqueLangs;
+  if (linesCountEl) linesCountEl.textContent = totalLines;
+
+  if (receivedCountEl) {
+    const token = localStorage.getItem('pastebin_jwt_token_v1');
+    if (token) {
+      try {
+        const getApiBaseUrl = () => (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'))
+          ? 'http://localhost:5000/api'
+          : 'https://pastebin-production-6477.up.railway.app/api';
+        fetch(`${getApiBaseUrl()}/pastes/received`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        }).then(r => r.json()).then(resData => {
+          if (resData && resData.success && Array.isArray(resData.data)) {
+            receivedCountEl.textContent = resData.data.length;
+          }
+        }).catch(() => {});
+      } catch(e) {}
+    } else {
+      try {
+        const guestRec = localStorage.getItem('pastebin_guest_received_v1');
+        const recList = guestRec ? JSON.parse(guestRec) : [];
+        receivedCountEl.textContent = recList.length;
+      } catch(e) {
+        receivedCountEl.textContent = 0;
+      }
+    }
+  }
 }
 
 /**
