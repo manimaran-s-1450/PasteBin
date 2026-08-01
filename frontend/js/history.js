@@ -1,7 +1,7 @@
 /**
  * Paste History Dashboard Controller
  * Handles search, filter chips, sorting, pagination, stats recalculation,
- * delete action, copy code, and share link actions.
+ * custom glass delete modal, copy code, and share link actions.
  */
 
 // Local Storage Key
@@ -17,6 +17,8 @@ let activeFilter = 'all';
 let activeSort = 'newest';
 let currentPage = 1;
 const ITEMS_PER_PAGE = 6;
+let pendingDeleteId = null;
+let pendingPasteObj = null;
 
 /**
  * Initialize History Page Dashboard
@@ -26,6 +28,7 @@ async function initHistoryDashboard() {
   checkUrlHashSearch();
   initSearchAndFilters();
   initGridActionListeners();
+  initDeleteModal();
 }
 
 /**
@@ -67,7 +70,7 @@ async function loadPastesFromStorage() {
 
   // Guest User -> Load strictly from localStorage history
   try {
-    const guestStored = localStorage.getItem('pastebin_guest_created_v1');
+    const guestStored = localStorage.getItem('pastebin_guest_created_v1') || localStorage.getItem('pastebin_local_history_v1');
     if (guestStored) {
       const parsed = JSON.parse(guestStored);
       if (Array.isArray(parsed)) {
@@ -147,10 +150,10 @@ function filterAndSortPastes() {
   if (searchQuery.trim() !== '') {
     const q = searchQuery.toLowerCase().trim();
     result = result.filter(p => 
-      p.title.toLowerCase().includes(q) ||
-      p.code.toLowerCase().includes(q) ||
-      p.language.toLowerCase().includes(q) ||
-      p.content.toLowerCase().includes(q)
+      (p.title || '').toLowerCase().includes(q) ||
+      (p.code || '').toLowerCase().includes(q) ||
+      (p.language || '').toLowerCase().includes(q) ||
+      (p.content || '').toLowerCase().includes(q)
     );
   }
 
@@ -448,7 +451,7 @@ function initGridActionListeners() {
   const grid = document.getElementById('pastes-grid');
   if (!grid) return;
 
-  grid.addEventListener('click', async (e) => {
+  grid.addEventListener('click', (e) => {
     const btn = e.target.closest('button, .action-btn, [data-action]');
     if (!btn) return;
 
@@ -488,20 +491,80 @@ function initGridActionListeners() {
         break;
 
       case 'delete':
-        if (window.confirm(`Are you sure you want to delete "${paste.title || 'this paste'}"?`)) {
-          await executeDeletePaste(paste);
-        }
+        openDeleteModal(paste);
         break;
     }
   });
 }
 
 /**
- * Guaranteed Delete Action Handler
+ * Custom Premium Light Red Glass Modal Controller
  */
-async function executeDeletePaste(paste) {
-  if (!paste) return;
-  const deleteCode = paste.code || paste.id;
+function initDeleteModal() {
+  const backdrop = document.getElementById('delete-modal-backdrop');
+  const cancelBtn = document.getElementById('cancel-delete-btn');
+  const confirmBtn = document.getElementById('confirm-delete-btn');
+
+  if (cancelBtn) {
+    cancelBtn.addEventListener('click', closeDeleteModal);
+  }
+
+  if (confirmBtn) {
+    confirmBtn.addEventListener('click', handleConfirmDelete);
+  }
+
+  if (backdrop) {
+    backdrop.addEventListener('click', (e) => {
+      if (e.target === backdrop) closeDeleteModal();
+    });
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && backdrop && !backdrop.classList.contains('hidden')) {
+      closeDeleteModal();
+    }
+  });
+}
+
+function openDeleteModal(paste) {
+  pendingDeleteId = paste.id || paste.code;
+  pendingPasteObj = paste;
+
+  const backdrop = document.getElementById('delete-modal-backdrop');
+  const titleEl = document.getElementById('delete-target-title');
+  const codeEl = document.getElementById('delete-target-code');
+
+  if (titleEl) titleEl.textContent = paste.title || 'Untitled Paste';
+  if (codeEl) codeEl.textContent = `#${paste.code || paste.id}`;
+
+  if (backdrop) {
+    backdrop.classList.remove('hidden');
+    backdrop.setAttribute('aria-hidden', 'false');
+  }
+}
+
+function closeDeleteModal() {
+  pendingDeleteId = null;
+  pendingPasteObj = null;
+
+  const backdrop = document.getElementById('delete-modal-backdrop');
+  if (backdrop) {
+    backdrop.classList.add('hidden');
+    backdrop.setAttribute('aria-hidden', 'true');
+  }
+}
+
+/**
+ * Confirmed Delete Handler: Deletes paste & instantly updates History Page!
+ */
+async function handleConfirmDelete() {
+  if (!pendingPasteObj && !pendingDeleteId) {
+    closeDeleteModal();
+    return;
+  }
+
+  const paste = pendingPasteObj || pastesState.find(p => String(p.id) === String(pendingDeleteId) || String(p.code) === String(pendingDeleteId));
+  const deleteCode = paste ? (paste.code || paste.id) : pendingDeleteId;
   const token = localStorage.getItem('pastebin_jwt_token_v1');
 
   try {
@@ -518,14 +581,17 @@ async function executeDeletePaste(paste) {
     console.error('[History API Delete Error]:', err);
   }
 
-  pastesState = pastesState.filter(p => String(p.id) !== String(paste.id) && String(p.code) !== String(paste.code));
+  // Remove paste from state
+  pastesState = pastesState.filter(p => String(p.id) !== String(deleteCode) && String(p.code) !== String(deleteCode));
 
   // Sync LocalStorage backup
   const storageKey = token ? 'pastebin_history_pastes_v1' : 'pastebin_guest_created_v1';
   localStorage.setItem(storageKey, JSON.stringify(pastesState));
   localStorage.setItem('pastebin_local_history_v1', JSON.stringify(pastesState));
 
-  showToast(`Paste "${paste.title || 'item'}" deleted successfully`, 'success');
+  // Close modal, notify user & instantly re-render History page!
+  closeDeleteModal();
+  showToast(`Paste "${paste ? paste.title : 'item'}" deleted successfully`, 'success');
   renderDashboard();
 }
 

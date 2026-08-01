@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import GlassCard from '../components/GlassCard';
-import { getMyPastes, getAllPastes, deletePaste, PasteItem } from '../services/api';
+import { getMyPastes, deletePaste, PasteItem } from '../services/api';
 import { PageRoute } from '../App';
 
 export interface HistoryProps {
@@ -14,6 +14,9 @@ export const History: React.FC<HistoryProps> = ({ onEditPaste, onNavigate }) => 
   const [searchTerm, setSearchTerm] = useState('');
   const [filterLang, setFilterLang] = useState('All');
   const [toastMsg, setToastMsg] = useState<string | null>(null);
+  
+  // Custom Premium Light Red Glass Modal State
+  const [deleteTargetPaste, setDeleteTargetPaste] = useState<PasteItem | null>(null);
 
   const showToast = (msg: string) => {
     setToastMsg(msg);
@@ -57,8 +60,11 @@ export const History: React.FC<HistoryProps> = ({ onEditPaste, onNavigate }) => 
     fetchPastes();
   }, []);
 
-  const handleDelete = async (id: string, title: string) => {
-    if (!window.confirm(`Are you sure you want to delete "${title || 'this paste'}"?`)) return;
+  const handleConfirmDelete = async () => {
+    if (!deleteTargetPaste) return;
+    const target = deleteTargetPaste;
+    const id = target.id;
+    const title = target.title;
 
     try {
       await deletePaste(id);
@@ -76,6 +82,7 @@ export const History: React.FC<HistoryProps> = ({ onEditPaste, onNavigate }) => 
       localStorage.setItem('pastebin_local_history_v1', JSON.stringify(updated));
     } catch (e) {}
 
+    setDeleteTargetPaste(null);
     showToast(`Paste "${title || 'item'}" deleted successfully!`);
   };
 
@@ -117,6 +124,49 @@ export const History: React.FC<HistoryProps> = ({ onEditPaste, onNavigate }) => 
         <div className="fixed bottom-6 right-6 z-50 bg-emerald-600 text-white font-bold text-xs px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 animate-bounce">
           <span>✓</span>
           <span>{toastMsg}</span>
+        </div>
+      )}
+
+      {/* CUSTOM PREMIUM LIGHT RED GLASS DELETE MODAL */}
+      {deleteTargetPaste && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-md p-4">
+          <div className="bg-[#111827] border border-rose-500/40 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_30px_rgba(244,63,94,0.25)] relative overflow-hidden text-center space-y-5">
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-rose-500 via-red-500 to-pink-500" />
+
+            <div className="w-14 h-14 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-400 flex items-center justify-center text-2xl font-bold mx-auto shadow-[0_0_20px_rgba(244,63,94,0.2)]">
+              ⚠️
+            </div>
+
+            <div>
+              <h3 className="text-xl font-extrabold text-white mb-1">Delete this Paste?</h3>
+              <p className="text-xs text-slate-400">This action cannot be undone. The paste and its share link will be permanently removed.</p>
+            </div>
+
+            <div className="p-3 bg-slate-900/80 border border-slate-800 rounded-xl flex items-center justify-between gap-3 text-xs">
+              <span className="text-slate-400 font-medium truncate max-w-[200px]">{deleteTargetPaste.title || 'Untitled Paste'}</span>
+              <span className="font-mono text-purple-300 font-bold px-2 py-0.5 rounded bg-purple-950/80 border border-purple-500/30">
+                #{(deleteTargetPaste as any).paste_code || deleteTargetPaste.id}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setDeleteTargetPaste(null)}
+                className="flex-1 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition-all border-none cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmDelete}
+                className="flex-1 py-3 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-bold text-xs shadow-[0_4px_18px_rgba(244,63,94,0.4)] transition-all border-none cursor-pointer flex items-center justify-center gap-2"
+              >
+                <span>Delete Permanently</span>
+              </button>
+            </div>
+
+          </div>
         </div>
       )}
 
@@ -231,7 +281,7 @@ export const History: React.FC<HistoryProps> = ({ onEditPaste, onNavigate }) => 
                     </div>
                   </div>
 
-                  {/* ALL 5 WORKING BUTTONS: Copy, Share, View, Edit, Delete */}
+                  {/* ALL 5 WORKING BUTTONS */}
                   <div className="flex items-center gap-2 flex-wrap">
                     <button
                       onClick={() => handleCopy(paste.content || '')}
@@ -268,7 +318,7 @@ export const History: React.FC<HistoryProps> = ({ onEditPaste, onNavigate }) => 
                     )}
 
                     <button
-                      onClick={() => handleDelete(paste.id, paste.title)}
+                      onClick={() => setDeleteTargetPaste(paste)}
                       title="Delete Paste"
                       className="px-3 py-1.5 rounded-lg bg-red-500/15 hover:bg-red-500/25 border border-red-500/30 text-red-400 text-xs font-bold transition-all cursor-pointer"
                     >
