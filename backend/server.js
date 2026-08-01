@@ -16,10 +16,10 @@ async function startServer() {
         console.warn('⚠️  Notice: Server initialized without active MySQL connection. Verify MySQL service configuration.');
     }
 
-    app.listen(PORT, () => {
+    app.listen(PORT, '0.0.0.0', () => {
         console.log(`================================================`);
         console.log(`🚀 PasteBin Express API Server Started`);
-        console.log(`🌐 URL: http://localhost:${PORT}`);
+        console.log(`🌐 URL: http://0.0.0.0:${PORT}`);
         console.log(`⚙️  Environment: ${process.env.NODE_ENV || 'development'}`);
         console.log(`================================================`);
     });
