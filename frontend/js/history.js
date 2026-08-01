@@ -35,9 +35,9 @@ async function initHistoryDashboard() {
  */
 async function loadPastesFromStorage() {
   try {
-    const getApiBaseUrl = () => ((typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && window.location.port === '3000'))
+    const getApiBaseUrl = () => (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'))
       ? 'http://localhost:5000/api'
-      : '/api';
+      : 'https://pastebin-production-6477.up.railway.app/api';
     const apiUrl = `${getApiBaseUrl()}/pastes`;
     const response = await fetch(apiUrl);
     const resData = await response.json();
@@ -640,9 +640,9 @@ async function handleConfirmDelete() {
 
   try {
     // Real API DELETE request to Express + MySQL backend
-    const getApiBaseUrl = () => ((typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && window.location.port === '3000'))
+    const getApiBaseUrl = () => (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'))
       ? 'http://localhost:5000/api'
-      : '/api';
+      : 'https://pastebin-production-6477.up.railway.app/api';
     await fetch(`${getApiBaseUrl()}/pastes/${encodeURIComponent(deleteCode)}`, {
       method: 'DELETE'
     });

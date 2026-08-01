@@ -192,7 +192,7 @@ function initCodeEditorLineNumbers() {
  * 4. Clear Button Handler
  */
 function initClearButton() {
-  const clearBtn = document.getElementById('btn-clear-paste');
+  const clearBtn = document.getElementById('btn-clear') || document.getElementById('btn-clear-paste');
   const titleInput = document.getElementById('paste-title');
   const textarea = document.getElementById('paste-content');
   const langSelect = document.getElementById('paste-language');
@@ -275,9 +275,9 @@ function initCreatePasteButton() {
       showToast('Creating paste...', 'info');
 
       // Real API POST request to Express.js + MySQL backend
-      const getApiBaseUrl = () => ((typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && window.location.port === '3000'))
+      const getApiBaseUrl = () => (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'))
         ? 'http://localhost:5000/api'
-        : '/api';
+        : 'https://pastebin-production-6477.up.railway.app/api';
       const response = await fetch(`${getApiBaseUrl()}/pastes`, {
         method: 'POST',
         headers: {
@@ -527,9 +527,9 @@ async function loadRecentPastes() {
   if (!container) return;
 
   try {
-    const getApiBaseUrl = () => ((typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && window.location.port === '3000'))
+    const getApiBaseUrl = () => (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'))
       ? 'http://localhost:5000/api'
-      : '/api';
+      : 'https://pastebin-production-6477.up.railway.app/api';
     const apiUrl = `${getApiBaseUrl()}/pastes`;
     const response = await fetch(apiUrl);
     const resData = await response.json();

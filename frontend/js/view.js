@@ -338,9 +338,9 @@ async function retrieveAndRenderPaste(codeOrId) {
 
   try {
     // Real API GET request to Express.js + MySQL backend
-    const getApiBaseUrl = () => ((typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && window.location.port === '3000'))
+    const getApiBaseUrl = () => (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'))
       ? 'http://localhost:5000/api'
-      : '/api';
+      : 'https://pastebin-production-6477.up.railway.app/api';
     const response = await fetch(`${getApiBaseUrl()}/pastes/${encodeURIComponent(searchKey)}`);
     const resData = await response.json();
 
