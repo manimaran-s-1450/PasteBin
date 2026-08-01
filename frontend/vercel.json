@@ -10,6 +10,7 @@
     { "source": "/docs", "destination": "/docs.html" },
     { "source": "/about", "destination": "/about.html" },
     { "source": "/login", "destination": "/login.html" },
-    { "source": "/signup", "destination": "/signup.html" }
+    { "source": "/signup", "destination": "/signup.html" },
+    { "source": "/profile", "destination": "/profile.html" }
   ]
 }

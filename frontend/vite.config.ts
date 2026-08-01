@@ -16,6 +16,7 @@ export default defineConfig(() => {
           about: path.resolve(__dirname, 'about.html'),
           login: path.resolve(__dirname, 'login.html'),
           signup: path.resolve(__dirname, 'signup.html'),
+          profile: path.resolve(__dirname, 'profile.html'),
         },
       },
     },
