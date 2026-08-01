@@ -777,20 +777,19 @@
 .modal-card {
   position: relative;
   width: 100%;
-  max-width: 500px;
-  max-height: 90vh;
+  max-width: 480px;
   background: rgba(13, 15, 29, 0.96);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border: 1px solid rgba(139, 92, 246, 0.4);
   border-radius: 24px;
-  padding: 1.75rem;
+  padding: 1.5rem 1.75rem;
   box-shadow: 0 25px 60px -15px rgba(139, 92, 246, 0.4);
   text-align: center;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  overflow-y: auto;
+  gap: 0.85rem;
+  overflow: hidden;
   animation: modalScaleIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
@@ -1127,7 +1126,7 @@
 
 @media (max-width: 480px) {
   .modal-card {
-    padding: 1.5rem 1.25rem;
+    padding: 1.25rem 1rem;
   }
   .modal-grid-2 {
     grid-template-columns: 1fr;
@@ -1135,5 +1134,73 @@
   .modal-grid-3 {
     grid-template-columns: 1fr;
   }
+}
+
+/* ==========================================================================
+   LIGHT THEME SUCCESS MODAL STYLES (100% HIGH-CONTRAST VISIBILITY)
+   ========================================================================== */
+[data-theme="light"] .modal-card {
+  background: #FFFFFF !important;
+  border-color: rgba(139, 92, 246, 0.3) !important;
+  box-shadow: 0 20px 50px -10px rgba(139, 92, 246, 0.25) !important;
+}
+
+[data-theme="light"] .modal-title {
+  color: #0F172A !important;
+}
+
+[data-theme="light"] .modal-subtitle {
+  color: #475569 !important;
+}
+
+[data-theme="light"] .modal-code-label {
+  color: #64748B !important;
+}
+
+[data-theme="light"] .modal-code-hero-card {
+  background: #F8FAFC !important;
+  border-color: rgba(139, 92, 246, 0.35) !important;
+}
+
+[data-theme="light"] .modal-code-text {
+  color: #1E293B !important;
+}
+
+[data-theme="light"] .modal-code-icon-box {
+  background: rgba(139, 92, 246, 0.15) !important;
+  color: #7C3AED !important;
+}
+
+[data-theme="light"] .modal-actions-heading {
+  color: #64748B !important;
+}
+
+[data-theme="light"] .modal-btn-outline {
+  background: #F1F5F9 !important;
+  border-color: #CBD5E1 !important;
+  color: #334155 !important;
+}
+
+[data-theme="light"] .modal-btn-outline:hover {
+  background: #E2E8F0 !important;
+  color: #0F172A !important;
+}
+
+[data-theme="light"] .btn-green-glass {
+  background: rgba(34, 197, 94, 0.15) !important;
+  border-color: rgba(34, 197, 94, 0.4) !important;
+  color: #15803D !important;
+}
+
+[data-theme="light"] .btn-purple-glass {
+  background: rgba(139, 92, 246, 0.15) !important;
+  border-color: rgba(139, 92, 246, 0.4) !important;
+  color: #6D28D9 !important;
+}
+
+[data-theme="light"] .badge-slate {
+  background: #F1F5F9 !important;
+  border-color: #CBD5E1 !important;
+  color: #475569 !important;
 }
 
