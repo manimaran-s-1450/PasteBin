@@ -14,6 +14,8 @@ export default defineConfig(() => {
           edit: path.resolve(__dirname, 'edit.html'),
           docs: path.resolve(__dirname, 'docs.html'),
           about: path.resolve(__dirname, 'about.html'),
+          login: path.resolve(__dirname, 'login.html'),
+          signup: path.resolve(__dirname, 'signup.html'),
         },
       },
     },

@@ -18,16 +18,47 @@ let activeSort = 'newest';
 let currentPage = 1;
 const ITEMS_PER_PAGE = 6;
 let pendingDeleteId = null;
+let activeUserScope = 'my'; // 'my' or 'received'
 
 /**
  * Initialize History Page Dashboard
  */
 async function initHistoryDashboard() {
+  initUserScopeTabs();
   await loadPastesFromStorage();
   checkUrlHashSearch();
   initSearchAndFilters();
   initDeleteModal();
   initGridActionListeners();
+}
+
+function initUserScopeTabs() {
+  const btnMy = document.getElementById('tab-my-pastes');
+  const btnReceived = document.getElementById('tab-received-pastes');
+
+  if (!btnMy || !btnReceived) return;
+
+  btnMy.addEventListener('click', async () => {
+    if (activeUserScope === 'my') return;
+    activeUserScope = 'my';
+    btnMy.style.background = '#8B5CF6';
+    btnMy.style.color = 'white';
+    btnReceived.style.background = 'transparent';
+    btnReceived.style.color = '#94A3B8';
+    await loadPastesFromStorage();
+    renderPastesGrid();
+  });
+
+  btnReceived.addEventListener('click', async () => {
+    if (activeUserScope === 'received') return;
+    activeUserScope = 'received';
+    btnReceived.style.background = '#8B5CF6';
+    btnReceived.style.color = 'white';
+    btnMy.style.background = 'transparent';
+    btnMy.style.color = '#94A3B8';
+    await loadPastesFromStorage();
+    renderPastesGrid();
+  });
 }
 
 /**
@@ -38,8 +69,10 @@ async function loadPastesFromStorage() {
     const getApiBaseUrl = () => (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'))
       ? 'http://localhost:5000/api'
       : 'https://pastebin-production-6477.up.railway.app/api';
-    const apiUrl = `${getApiBaseUrl()}/pastes`;
-    const response = await fetch(apiUrl);
+    const token = localStorage.getItem('pastebin_jwt_token_v1');
+    const authHeaders = token ? { 'Authorization': `Bearer ${token}` } : {};
+    const apiUrl = `${getApiBaseUrl()}/pastes?type=${activeUserScope}`;
+    const response = await fetch(apiUrl, { headers: authHeaders });
     const resData = await response.json();
 
     if (resData && resData.success && Array.isArray(resData.data)) {
@@ -643,8 +676,11 @@ async function handleConfirmDelete() {
     const getApiBaseUrl = () => (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'))
       ? 'http://localhost:5000/api'
       : 'https://pastebin-production-6477.up.railway.app/api';
+    const token = localStorage.getItem('pastebin_jwt_token_v1');
+    const authHeaders = token ? { 'Authorization': `Bearer ${token}` } : {};
     await fetch(`${getApiBaseUrl()}/pastes/${encodeURIComponent(deleteCode)}`, {
-      method: 'DELETE'
+      method: 'DELETE',
+      headers: authHeaders
     });
   } catch (err) {
     console.error('[History API Delete Error]:', err);

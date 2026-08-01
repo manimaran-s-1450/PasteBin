@@ -8,6 +8,8 @@
     { "source": "/view", "destination": "/view.html" },
     { "source": "/edit", "destination": "/edit.html" },
     { "source": "/docs", "destination": "/docs.html" },
-    { "source": "/about", "destination": "/about.html" }
+    { "source": "/about", "destination": "/about.html" },
+    { "source": "/login", "destination": "/login.html" },
+    { "source": "/signup", "destination": "/signup.html" }
   ]
 }

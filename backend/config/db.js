@@ -31,6 +31,18 @@ async function testConnection() {
     const dbConfig = getDbConfig();
     console.log(`✅ Railway MySQL Connected! [Host: ${dbConfig.host}:${dbConfig.port} | Database: ${dbConfig.database}]`);
 
+    // 1. Create users table
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        username VARCHAR(50) NOT NULL UNIQUE,
+        email VARCHAR(255) NOT NULL UNIQUE,
+        password_hash VARCHAR(255) NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `);
+
+    // 2. Create pastes table
     await connection.query(`
       CREATE TABLE IF NOT EXISTS pastes (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -41,6 +53,24 @@ async function testConnection() {
         expires_at DATETIME NULL,
         content TEXT NOT NULL,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `);
+
+    // 3. Add user_id column to pastes if not exists
+    try {
+      await connection.query(`ALTER TABLE pastes ADD COLUMN user_id INT NULL AFTER paste_code;`);
+    } catch (e) {
+      // Column user_id already exists
+    }
+
+    // 4. Create received_pastes table
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS received_pastes (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        paste_id INT NOT NULL,
+        received_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE KEY user_paste_unique (user_id, paste_id)
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
 
