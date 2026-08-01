@@ -326,9 +326,20 @@ export function renderNavbar() {
 
   initProfileDropdownHandlers();
   initProtectedLinkHandlers();
+  initThemeToggleHandler();
 
   if (window.initMobileDrawer) {
     window.initMobileDrawer();
+  }
+}
+
+function initThemeToggleHandler() {
+  const themeToggleBtn = document.getElementById('theme-toggle-btn');
+  if (themeToggleBtn) {
+    themeToggleBtn.onclick = (e) => {
+      e.stopPropagation();
+      toggleTheme();
+    };
   }
 }
 
