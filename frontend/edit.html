@@ -132,7 +132,7 @@
                 name="title" 
                 class="form-control-input" 
                 placeholder="Enter your paste title..."
-                value=""
+                value="Binary Search Implementation"
                 autocomplete="off"
                 required
               >
@@ -187,9 +187,9 @@
                 </label>
                 <div class="select-wrapper">
                   <select id="paste-expiration" name="expiresIn" class="form-control-select">
-                    <option value="never">Never</option>
+                    <option value="never" selected>Never</option>
                     <option value="1h">1 Hour</option>
-                    <option value="24h" selected>24 Hours</option>
+                    <option value="24h">24 Hours</option>
                     <option value="7d">7 Days</option>
                     <option value="30d">30 Days</option>
                   </select>
@@ -235,7 +235,7 @@
                           <polyline points="14 2 14 8 20 8"></polyline>
                         </svg>
                       </span>
-                      <span id="editor-file-ext">untitled.js</span>
+                      <span id="editor-file-ext">Binary Search Implementation.js</span>
                     </div>
                   </div>
 
@@ -259,7 +259,25 @@
                       placeholder="// Enter or paste your code or text here..." 
                       spellcheck="false"
                       required
-                    ></textarea>
+                    >// Binary Search Implementation in JavaScript
+function binarySearch(arr, target) {
+  let left = 0;
+  let right = arr.length - 1;
+
+  while (left <= right) {
+    const mid = Math.floor((left + right) / 2);
+    
+    if (arr[mid] === target) {
+      return mid; // Target index found
+    } else if (arr[mid] < target) {
+      left = mid + 1;
+    } else {
+      right = mid - 1;
+    }
+  }
+
+  return -1; // Target element not found
+}</textarea>
                   </div>
                 </div>
 
