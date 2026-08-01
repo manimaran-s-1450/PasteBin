@@ -278,13 +278,10 @@ function initCreatePasteButton() {
       const getApiBaseUrl = () => (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'))
         ? 'http://localhost:5000/api'
         : 'https://pastebin-production-6477.up.railway.app/api';
-      const token = localStorage.getItem('pastebin_jwt_token_v1');
-      const authHeaders = token ? { 'Authorization': `Bearer ${token}` } : {};
       const response = await fetch(`${getApiBaseUrl()}/pastes`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          ...authHeaders
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           title,

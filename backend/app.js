@@ -31,10 +31,7 @@ app.get('/health', (req, res) => {
 });
 
 // 5. API Routes Mount Point
-const authRoutes = require('./routes/authRoutes');
 const pasteRoutes = require('./routes/pasteRoutes');
-
-app.use('/api/auth', authRoutes);
 app.use('/api/pastes', pasteRoutes);
 
 // 6. 404 Catch-All Middleware for undefined routes
