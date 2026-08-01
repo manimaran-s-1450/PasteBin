@@ -2,13 +2,13 @@ const pasteModel = require('../models/pasteModel');
 
 /**
  * Controller to handle POST /api/pastes
- * Validates request payload and creates a new paste snippet
+ * Validates request payload and creates a new paste snippet associated with user_id
  */
 async function createPaste(req, res, next) {
   try {
     const { title, content, language, visibility, expires_in } = req.body;
+    const userId = req.user ? (req.user.id || req.user.user_id || req.user.google_id || null) : null;
 
-    // Validate required content field
     if (!content || typeof content !== 'string' || content.trim() === '') {
       return res.status(400).json({
         success: false,
@@ -16,7 +16,6 @@ async function createPaste(req, res, next) {
       });
     }
 
-    // Format optional title and language fields
     const formattedTitle = title && typeof title === 'string' && title.trim() !== ''
       ? title.trim()
       : null;
@@ -29,13 +28,13 @@ async function createPaste(req, res, next) {
       ? visibility.trim().toLowerCase()
       : 'public';
 
-    // Call pasteModel to insert record into MySQL database
     const newPaste = await pasteModel.createPaste({
       title: formattedTitle,
       language: formattedLanguage,
       visibility: formattedVisibility,
       expires_in,
-      content: content.trim()
+      content: content.trim(),
+      user_id: userId
     });
 
     return res.status(201).json({
@@ -49,8 +48,62 @@ async function createPaste(req, res, next) {
 }
 
 /**
+ * Controller to handle GET /api/pastes/my
+ * Retrieves ONLY the authenticated user's created pastes
+ */
+async function getMyPastes(req, res, next) {
+  try {
+    const userId = req.user ? (req.user.id || req.user.user_id || req.user.google_id) : null;
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: 'Authentication required'
+      });
+    }
+
+    const pastes = await pasteModel.getUserPastes(userId);
+
+    return res.status(200).json({
+      success: true,
+      count: pastes.length,
+      data: pastes
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+/**
+ * Controller to handle GET /api/pastes/received
+ * Retrieves history list of pastes received/viewed by the authenticated user
+ */
+async function getReceivedPastes(req, res, next) {
+  try {
+    const userId = req.user ? (req.user.id || req.user.user_id || req.user.google_id) : null;
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: 'Authentication required'
+      });
+    }
+
+    const pastes = await pasteModel.getReceivedPastes(userId);
+
+    return res.status(200).json({
+      success: true,
+      count: pastes.length,
+      data: pastes
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+/**
  * Controller to handle GET /api/pastes/:paste_code
- * Retrieves a paste snippet by its unique 8-character paste_code
+ * Retrieves a paste snippet by code and records view in received_pastes if logged in
  */
 async function getPasteByCode(req, res, next) {
   try {
@@ -72,6 +125,12 @@ async function getPasteByCode(req, res, next) {
       });
     }
 
+    // Automatically record in received_pastes if authenticated user is viewing
+    const userId = req.user ? (req.user.id || req.user.user_id || req.user.google_id) : null;
+    if (userId && paste.paste_code) {
+      await pasteModel.recordReceivedPaste(userId, paste.paste_code);
+    }
+
     return res.status(200).json({
       success: true,
       data: paste
@@ -83,7 +142,7 @@ async function getPasteByCode(req, res, next) {
 
 /**
  * Controller to handle GET /api/pastes
- * Retrieves list of all pastes ordered by newest first (history)
+ * Retrieves list of all public pastes (history fallback)
  */
 async function getAllPastes(req, res, next) {
   try {
@@ -101,11 +160,12 @@ async function getAllPastes(req, res, next) {
 
 /**
  * Controller to handle DELETE /api/pastes/:paste_code
- * Deletes a paste snippet by its unique 8-character paste_code
+ * Deletes a paste snippet (verifying ownership)
  */
 async function deletePaste(req, res, next) {
   try {
     const { paste_code } = req.params;
+    const userId = req.user ? (req.user.id || req.user.user_id || req.user.google_id) : null;
 
     if (!paste_code || typeof paste_code !== 'string' || paste_code.trim() === '') {
       return res.status(400).json({
@@ -114,12 +174,19 @@ async function deletePaste(req, res, next) {
       });
     }
 
-    const isDeleted = await pasteModel.deletePasteByCode(paste_code.trim());
+    const result = await pasteModel.deletePasteByCode(paste_code.trim(), userId);
 
-    if (!isDeleted) {
+    if (!result.found) {
       return res.status(404).json({
         success: false,
         message: 'Paste not found'
+      });
+    }
+
+    if (!result.owner) {
+      return res.status(403).json({
+        success: false,
+        message: 'Access Denied: You do not own this paste.'
       });
     }
 
@@ -134,14 +201,14 @@ async function deletePaste(req, res, next) {
 
 /**
  * Controller to handle PUT /api/pastes/:paste_code
- * Updates an existing paste snippet by its unique 8-character paste_code
+ * Updates an existing paste snippet (verifying ownership)
  */
 async function updatePaste(req, res, next) {
   try {
     const { paste_code } = req.params;
     const { title, content, language } = req.body;
+    const userId = req.user ? (req.user.id || req.user.user_id || req.user.google_id) : null;
 
-    // Validate paste_code param
     if (!paste_code || typeof paste_code !== 'string' || paste_code.trim() === '') {
       return res.status(400).json({
         success: false,
@@ -149,7 +216,6 @@ async function updatePaste(req, res, next) {
       });
     }
 
-    // Validate required content field
     if (!content || typeof content !== 'string' || content.trim() === '') {
       return res.status(400).json({
         success: false,
@@ -157,7 +223,6 @@ async function updatePaste(req, res, next) {
       });
     }
 
-    // Format fields with trimming
     const formattedTitle = title && typeof title === 'string' && title.trim() !== ''
       ? title.trim()
       : null;
@@ -166,23 +231,30 @@ async function updatePaste(req, res, next) {
       ? language.trim()
       : 'Plain Text';
 
-    const updatedPaste = await pasteModel.updatePasteByCode(paste_code.trim(), {
+    const result = await pasteModel.updatePasteByCode(paste_code.trim(), {
       title: formattedTitle,
       language: formattedLanguage,
       content: content.trim()
-    });
+    }, userId);
 
-    if (!updatedPaste) {
+    if (!result.found) {
       return res.status(404).json({
         success: false,
         message: 'Paste not found'
       });
     }
 
+    if (!result.owner) {
+      return res.status(403).json({
+        success: false,
+        message: 'Access Denied: You do not own this paste.'
+      });
+    }
+
     return res.status(200).json({
       success: true,
       message: 'Paste updated successfully',
-      data: updatedPaste
+      data: result.data
     });
   } catch (error) {
     next(error);
@@ -191,12 +263,10 @@ async function updatePaste(req, res, next) {
 
 module.exports = {
   createPaste,
+  getMyPastes,
+  getReceivedPastes,
   getPasteByCode,
   getAllPastes,
   deletePaste,
   updatePaste
 };
-
-
-
-

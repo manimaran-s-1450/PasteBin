@@ -341,7 +341,9 @@ async function retrieveAndRenderPaste(codeOrId) {
     const getApiBaseUrl = () => (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'))
       ? 'http://localhost:5000/api'
       : 'https://pastebin-production-6477.up.railway.app/api';
-    const response = await fetch(`${getApiBaseUrl()}/pastes/${encodeURIComponent(searchKey)}`);
+    const token = localStorage.getItem('pastebin_jwt_token_v1');
+    const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+    const response = await fetch(`${getApiBaseUrl()}/pastes/${encodeURIComponent(searchKey)}`, { headers });
     const resData = await response.json();
 
     if (resData && resData.success && resData.data) {

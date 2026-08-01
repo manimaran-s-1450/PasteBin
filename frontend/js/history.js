@@ -38,8 +38,11 @@ async function loadPastesFromStorage() {
     const getApiBaseUrl = () => (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'))
       ? 'http://localhost:5000/api'
       : 'https://pastebin-production-6477.up.railway.app/api';
-    const apiUrl = `${getApiBaseUrl()}/pastes`;
-    const response = await fetch(apiUrl);
+    
+    const token = localStorage.getItem('pastebin_jwt_token_v1');
+    const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+    const endpoint = token ? '/pastes/my' : '/pastes';
+    const response = await fetch(`${getApiBaseUrl()}${endpoint}`, { headers });
     const resData = await response.json();
 
     if (resData && resData.success && Array.isArray(resData.data)) {

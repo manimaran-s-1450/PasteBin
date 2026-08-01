@@ -6,23 +6,19 @@ import apiClient from '../api/axios';
  * Purpose:
  * Centralized service module for handling communication between the React frontend
  * and the Express.js + MySQL backend endpoints.
- * 
- * Backend Contract Specifications:
- * - Base URL: /api/pastes (or http://localhost:5000/api/pastes)
- * - Format: JSON
  * --------------------------------------------------------------------------
  */
 
-// --- TYPES & INTERFACES ---
-
 export interface PasteItem {
   id: string;
+  paste_code?: string;
   title: string;
   language: string;
-  expiresIn: 'never' | '1h' | '24h' | '7d' | '30d';
-  visibility: 'public' | 'private';
-  content: string;
-  createdAt: string;
+  expiresIn?: 'never' | '1h' | '24h' | '7d' | '30d';
+  visibility?: 'public' | 'private';
+  content?: string;
+  createdAt?: string;
+  created_at?: string;
   viewsCount?: number;
   sizeBytes?: number;
 }
@@ -30,8 +26,8 @@ export interface PasteItem {
 export interface CreatePastePayload {
   title: string;
   language: string;
-  expiresIn: string;
-  visibility: 'public' | 'private';
+  expiresIn?: string;
+  visibility?: 'public' | 'private';
   content: string;
 }
 
@@ -47,18 +43,19 @@ export interface ApiResponse<T> {
   success: boolean;
   message?: string;
   data?: T;
+  count?: number;
   error?: string;
 }
 
-// --- API ENDPOINTS FOR BACKEND INTEGRATION ---
+function getAuthHeader() {
+  const token = localStorage.getItem('pastebin_jwt_token_v1');
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
 
 /**
  * Backend API Integration - POST /api/pastes
- * Sends payload to Express backend to create a new paste snippet.
- * Note: `expiresIn` and `visibility` are excluded as backend accepts ONLY { title, language, content }.
  */
 export async function createPaste(payload: CreatePastePayload): Promise<ApiResponse<PasteItem>> {
-  // Construct backend payload containing ONLY title, language, and content
   const backendPayload = {
     title: payload.title,
     language: payload.language,
@@ -66,23 +63,49 @@ export async function createPaste(payload: CreatePastePayload): Promise<ApiRespo
   };
 
   try {
-    // Execute POST request to Express.js backend via reusable Axios instance
-    const response = await apiClient.post('/pastes', backendPayload);
+    const response = await apiClient.post('/pastes', backendPayload, { headers: getAuthHeader() });
     return response.data;
   } catch (error: any) {
     console.error('[API Error] POST /api/pastes failed:', error);
-    // Rethrow error for UI components to handle error states
+    throw error.response?.data || error;
+  }
+}
+
+/**
+ * Backend API Integration - GET /api/pastes/my
+ * Fetches ONLY the authenticated user's created pastes.
+ */
+export async function getMyPastes(): Promise<ApiResponse<PasteItem[]>> {
+  try {
+    const response = await apiClient.get('/pastes/my', { headers: getAuthHeader() });
+    return response.data;
+  } catch (error: any) {
+    console.error('[API Error] GET /api/pastes/my failed:', error);
+    throw error.response?.data || error;
+  }
+}
+
+/**
+ * Backend API Integration - GET /api/pastes/received
+ * Fetches history list of pastes received/viewed by the authenticated user.
+ */
+export async function getReceivedPastes(): Promise<ApiResponse<PasteItem[]>> {
+  try {
+    const response = await apiClient.get('/pastes/received', { headers: getAuthHeader() });
+    return response.data;
+  } catch (error: any) {
+    console.error('[API Error] GET /api/pastes/received failed:', error);
     throw error.response?.data || error;
   }
 }
 
 /**
  * Backend API Integration - GET /api/pastes
- * Fetches all public pastes from Express + MySQL backend for the History dashboard.
+ * Fetches all public pastes.
  */
 export async function getAllPastes(): Promise<ApiResponse<PasteItem[]>> {
   try {
-    const response = await apiClient.get('/pastes');
+    const response = await apiClient.get('/pastes', { headers: getAuthHeader() });
     return response.data;
   } catch (error: any) {
     console.error('[API Error] GET /api/pastes failed:', error);
@@ -92,11 +115,10 @@ export async function getAllPastes(): Promise<ApiResponse<PasteItem[]>> {
 
 /**
  * Backend API Integration - GET /api/pastes/:paste_code
- * Fetches a single paste by unique paste code (or ID) from Express + MySQL backend.
  */
 export async function getPasteById(id: string): Promise<ApiResponse<PasteItem>> {
   try {
-    const response = await apiClient.get(`/pastes/${id}`);
+    const response = await apiClient.get(`/pastes/${id}`, { headers: getAuthHeader() });
     return response.data;
   } catch (error: any) {
     console.error('[API Error] GET /api/pastes/:id failed:', error);
@@ -106,10 +128,8 @@ export async function getPasteById(id: string): Promise<ApiResponse<PasteItem>> 
 
 /**
  * Backend API Integration - PUT /api/pastes/:id
- * Updates an existing code paste in Express + MySQL backend.
  */
 export async function updatePaste(id: string, payload: UpdatePastePayload): Promise<ApiResponse<PasteItem>> {
-  // Construct backend payload containing ONLY title, language, and content
   const backendPayload = {
     title: payload.title,
     language: payload.language,
@@ -117,7 +137,7 @@ export async function updatePaste(id: string, payload: UpdatePastePayload): Prom
   };
 
   try {
-    const response = await apiClient.put(`/pastes/${id}`, backendPayload);
+    const response = await apiClient.put(`/pastes/${id}`, backendPayload, { headers: getAuthHeader() });
     return response.data;
   } catch (error: any) {
     console.error('[API Error] PUT /api/pastes/:id failed:', error);
@@ -127,11 +147,10 @@ export async function updatePaste(id: string, payload: UpdatePastePayload): Prom
 
 /**
  * Backend API Integration - DELETE /api/pastes/:id
- * Deletes a paste snippet by paste code or ID from Express + MySQL backend.
  */
 export async function deletePaste(id: string): Promise<ApiResponse<boolean>> {
   try {
-    const response = await apiClient.delete(`/pastes/${id}`);
+    const response = await apiClient.delete(`/pastes/${id}`, { headers: getAuthHeader() });
     return response.data;
   } catch (error: any) {
     console.error('[API Error] DELETE /api/pastes/:id failed:', error);

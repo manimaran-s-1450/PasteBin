@@ -1,37 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import GlassCard from '../components/GlassCard';
-import { getAllPastes, PasteItem } from '../services/api';
-
-/**
- * History Component (History Dashboard)
- * --------------------------------------------------------------------------
- * Purpose:
- * Management dashboard allowing users to view, search, and filter all saved 
- * code pastes fetched live from the Express + MySQL backend via GET /api/pastes.
- * --------------------------------------------------------------------------
- */
+import { getMyPastes, getAllPastes, deletePaste, PasteItem } from '../services/api';
+import { PageRoute } from '../App';
 
 export interface HistoryProps {
   onEditPaste?: (paste: PasteItem) => void;
+  onNavigate?: (page: PageRoute) => void;
 }
 
-export const History: React.FC<HistoryProps> = ({ onEditPaste }) => {
+export const History: React.FC<HistoryProps> = ({ onEditPaste, onNavigate }) => {
   const [pastes, setPastes] = useState<PasteItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterLang, setFilterLang] = useState('All');
 
-  /**
-   * Fetch All Pastes on Component Mount
-   * Connects to GET /api/pastes backend endpoint
-   */
   useEffect(() => {
     let isMounted = true;
 
     async function fetchPastes() {
       setLoading(true);
       try {
-        const res = await getAllPastes();
+        const token = localStorage.getItem('pastebin_jwt_token_v1');
+        const res = token ? await getMyPastes() : await getAllPastes();
         if (isMounted && res && res.success && res.data) {
           setPastes(res.data);
         }
@@ -48,10 +38,6 @@ export const History: React.FC<HistoryProps> = ({ onEditPaste }) => {
     };
   }, []);
 
-  /**
-   * Delete Paste Handler
-   * Connects to DELETE /api/pastes/:id backend endpoint
-   */
   const handleDelete = async (id: string) => {
     try {
       const res = await deletePaste(id);
@@ -64,14 +50,11 @@ export const History: React.FC<HistoryProps> = ({ onEditPaste }) => {
     }
   };
 
-  /**
-   * Filter Pastes by Title, Paste Code, or Language
-   */
   const filteredPastes = pastes.filter((p) => {
     const code = (p as any).paste_code || p.id || '';
     const searchLower = searchTerm.toLowerCase();
     const matchesSearch =
-      p.title.toLowerCase().includes(searchLower) ||
+      (p.title || 'Untitled').toLowerCase().includes(searchLower) ||
       code.toLowerCase().includes(searchLower) ||
       p.language.toLowerCase().includes(searchLower);
     const matchesLang = filterLang === 'All' || p.language === filterLang;
@@ -93,7 +76,7 @@ export const History: React.FC<HistoryProps> = ({ onEditPaste }) => {
           </div>
         </h1>
         <p className="text-slate-400 text-base sm:text-lg">
-          Manage, organize, search and edit all your created pastes from one place.
+          Manage, organize, search and edit your personal pastes.
         </p>
       </section>
 
@@ -105,7 +88,7 @@ export const History: React.FC<HistoryProps> = ({ onEditPaste }) => {
         </GlassCard>
         <GlassCard gradientTopLine={false} className="!p-4 text-center">
           <div className="text-2xl font-extrabold text-purple-400">
-            {pastes.reduce((acc, curr) => acc + (curr.viewsCount || 0), 0)}
+            {pastes.reduce((acc, curr) => acc + (curr.viewsCount || 1), 0)}
           </div>
           <div className="text-xs text-slate-400 font-semibold uppercase">Total Views</div>
         </GlassCard>
@@ -155,13 +138,23 @@ export const History: React.FC<HistoryProps> = ({ onEditPaste }) => {
             <span>Loading history pastes from backend...</span>
           </GlassCard>
         ) : filteredPastes.length === 0 ? (
-          <GlassCard className="text-center py-12 text-slate-400">
-            No pastes found.
+          <GlassCard className="text-center py-12 flex flex-col items-center justify-center gap-3">
+            <div className="w-14 h-14 rounded-2xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center text-2xl font-bold">
+              📄
+            </div>
+            <h3 className="text-xl font-extrabold text-white">No Pastes Yet</h3>
+            <p className="text-slate-400 text-sm max-w-sm">You haven't created any pastes yet.</p>
+            <button
+              onClick={() => onNavigate ? onNavigate('create') : (window.location.href = 'create.html')}
+              className="mt-2 px-6 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-sm shadow-[0_4px_15px_rgba(139,92,246,0.35)] transition-all border-none cursor-pointer"
+            >
+              Create Your First Paste
+            </button>
           </GlassCard>
         ) : (
           filteredPastes.map((paste) => {
             const pasteCodeDisplay = (paste as any).paste_code || paste.id;
-            const formattedDate = paste.createdAt ? new Date(paste.createdAt).toLocaleDateString() : 'Just now';
+            const formattedDate = paste.createdAt || (paste as any).created_at ? new Date(paste.createdAt || (paste as any).created_at).toLocaleDateString() : 'Just now';
 
             return (
               <GlassCard key={paste.id} className="!p-5">
@@ -169,7 +162,7 @@ export const History: React.FC<HistoryProps> = ({ onEditPaste }) => {
                   
                   <div className="space-y-1">
                     <div className="flex items-center gap-3">
-                      <h3 className="text-lg font-bold text-white">{paste.title}</h3>
+                      <h3 className="text-lg font-bold text-white">{paste.title || 'Untitled Paste'}</h3>
                       <span className="font-mono text-xs px-2 py-0.5 rounded bg-purple-950/80 border border-purple-500/30 text-purple-300 font-bold">
                         {pasteCodeDisplay}
                       </span>
@@ -179,12 +172,6 @@ export const History: React.FC<HistoryProps> = ({ onEditPaste }) => {
                       <span>Language: <strong className="text-purple-300">{paste.language}</strong></span>
                       <span>•</span>
                       <span>Created: {formattedDate}</span>
-                      {paste.viewsCount !== undefined && (
-                        <>
-                          <span>•</span>
-                          <span>Views: {paste.viewsCount}</span>
-                        </>
-                      )}
                     </div>
                   </div>
 

@@ -38,15 +38,8 @@ async function deleteExpiredPastes() {
 
 /**
  * Inserts a new paste record into the database using parameterized queries.
- * @param {Object} pasteData
- * @param {string|null} pasteData.title - Title of the paste
- * @param {string} pasteData.language - Programming language or format
- * @param {string} pasteData.visibility - Visibility (public or private)
- * @param {string} pasteData.expires_in - Expiration option (never, 10m, 1h, 1d, 1w)
- * @param {string} pasteData.content - Main code/text snippet content
- * @returns {Promise<Object>} Created paste details
  */
-async function createPaste({ title, language, visibility, expires_in, content }) {
+async function createPaste({ title, language, visibility, expires_in, content, user_id }) {
   await deleteExpiredPastes();
   let pasteCode;
   let isInserted = false;
@@ -55,6 +48,7 @@ async function createPaste({ title, language, visibility, expires_in, content })
 
   let lastResult;
   const expiresAt = calculateExpiresAt(expires_in);
+  const userIdStr = user_id ? String(user_id) : null;
 
   while (!isInserted && attempts < maxAttempts) {
     pasteCode = generatePasteCode(8);
@@ -62,11 +56,12 @@ async function createPaste({ title, language, visibility, expires_in, content })
 
     try {
       const query = `
-        INSERT INTO pastes (paste_code, title, language, visibility, expires_at, content)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO pastes (paste_code, user_id, title, language, visibility, expires_at, content)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
       `;
       const values = [
         pasteCode,
+        userIdStr,
         title || null,
         language || 'Plain Text',
         visibility || 'public',
@@ -88,6 +83,7 @@ async function createPaste({ title, language, visibility, expires_in, content })
   return {
     id: lastResult.insertId,
     paste_code: pasteCode,
+    user_id: userIdStr,
     title: title || null,
     language: language || 'Plain Text',
     visibility: visibility || 'public',
@@ -99,14 +95,12 @@ async function createPaste({ title, language, visibility, expires_in, content })
 
 /**
  * Retrieves a paste record by paste_code or id safely
- * @param {string} pasteCode
- * @returns {Promise<Object|null>}
  */
 async function findByCode(pasteCode) {
   const isNumeric = /^\d+$/.test(String(pasteCode).trim());
   const query = isNumeric
-    ? `SELECT id, paste_code, title, language, visibility, expires_at, content, created_at FROM pastes WHERE id = ? OR paste_code = ? LIMIT 1`
-    : `SELECT id, paste_code, title, language, visibility, expires_at, content, created_at FROM pastes WHERE paste_code = ? LIMIT 1`;
+    ? `SELECT id, paste_code, user_id, title, language, visibility, expires_at, content, created_at FROM pastes WHERE id = ? OR paste_code = ? LIMIT 1`
+    : `SELECT id, paste_code, user_id, title, language, visibility, expires_at, content, created_at FROM pastes WHERE paste_code = ? LIMIT 1`;
   const params = isNumeric ? [pasteCode, pasteCode] : [pasteCode];
 
   const [rows] = await pool.execute(query, params);
@@ -115,11 +109,10 @@ async function findByCode(pasteCode) {
 
 /**
  * Retrieves history list of all unexpired pastes ordered by newest first
- * @returns {Promise<Array>} Array of paste summary objects
  */
 async function getAllPastes() {
   const query = `
-    SELECT id, paste_code, title, language, visibility, expires_at, content, created_at
+    SELECT id, paste_code, user_id, title, language, visibility, expires_at, content, created_at
     FROM pastes
     ORDER BY created_at DESC
   `;
@@ -128,20 +121,75 @@ async function getAllPastes() {
 }
 
 /**
- * Deletes a paste record by paste_code or id safely
- * @param {string} pasteCode - Unique 8-character paste code or ID
- * @returns {Promise<boolean>} Returns true if paste existed and was deleted, false if not found
+ * Retrieves ONLY the authenticated user's created pastes ordered by newest first
  */
-async function deletePasteByCode(pasteCode) {
+async function getUserPastes(userId) {
+  if (!userId) return [];
+  const query = `
+    SELECT id, paste_code, user_id, title, language, visibility, expires_at, content, created_at
+    FROM pastes
+    WHERE user_id = ?
+    ORDER BY created_at DESC
+  `;
+  const [rows] = await pool.execute(query, [String(userId)]);
+  return rows;
+}
+
+/**
+ * Records a viewed/received paste for an authenticated user
+ */
+async function recordReceivedPaste(userId, pasteCode) {
+  if (!userId || !pasteCode) return;
+  try {
+    const query = `
+      INSERT INTO received_pastes (user_id, paste_code, viewed_at)
+      VALUES (?, ?, NOW())
+      ON DUPLICATE KEY UPDATE viewed_at = NOW()
+    `;
+    await pool.execute(query, [String(userId), String(pasteCode)]);
+  } catch (e) {
+    console.warn('Record received paste error:', e.message);
+  }
+}
+
+/**
+ * Retrieves history list of pastes received/viewed by an authenticated user
+ */
+async function getReceivedPastes(userId) {
+  if (!userId) return [];
+  try {
+    const query = `
+      SELECT p.id, p.paste_code, p.user_id, p.title, p.language, p.visibility, p.expires_at, p.content, rp.viewed_at AS created_at
+      FROM received_pastes rp
+      JOIN pastes p ON rp.paste_code = p.paste_code
+      WHERE rp.user_id = ?
+      ORDER BY rp.viewed_at DESC
+    `;
+    const [rows] = await pool.execute(query, [String(userId)]);
+    return rows;
+  } catch (e) {
+    return [];
+  }
+}
+
+/**
+ * Deletes a paste record by paste_code or id safely (verifying user ownership)
+ */
+async function deletePasteByCode(pasteCode, userId = null) {
   const isNumeric = /^\d+$/.test(String(pasteCode).trim());
   const checkQuery = isNumeric
-    ? `SELECT id FROM pastes WHERE id = ? OR paste_code = ? LIMIT 1`
-    : `SELECT id FROM pastes WHERE paste_code = ? LIMIT 1`;
+    ? `SELECT id, user_id FROM pastes WHERE id = ? OR paste_code = ? LIMIT 1`
+    : `SELECT id, user_id FROM pastes WHERE paste_code = ? LIMIT 1`;
   const checkParams = isNumeric ? [pasteCode, pasteCode] : [pasteCode];
   const [existing] = await pool.execute(checkQuery, checkParams);
 
   if (existing.length === 0) {
-    return false;
+    return { found: false, owner: false };
+  }
+
+  const paste = existing[0];
+  if (userId && paste.user_id && String(paste.user_id) !== String(userId)) {
+    return { found: true, owner: false };
   }
 
   const deleteQuery = isNumeric
@@ -149,29 +197,27 @@ async function deletePasteByCode(pasteCode) {
     : `DELETE FROM pastes WHERE paste_code = ?`;
   const [result] = await pool.execute(deleteQuery, checkParams);
 
-  return result.affectedRows > 0;
+  return { found: true, owner: result.affectedRows > 0 };
 }
 
 /**
- * Updates an existing paste record by paste_code or id safely
- * @param {string} pasteCode - Unique 8-character paste code or ID
- * @param {Object} pasteData
- * @param {string|null} pasteData.title - Updated title
- * @param {string} pasteData.language - Updated language
- * @param {string} pasteData.visibility - Updated visibility
- * @param {string} pasteData.content - Updated content
- * @returns {Promise<Object|null>} Updated paste record or null if not found
+ * Updates an existing paste record safely (verifying user ownership)
  */
-async function updatePasteByCode(pasteCode, { title, language, visibility, content }) {
+async function updatePasteByCode(pasteCode, { title, language, visibility, content }, userId = null) {
   const isNumeric = /^\d+$/.test(String(pasteCode).trim());
   const checkQuery = isNumeric
-    ? `SELECT id FROM pastes WHERE id = ? OR paste_code = ? LIMIT 1`
-    : `SELECT id FROM pastes WHERE paste_code = ? LIMIT 1`;
+    ? `SELECT id, user_id FROM pastes WHERE id = ? OR paste_code = ? LIMIT 1`
+    : `SELECT id, user_id FROM pastes WHERE paste_code = ? LIMIT 1`;
   const checkParams = isNumeric ? [pasteCode, pasteCode] : [pasteCode];
   const [existing] = await pool.execute(checkQuery, checkParams);
 
   if (existing.length === 0) {
-    return null;
+    return { found: false, owner: false, data: null };
+  }
+
+  const paste = existing[0];
+  if (userId && paste.user_id && String(paste.user_id) !== String(userId)) {
+    return { found: true, owner: false, data: null };
   }
 
   const updateQuery = isNumeric
@@ -184,19 +230,19 @@ async function updatePasteByCode(pasteCode, { title, language, visibility, conte
   await pool.execute(updateQuery, updateParams);
 
   const selectQuery = isNumeric
-    ? `SELECT id, paste_code, title, language, visibility, expires_at, content, created_at FROM pastes WHERE id = ? OR paste_code = ? LIMIT 1`
-    : `SELECT id, paste_code, title, language, visibility, expires_at, content, created_at FROM pastes WHERE paste_code = ? LIMIT 1`;
+    ? `SELECT id, paste_code, user_id, title, language, visibility, expires_at, content, created_at FROM pastes WHERE id = ? OR paste_code = ? LIMIT 1`
+    : `SELECT id, paste_code, user_id, title, language, visibility, expires_at, content, created_at FROM pastes WHERE paste_code = ? LIMIT 1`;
   const [rows] = await pool.execute(selectQuery, checkParams);
-  return rows[0];
+  return { found: true, owner: true, data: rows[0] };
 }
 
 module.exports = {
   createPaste,
   findByCode,
   getAllPastes,
+  getUserPastes,
+  recordReceivedPaste,
+  getReceivedPastes,
   deletePasteByCode,
   updatePasteByCode
 };
-
-
-

@@ -78,16 +78,17 @@ async function testConnection() {
     `);
 
     // 3. Add user_id column to pastes if not exists
-    try { await connection.query(`ALTER TABLE pastes ADD COLUMN user_id INT NULL AFTER paste_code;`); } catch (e) {}
+    try { await connection.query(`ALTER TABLE pastes ADD COLUMN user_id VARCHAR(255) NULL AFTER paste_code;`); } catch (e) {}
+    try { await connection.query(`ALTER TABLE pastes MODIFY COLUMN user_id VARCHAR(255) NULL;`); } catch (e) {}
 
     // 4. Create received_pastes table
     await connection.query(`
       CREATE TABLE IF NOT EXISTS received_pastes (
         id INT AUTO_INCREMENT PRIMARY KEY,
-        user_id INT NOT NULL,
-        paste_id INT NOT NULL,
-        received_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        UNIQUE KEY user_paste_unique (user_id, paste_id)
+        user_id VARCHAR(255) NOT NULL,
+        paste_code VARCHAR(255) NOT NULL,
+        viewed_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        UNIQUE KEY user_paste_unique (user_id, paste_code)
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
 
