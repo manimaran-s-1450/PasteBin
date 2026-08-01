@@ -374,47 +374,6 @@ export const EditPaste: React.FC<EditPasteProps> = ({ pasteCode, pasteToEdit, on
 
                 </div>
 
-                {/* 3. VISIBILITY SELECTION CARDS */}
-                <div className="flex flex-col gap-2">
-                  <label className="inline-flex items-center gap-2 text-sm font-bold text-slate-100">
-                    <svg className="w-4 h-4 text-purple-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                      <circle cx="12" cy="12" r="3"></circle>
-                    </svg>
-                    <span>Paste Visibility</span>
-                  </label>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    
-                    <div 
-                      onClick={() => !loading && !updating && handleVisibilitySelect('public')}
-                      className={`p-4 rounded-2xl border cursor-pointer transition-all ${
-                        formData.visibility === 'public'
-                          ? 'bg-purple-950/40 border-purple-500/80 shadow-[0_0_20px_rgba(139,92,246,0.2)]'
-                          : 'bg-[#09090B] border-slate-800 hover:border-slate-700'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="font-bold text-sm text-white">🌐 Public</span>
-                        {formData.visibility === 'public' && <span className="text-purple-400 font-bold text-xs">✓ Active</span>}
-                      </div>
-                      <p className="text-xs text-slate-400">Visible to anyone with the paste code or search.</p>
-                    </div>
-
-                    <div 
-                      onClick={() => !loading && !updating && handleVisibilitySelect('private')}
-                      className={`p-4 rounded-2xl border cursor-pointer transition-all ${
-                        formData.visibility === 'private'
-                          ? 'bg-purple-950/40 border-purple-500/80 shadow-[0_0_20px_rgba(139,92,246,0.2)]'
-                          : 'bg-[#09090B] border-slate-800 hover:border-slate-700'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="font-bold text-sm text-white">🔒 Private</span>
-                        {formData.visibility === 'private' && <span className="text-purple-400 font-bold text-xs">✓ Active</span>}
-                      </div>
-                      <p className="text-xs text-slate-400">Accessible only via secret link or paste code.</p>
-                    </div>
-
                   </div>
                 </div>
 
