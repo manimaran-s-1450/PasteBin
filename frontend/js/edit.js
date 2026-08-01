@@ -188,11 +188,13 @@ function populateFormFields(paste) {
 
   const titleInput = document.getElementById('paste-title');
   const langSelect = document.getElementById('paste-language');
+  const expSelect = document.getElementById('paste-expiration');
   const visInput = document.getElementById('paste-visibility-input');
   const textarea = document.getElementById('paste-content');
 
   if (titleInput) titleInput.value = paste.title || '';
   if (langSelect) langSelect.value = paste.language || 'JavaScript';
+  if (expSelect) expSelect.value = paste.expiresIn || '24h';
   if (textarea) textarea.value = paste.content || '';
 
   if (visInput) visInput.value = paste.visibility || 'public';
