@@ -294,7 +294,7 @@ export const EditPaste: React.FC<EditPasteProps> = ({ pasteCode, pasteToEdit, on
                     value={formData.title}
                     onChange={handleInputChange}
                     disabled={loading || updating}
-                    placeholder="e.g. Binary Search Implementation"
+                    placeholder="Enter your paste title..."
                     required
                     className="w-full px-4 py-3 bg-[#09090B] border border-slate-800 rounded-xl text-white font-medium focus:outline-none focus:border-purple-500 transition-all disabled:opacity-50"
                   />
