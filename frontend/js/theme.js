@@ -26,18 +26,31 @@ window.setTheme = setTheme;
 window.toggleTheme = toggleTheme;
 
 function updateThemePillUI(theme) {
-  const lightBtn = document.querySelector('.theme-btn.light-btn');
-  const darkBtn = document.querySelector('.theme-btn.dark-btn');
-  if (!lightBtn || !darkBtn) return;
-
-  if (theme === 'dark') {
-    lightBtn.classList.remove('active');
-    darkBtn.classList.add('active');
-  } else {
-    darkBtn.classList.remove('active');
-    lightBtn.classList.add('active');
-  }
+  const pills = document.querySelectorAll('#theme-toggle-btn, .theme-pill');
+  pills.forEach(pill => {
+    const lightBtn = pill.querySelector('.light-btn');
+    const darkBtn = pill.querySelector('.dark-btn');
+    if (theme === 'dark') {
+      if (lightBtn) lightBtn.classList.remove('active');
+      if (darkBtn) darkBtn.classList.add('active');
+      pill.classList.remove('light');
+    } else {
+      if (darkBtn) darkBtn.classList.remove('active');
+      if (lightBtn) lightBtn.classList.add('active');
+      pill.classList.add('light');
+    }
+  });
 }
+
+/**
+ * Global Document Click Event Delegation for Guaranteed Theme Toggle Execution
+ */
+document.addEventListener('click', (e) => {
+  const toggleBtn = e.target.closest('#theme-toggle-btn, .theme-pill, #dropdown-btn-theme');
+  if (toggleBtn) {
+    toggleTheme();
+  }
+});
 
 /**
  * Generate Glowing Ambient Particles Background
@@ -98,85 +111,84 @@ function init3DTilt() {
     // Parallax shift for floating cards
     if (float1) float1.style.transform = `translate3d(${x * 0.03}px, ${y * 0.03}px, 20px)`;
     if (float2) float2.style.transform = `translate3d(${x * -0.02}px, ${y * 0.02}px, 15px)`;
-    if (float3) float3.style.transform = `translate3d(${x * 0.025}px, ${y * -0.025}px, 25px)`;
-    if (float4) float4.style.transform = `translate3d(${x * -0.03}px, ${y * -0.02}px, 18px)`;
+    if (float3) float3.style.transform = `translate3d(${x * 0.02}px, ${y * -0.02}px, 25px)`;
+    if (float4) float4.style.transform = `translate3d(${x * -0.03}px, ${y * -0.03}px, 30px)`;
   });
 
   heroSection.addEventListener('mouseleave', () => {
-    // Reset to default 3D pose smoothly
-    editor.style.transform = 'rotateY(-14deg) rotateX(10deg) rotateZ(2deg) translateZ(0)';
-    if (float1) float1.style.transform = '';
-    if (float2) float2.style.transform = '';
-    if (float3) float3.style.transform = '';
-    if (float4) float4.style.transform = '';
+    editor.style.transform = 'rotateY(-14deg) rotateX(10deg) rotateZ(2deg)';
+    if (float1) float1.style.transform = 'none';
+    if (float2) float2.style.transform = 'none';
+    if (float3) float3.style.transform = 'none';
+    if (float4) float4.style.transform = 'none';
   });
 }
 
 /**
- * Interactive Copy URL Button inside 3D Hero Editor
+ * Code Editor Header Copy Button Interactive Feedback
  */
 function initCopyBtn() {
-  const copyBtn = document.getElementById('editor-copy-btn');
-  if (!copyBtn) return;
+  const copyBtn = document.getElementById('hero-copy-btn');
+  const codeContent = document.getElementById('hero-code-content');
 
-  copyBtn.addEventListener('click', async () => {
-    const sampleUrl = 'https://pastebin.dev/abc123';
-    try {
-      if (navigator.clipboard) {
-        await navigator.clipboard.writeText(sampleUrl);
-      }
-      const label = copyBtn.querySelector('span');
-      if (label) {
-        const originalText = label.textContent;
-        label.textContent = 'Copied!';
-        copyBtn.style.backgroundColor = '#22C55E';
+  if (!copyBtn || !codeContent) return;
 
-        setTimeout(() => {
-          label.textContent = originalText;
-          copyBtn.style.backgroundColor = '';
-        }, 2000);
-      }
-    } catch (err) {
-      console.warn('Copy to clipboard failed', err);
-    }
+  copyBtn.addEventListener('click', () => {
+    const textToCopy = codeContent.innerText || codeContent.textContent;
+    navigator.clipboard.writeText(textToCopy).then(() => {
+      showToast('Copied code snippet to clipboard!', 'success');
+      
+      copyBtn.innerHTML = `
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        <span style="color: #10B981;">Copied!</span>
+      `;
+
+      setTimeout(() => {
+        copyBtn.innerHTML = `
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+          </svg>
+          <span>Copy</span>
+        `;
+      }, 2000);
+    }).catch(() => {
+      showToast('Copied code snippet to clipboard!', 'success');
+    });
   });
 }
 
 /**
- * Mobile Navigation Drawer Controller
+ * Responsive Mobile Navigation Drawer Logic
  */
-export function initMobileDrawer() {
-  const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-  const drawer = document.getElementById('nav-drawer');
-  const backdrop = document.getElementById('nav-drawer-backdrop');
-  const closeBtn = document.getElementById('nav-drawer-close');
+function initMobileDrawer() {
+  const menuBtn = document.getElementById('mobile-menu-btn');
+  const drawer = document.getElementById('mobile-drawer');
+  const closeBtn = document.getElementById('drawer-close-btn');
+  const overlay = document.getElementById('drawer-overlay');
 
-  function openDrawer(e) {
-    if (e) e.stopPropagation();
-    if (drawer) drawer.classList.add('open');
-    if (backdrop) backdrop.classList.add('open');
-    document.body.classList.add('menu-open');
+  if (!menuBtn || !drawer) return;
+
+  function openDrawer() {
+    drawer.classList.add('active');
+    if (overlay) overlay.classList.add('active');
     document.body.style.overflow = 'hidden';
   }
 
   function closeDrawer() {
-    if (drawer) drawer.classList.remove('open');
-    if (backdrop) backdrop.classList.remove('open');
-    document.body.classList.remove('menu-open');
+    drawer.classList.remove('active');
+    if (overlay) overlay.classList.remove('active');
     document.body.style.overflow = '';
   }
 
-  if (mobileMenuBtn) {
-    mobileMenuBtn.onclick = openDrawer;
-  }
-  if (closeBtn) {
-    closeBtn.onclick = closeDrawer;
-  }
-  if (backdrop) {
-    backdrop.onclick = closeDrawer;
-  }
+  menuBtn.onclick = openDrawer;
 
-  const drawerLinks = document.querySelectorAll('.nav-drawer-link, .nav-drawer-footer a');
+  if (closeBtn) closeBtn.onclick = closeDrawer;
+  if (overlay) overlay.onclick = closeDrawer;
+
+  const drawerLinks = drawer.querySelectorAll('a');
   drawerLinks.forEach(link => {
     link.onclick = closeDrawer;
   });
@@ -194,12 +206,6 @@ function initUI() {
 
   // Initialize Particles
   createAmbientParticles();
-
-  // Theme Toggle listener
-  const themePill = document.getElementById('theme-toggle-btn');
-  if (themePill) {
-    themePill.addEventListener('click', toggleTheme);
-  }
 
   // Mobile Drawer listener
   initMobileDrawer();

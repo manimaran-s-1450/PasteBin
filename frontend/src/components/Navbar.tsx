@@ -34,6 +34,9 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate }) => {
       if (storedUser) {
         setUser(JSON.parse(storedUser));
       }
+      const savedTheme = (localStorage.getItem('pastebin_theme') as 'dark' | 'light') || 'dark';
+      setTheme(savedTheme);
+      document.documentElement.setAttribute('data-theme', savedTheme);
     } catch (e) {}
   }, []);
 
@@ -41,6 +44,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate }) => {
     const nextTheme = theme === 'dark' ? 'light' : 'dark';
     setTheme(nextTheme);
     document.documentElement.setAttribute('data-theme', nextTheme);
+    localStorage.setItem('pastebin_theme', nextTheme);
   };
 
   const displayName = user?.fullName || user?.username || 'John Smith';

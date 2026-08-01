@@ -177,24 +177,32 @@ async function getReceivedPastes(userId) {
  */
 async function deletePasteByCode(pasteCode, userId = null) {
   const codeStr = String(pasteCode).trim();
-  if (!codeStr) return { found: false, owner: false };
+  const isNumeric = /^\d+$/.test(codeStr);
+  const checkQuery = isNumeric
+    ? `SELECT id, paste_code, user_id FROM pastes WHERE id = ? OR paste_code = ? LIMIT 1`
+    : `SELECT id, paste_code, user_id FROM pastes WHERE paste_code = ? LIMIT 1`;
+  const checkParams = isNumeric ? [codeStr, codeStr] : [codeStr];
+  const [existing] = await pool.execute(checkQuery, checkParams);
 
-  // Clean up references in received_pastes table first
-  try {
-    await pool.execute(`DELETE FROM received_pastes WHERE paste_code = ?`, [codeStr]);
-  } catch (e) {}
-
-  // Delete paste from pastes table matching paste_code or id
-  try {
-    const [result] = await pool.execute(
-      `DELETE FROM pastes WHERE paste_code = ? OR id = ?`,
-      [codeStr, codeStr]
-    );
-    return { found: true, owner: true };
-  } catch (e) {
-    console.error('[deletePasteByCode Error]:', e);
+  if (existing.length === 0) {
     return { found: false, owner: false };
   }
+
+  const paste = existing[0];
+  const targetCode = paste.paste_code || codeStr;
+
+  // Clean up any references in received_pastes table first
+  try {
+    await pool.execute(`DELETE FROM received_pastes WHERE paste_code = ?`, [targetCode]);
+  } catch (e) {}
+
+  // Delete paste from pastes table
+  const deleteQuery = isNumeric
+    ? `DELETE FROM pastes WHERE id = ? OR paste_code = ?`
+    : `DELETE FROM pastes WHERE paste_code = ?`;
+  const [result] = await pool.execute(deleteQuery, checkParams);
+
+  return { found: true, owner: result.affectedRows > 0 };
 }
 
 /**
