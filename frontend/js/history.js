@@ -100,21 +100,20 @@ function renderDashboard() {
  */
 function renderStats() {
   const totalCount = pastesState.length;
-  const publicCount = pastesState.filter(p => p.visibility === 'public').length;
-  const privateCount = pastesState.filter(p => p.visibility === 'private').length;
-  
+  const totalViews = pastesState.reduce((sum, p) => sum + (p.views || p.viewsCount || 1), 0);
   const languagesSet = new Set(pastesState.map(p => p.language).filter(Boolean));
   const languagesCount = languagesSet.size;
+  const totalLines = pastesState.reduce((sum, p) => sum + (p.content ? p.content.split('\n').length : 1), 0);
 
   const totalEl = document.getElementById('stat-total-count');
-  const publicEl = document.getElementById('stat-public-count');
-  const privateEl = document.getElementById('stat-private-count');
+  const viewsEl = document.getElementById('stat-views-count');
   const langEl = document.getElementById('stat-languages-count');
+  const linesEl = document.getElementById('stat-lines-count');
 
   if (totalEl) totalEl.textContent = totalCount;
-  if (publicEl) publicEl.textContent = publicCount;
-  if (privateEl) privateEl.textContent = privateCount;
+  if (viewsEl) viewsEl.textContent = totalViews;
   if (langEl) langEl.textContent = languagesCount;
+  if (linesEl) linesEl.textContent = totalLines;
 }
 
 /**

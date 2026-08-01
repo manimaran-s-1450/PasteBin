@@ -108,7 +108,7 @@
       <!-- Statistics Section (4 Cards) -->
       <section class="stats-container" aria-label="Paste Statistics">
         
-        <!-- Total Pastes -->
+        <!-- 1. Total Pastes -->
         <div class="stat-card" id="stat-total-card">
           <div class="stat-icon-wrapper icon-purple">
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -123,7 +123,22 @@
           </div>
         </div>
 
-        <!-- Languages Used -->
+        <!-- 2. Total Views -->
+        <div class="stat-card" id="stat-views-card">
+          <div class="stat-icon-wrapper icon-cyan">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value" id="stat-views-count">0</div>
+            <div class="stat-label">Total Views</div>
+            <div class="stat-desc">Total views across all pastes</div>
+          </div>
+        </div>
+
+        <!-- 3. Languages Used -->
         <div class="stat-card" id="stat-languages-card">
           <div class="stat-icon-wrapper icon-blue">
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -135,7 +150,24 @@
           <div class="stat-content">
             <div class="stat-value" id="stat-languages-count">0</div>
             <div class="stat-label">Languages Used</div>
-            <div class="stat-desc">Unique syntaxes</div>
+            <div class="stat-desc">Unique programming languages</div>
+          </div>
+        </div>
+
+        <!-- 4. Lines of Code -->
+        <div class="stat-card" id="stat-lines-card">
+          <div class="stat-icon-wrapper icon-emerald">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="10" y1="12" x2="14" y2="12"></line>
+              <line x1="10" y1="16" x2="14" y2="16"></line>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value" id="stat-lines-count">0</div>
+            <div class="stat-label">Lines of Code</div>
+            <div class="stat-desc">Total lines across all pastes</div>
           </div>
         </div>
 
