@@ -3,10 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PasteBin - Professional Registration</title>
+  <title>PasteBin - Sign Up</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%238B5CF6'><path d='M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2'/><rect x='8' y='2' width='8' height='4' rx='1' ry='1'/></svg>">
   
   <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/landing.css">
   <link rel="stylesheet" href="css/create.css">
   <link rel="stylesheet" href="css/auth.css">
 </head>
@@ -16,7 +17,7 @@
   <div id="particles-container" class="particles-container" aria-hidden="true"></div>
 
   <!-- Header Navigation -->
-  <header class="navbar-wrapper" style="position: relative; z-index: 10;">
+  <header class="navbar-wrapper">
     <div class="container navbar-container">
       <a href="index.html" class="nav-brand">
         <div class="logo-icon">
@@ -28,7 +29,7 @@
         <span class="logo-text">Paste<span class="logo-highlight">Bin</span></span>
       </a>
 
-      <div style="display: flex; align-items: center; gap: 1rem;">
+      <div class="nav-actions" style="display: flex; align-items: center; gap: 1rem;">
         <div class="theme-pill" id="theme-toggle-btn" role="button" tabindex="0" aria-label="Toggle Theme">
           <button class="theme-btn light-btn" title="Light Mode" type="button">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path></svg>
@@ -37,7 +38,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
           </button>
         </div>
-        <a href="index.html" style="color: #94A3B8; text-decoration: none; font-size: 0.85rem; font-weight: 600; transition: color 0.2s;">← Back to Home</a>
+        <a href="index.html" class="btn btn-secondary" style="padding: 0.4rem 0.85rem; font-size: 0.85rem; text-decoration: none;">← Home</a>
       </div>
     </div>
   </header>
