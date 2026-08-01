@@ -1,0 +1,285 @@
+/* ==========================================================================
+   ULTRA-PREMIUM GLASSMORPHIC AUTHENTICATION STYLES (LOGIN & SIGNUP)
+   ========================================================================== */
+
+.auth-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  background-color: var(--bg-dark, #090A15);
+}
+
+.auth-bg-glow {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.22) 0%, rgba(99, 102, 241, 0.08) 50%, transparent 70%);
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.auth-main-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+.auth-glass-card {
+  width: 100%;
+  max-width: 440px;
+  background: rgba(13, 15, 29, 0.88);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid rgba(139, 92, 246, 0.35);
+  border-radius: 28px;
+  padding: 2.5rem 2.25rem;
+  box-shadow: 0 30px 70px -15px rgba(139, 92, 246, 0.35);
+  text-align: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-card-top-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #8B5CF6, #EC4899, #3B82F6);
+}
+
+/* Auth Header & Tabs */
+.auth-header-icon {
+  width: 56px;
+  height: 56px;
+  background: rgba(139, 92, 246, 0.14);
+  border: 1px solid rgba(139, 92, 246, 0.35);
+  border-radius: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 8px 20px -4px rgba(139, 92, 246, 0.3);
+}
+
+.auth-tabs-switcher {
+  display: flex;
+  background: rgba(30, 41, 59, 0.6);
+  padding: 0.3rem;
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  margin-bottom: 2rem;
+}
+
+.auth-tab-btn {
+  flex: 1;
+  padding: 0.65rem;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #94A3B8;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+}
+
+.auth-tab-btn.active {
+  background: #8B5CF6;
+  color: #FFFFFF;
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+}
+
+/* Form Group & Input with Left Icon */
+.auth-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  text-align: left;
+  margin-bottom: 1.25rem;
+}
+
+.auth-label {
+  font-size: 0.825rem;
+  font-weight: 600;
+  color: #CBD5E1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.auth-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.auth-input-icon {
+  position: absolute;
+  left: 14px;
+  color: #94A3B8;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+}
+
+.auth-input {
+  width: 100%;
+  padding: 0.85rem 1rem 0.85rem 2.75rem;
+  background: rgba(22, 27, 46, 0.75);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 14px;
+  color: #FFFFFF;
+  font-size: 0.925rem;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.auth-input:focus {
+  border-color: #8B5CF6;
+  background: rgba(22, 27, 46, 0.95);
+  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.18);
+}
+
+.auth-password-toggle {
+  position: absolute;
+  right: 14px;
+  background: none;
+  border: none;
+  color: #94A3B8;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  transition: color 0.2s;
+}
+
+.auth-password-toggle:hover {
+  color: #8B5CF6;
+}
+
+/* Submit Button */
+.auth-submit-btn {
+  width: 100%;
+  padding: 0.9rem 1.5rem;
+  background: linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%);
+  border: none;
+  border-radius: 14px;
+  color: #FFFFFF;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  box-shadow: 0 8px 25px -4px rgba(139, 92, 246, 0.5);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.auth-submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px -4px rgba(139, 92, 246, 0.65);
+}
+
+/* Divider & Social OAuth Buttons */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  margin: 1.75rem 0 1.25rem 0;
+  color: #64748B;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: rgba(148, 163, 184, 0.2);
+}
+
+.auth-divider span {
+  padding: 0 0.85rem;
+}
+
+.auth-social-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.auth-social-btn {
+  padding: 0.65rem;
+  background: rgba(30, 41, 59, 0.5);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 12px;
+  color: #E2E8F0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.auth-social-btn:hover {
+  background: rgba(139, 92, 246, 0.15);
+  border-color: rgba(139, 92, 246, 0.4);
+  color: #FFFFFF;
+}
+
+/* Light Theme High Contrast */
+[data-theme="light"] .auth-wrapper {
+  background-color: #F8FAFC;
+}
+
+[data-theme="light"] .auth-glass-card {
+  background: #FFFFFF;
+  border-color: rgba(139, 92, 246, 0.3);
+  box-shadow: 0 25px 60px -15px rgba(139, 92, 246, 0.2);
+}
+
+[data-theme="light"] .auth-input {
+  background: #F1F5F9;
+  border-color: #CBD5E1;
+  color: #0F172A;
+}
+
+[data-theme="light"] .auth-label {
+  color: #334155;
+}
+
+[data-theme="light"] .auth-tabs-switcher {
+  background: #E2E8F0;
+  border-color: #CBD5E1;
+}
+
+[data-theme="light"] .auth-tab-btn {
+  color: #64748B;
+}
+
+[data-theme="light"] .auth-social-btn {
+  background: #F1F5F9;
+  border-color: #CBD5E1;
+  color: #334155;
+}
