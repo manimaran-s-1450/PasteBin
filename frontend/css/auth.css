@@ -1,6 +1,15 @@
 /* ==========================================================================
    STATE-OF-THE-ART SAAS AUTHENTICATION STYLES (MATCHING UI REFERENCE)
+   100% SCROLLABLE, FULLY ACCESSIBLE ON ALL SCREEN SIZES, ZERO CUT-OFF
    ========================================================================== */
+
+html, body {
+  overflow-x: hidden;
+  overflow-y: auto;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
 
 /* Dark Background with Controlled 40% Reduced Ambient Glow */
 .auth-page-wrapper {
@@ -11,6 +20,7 @@
   color: #FFFFFF;
   position: relative;
   overflow-x: hidden;
+  overflow-y: auto;
   font-family: var(--font-sans, 'Inter', system-ui, -apple-system, sans-serif);
 }
 
@@ -44,6 +54,7 @@
   position: relative;
   z-index: 10;
   padding: 1.25rem 2rem;
+  flex-shrink: 0;
 }
 
 .auth-header-container {
@@ -54,13 +65,13 @@
   justify-content: space-between;
 }
 
-/* Split-Screen Main Container */
+/* Split-Screen Main Container with Ample Vertical Padding for Smooth Scrolling */
 .auth-split-container {
   flex: 1;
   max-width: 1400px;
   width: 100%;
   margin: 0 auto;
-  padding: 1rem 2rem 3rem 2rem;
+  padding: 1.5rem 2rem 5rem 2rem;
   display: grid;
   grid-template-columns: 45% 55%;
   gap: 3rem;
@@ -75,7 +86,7 @@
 .auth-left-branding {
   display: flex;
   flex-direction: column;
-  gap: 1.75rem;
+  gap: 1.5rem;
   padding-right: 1rem;
 }
 
@@ -102,7 +113,7 @@
 }
 
 .auth-hero-heading {
-  font-size: 3.25rem;
+  font-size: 3.1rem;
   font-weight: 900;
   line-height: 1.1;
   letter-spacing: -0.03em;
@@ -117,13 +128,13 @@
 }
 
 .auth-hero-subtitle {
-  font-size: 1.05rem;
+  font-size: 1.025rem;
   color: #9CA3AF;
   line-height: 1.6;
   max-width: 480px;
 }
 
-/* Feature Cards Grid (3 Cards Only) */
+/* Feature Cards Grid (3 Cards Only - No Testimonials) */
 .auth-features-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -186,14 +197,15 @@
 .auth-card-container {
   width: 100%;
   max-width: 480px;
-  background: rgba(17, 24, 39, 0.82);
+  background: rgba(17, 24, 39, 0.85);
   backdrop-filter: blur(28px);
   -webkit-backdrop-filter: blur(28px);
   border: 1px solid rgba(139, 92, 246, 0.25);
   border-radius: 24px;
-  padding: 2.75rem 2.5rem;
+  padding: 2.5rem 2.25rem 2.5rem 2.25rem;
   box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 40px rgba(139, 92, 246, 0.15);
   position: relative;
+  margin-bottom: 1rem;
 }
 
 .auth-card-icon-badge {
@@ -222,7 +234,7 @@
   font-size: 0.875rem;
   color: #9CA3AF;
   text-align: center;
-  margin-bottom: 1.75rem;
+  margin-bottom: 1.5rem;
 }
 
 /* Sliding Tab Switcher */
@@ -232,7 +244,7 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
   padding: 0.3rem;
   border-radius: 14px;
-  margin-bottom: 1.75rem;
+  margin-bottom: 1.5rem;
   position: relative;
 }
 
@@ -359,7 +371,7 @@
 .auth-or-divider {
   display: flex;
   align-items: center;
-  margin: 1.75rem 0 1.25rem 0;
+  margin: 1.5rem 0 1.25rem 0;
   color: #6B7280;
   font-size: 0.75rem;
   font-weight: 600;
@@ -406,7 +418,7 @@
   color: #FFFFFF;
 }
 
-/* Light Theme High-Contrast Overrides */
+/* Light Theme Overrides */
 [data-theme="light"] .auth-page-wrapper {
   background-color: #F8FAFC;
   color: #0F172A;
@@ -458,13 +470,13 @@
 }
 
 /* ==========================================================================
-   RESPONSIVE DESIGN (LAPTOP, TABLET, MOBILE)
+   RESPONSIVE DESIGN FOR LAPTOPS, TABLETS, & MOBILE PHONES
    ========================================================================== */
 @media (max-width: 1024px) {
   .auth-split-container {
     grid-template-columns: 1fr;
-    gap: 2.5rem;
-    padding-top: 1rem;
+    gap: 2rem;
+    padding: 1rem 1.5rem 4rem 1.5rem;
   }
 
   .auth-left-branding {
@@ -478,22 +490,39 @@
   }
 
   .auth-features-grid {
-    max-width: 600px;
+    max-width: 540px;
     margin: 0 auto;
   }
 }
 
 @media (max-width: 640px) {
-  .auth-left-branding {
-    display: none; /* Hide branding section on mobile for clean focused login */
+  .auth-header {
+    padding: 1rem;
   }
 
-  .auth-header-container {
-    padding: 0 0.5rem;
+  .auth-left-branding {
+    display: flex;
+    text-align: center;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .auth-hero-heading {
+    font-size: 2.25rem;
+  }
+
+  .auth-features-grid {
+    grid-template-columns: 1fr;
+    width: 100%;
+  }
+
+  .auth-split-container {
+    padding: 0.5rem 1rem 3rem 1rem;
+    gap: 2rem;
   }
 
   .auth-card-container {
-    padding: 2rem 1.5rem;
+    padding: 1.75rem 1.25rem;
   }
 
   .auth-social-grid {
