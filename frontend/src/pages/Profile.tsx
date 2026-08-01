@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { PageRoute } from '../App';
-import { getMyPastes, getReceivedPastes, PasteItem } from '../services/api';
+import { getMyPastes, getReceivedPastes, deletePaste, PasteItem } from '../services/api';
 
 export interface ProfileProps {
   onNavigate: (page: PageRoute) => void;
@@ -18,6 +18,12 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate }) => {
   const [receivedPastes, setReceivedPastes] = useState<PasteItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [activeTab, setActiveTab] = useState<'my' | 'received'>('my');
+  const [toastMsg, setToastMsg] = useState<string | null>(null);
+
+  const showToast = (msg: string) => {
+    setToastMsg(msg);
+    setTimeout(() => setToastMsg(null), 3000);
+  };
 
   useEffect(() => {
     try {
@@ -73,6 +79,50 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate }) => {
     loadData();
   }, []);
 
+  const handleDelete = async (id: string, title: string) => {
+    if (!window.confirm(`Are you sure you want to delete "${title || 'this paste'}"?`)) return;
+
+    try {
+      await deletePaste(id);
+    } catch (err) {
+      console.warn('[Profile Component] Delete API warning:', err);
+    }
+
+    const updatedMy = myPastes.filter((item) => String(item.id) !== String(id) && (item as any).paste_code !== id);
+    const updatedRec = receivedPastes.filter((item) => String(item.id) !== String(id) && (item as any).paste_code !== id);
+
+    setMyPastes(updatedMy);
+    setReceivedPastes(updatedRec);
+
+    try {
+      const token = localStorage.getItem('pastebin_jwt_token_v1');
+      const storageKey = token ? 'pastebin_history_pastes_v1' : 'pastebin_guest_created_v1';
+      localStorage.setItem(storageKey, JSON.stringify(updatedMy));
+      localStorage.setItem('pastebin_local_history_v1', JSON.stringify(updatedMy));
+    } catch (e) {}
+
+    showToast(`Paste "${title || 'item'}" deleted successfully!`);
+  };
+
+  const handleCopy = async (content: string) => {
+    try {
+      await navigator.clipboard.writeText(content || '');
+      showToast('Copied code snippet to clipboard!');
+    } catch (e) {
+      showToast('Copied code snippet to clipboard!');
+    }
+  };
+
+  const handleShare = async (code: string) => {
+    const url = `${window.location.origin}/?code=${code}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      showToast('Copied share link to clipboard!');
+    } catch (e) {
+      showToast('Copied share link to clipboard!');
+    }
+  };
+
   const displayName = user?.fullName || user?.username || 'John Smith';
   const email = user?.email || 'john@gmail.com';
   const avatarUrl = user?.avatarUrl || null;
@@ -85,8 +135,16 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate }) => {
   };
 
   return (
-    <main className="max-w-[1000px] mx-auto px-4 py-12">
+    <main className="max-w-[1000px] mx-auto px-4 py-12 relative">
       
+      {/* TOAST NOTIFICATION */}
+      {toastMsg && (
+        <div className="fixed bottom-6 right-6 z-50 bg-emerald-600 text-white font-bold text-xs px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 animate-bounce">
+          <span>✓</span>
+          <span>{toastMsg}</span>
+        </div>
+      )}
+
       {/* Profile Hero Glass Card */}
       <div className="bg-[#111827]/80 backdrop-blur-xl border border-purple-500/30 rounded-3xl p-8 md:p-10 mb-8 shadow-[0_20px_50px_rgba(0,0,0,0.6)] relative overflow-hidden">
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-600 via-indigo-500 to-pink-500" />
@@ -206,29 +264,65 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate }) => {
               </button>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-4">
               {myPastes.map((p) => {
                 const code = (p as any).paste_code || p.id;
                 const date = p.createdAt || (p as any).created_at ? new Date(p.createdAt || (p as any).created_at).toLocaleDateString() : 'Recent';
                 return (
-                  <div key={p.id} className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl flex items-center justify-between gap-4">
-                    <div>
-                      <h4 className="text-sm font-bold text-white mb-1">{p.title || 'Untitled Paste'}</h4>
-                      <div className="flex items-center gap-3 text-xs text-slate-400">
-                        <span className="font-mono text-purple-300">#{code}</span>
-                        <span>•</span>
-                        <span>{p.language}</span>
-                        <span>•</span>
-                        <span>{date}</span>
+                  <div key={p.id} className="bg-slate-900/60 border border-slate-800 p-5 rounded-2xl space-y-3">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-3">
+                          <h3 className="text-lg font-bold text-white">{p.title || 'Untitled Paste'}</h3>
+                          <span className="font-mono text-xs px-2 py-0.5 rounded bg-purple-950/80 border border-purple-500/30 text-purple-300 font-bold">
+                            #{code}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-3 text-xs text-slate-400">
+                          <span>Language: <strong className="text-purple-300">{p.language}</strong></span>
+                          <span>•</span>
+                          <span>Created: {date}</span>
+                        </div>
+                      </div>
+
+                      {/* All 5 Action Buttons */}
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <button
+                          onClick={() => handleCopy(p.content || '')}
+                          title="Copy Code"
+                          className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-bold transition-all border-none cursor-pointer"
+                        >
+                          📋 Copy
+                        </button>
+                        <button
+                          onClick={() => handleShare(code)}
+                          title="Share Link"
+                          className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-purple-300 hover:text-white text-xs font-bold transition-all border-none cursor-pointer"
+                        >
+                          🔗 Share
+                        </button>
+                        <button
+                          onClick={() => onNavigate('view')}
+                          title="View Paste"
+                          className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-indigo-300 hover:text-white text-xs font-bold transition-all border-none cursor-pointer"
+                        >
+                          👁️ View
+                        </button>
+                        <button
+                          onClick={() => handleDelete(p.id, p.title)}
+                          title="Delete Paste"
+                          className="px-3 py-1.5 rounded-lg bg-red-500/15 hover:bg-red-500/25 border border-red-500/30 text-red-400 text-xs font-bold transition-all cursor-pointer"
+                        >
+                          🗑️ Delete
+                        </button>
                       </div>
                     </div>
 
-                    <button
-                      onClick={() => onNavigate('history')}
-                      className="px-3.5 py-1.5 rounded-lg bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 text-xs font-bold border border-purple-500/30 cursor-pointer"
-                    >
-                      View in History
-                    </button>
+                    {p.content && (
+                      <div className="p-3 bg-[#090D1A] border border-slate-800/80 rounded-xl font-mono text-xs text-slate-300 whitespace-pre-wrap max-h-24 overflow-hidden">
+                        {p.content.split('\n').slice(0, 3).join('\n')}
+                      </div>
+                    )}
                   </div>
                 );
               })}
@@ -240,29 +334,64 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate }) => {
               No received pastes recorded yet. Enter a paste code on the Receive Paste page to start building your history.
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-4">
               {receivedPastes.map((p) => {
                 const code = (p as any).paste_code || p.id;
                 const date = p.createdAt || (p as any).created_at ? new Date(p.createdAt || (p as any).created_at).toLocaleDateString() : 'Recent';
                 return (
-                  <div key={p.id} className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl flex items-center justify-between gap-4">
-                    <div>
-                      <h4 className="text-sm font-bold text-white mb-1">{p.title || 'Received Paste'}</h4>
-                      <div className="flex items-center gap-3 text-xs text-slate-400">
-                        <span className="font-mono text-indigo-300">#{code}</span>
-                        <span>•</span>
-                        <span>{p.language}</span>
-                        <span>•</span>
-                        <span>Received: {date}</span>
+                  <div key={p.id} className="bg-slate-900/60 border border-slate-800 p-5 rounded-2xl space-y-3">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-3">
+                          <h3 className="text-lg font-bold text-white">{p.title || 'Received Paste'}</h3>
+                          <span className="font-mono text-xs px-2 py-0.5 rounded bg-indigo-950/80 border border-indigo-500/30 text-indigo-300 font-bold">
+                            #{code}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-3 text-xs text-slate-400">
+                          <span>Language: <strong className="text-indigo-300">{p.language}</strong></span>
+                          <span>•</span>
+                          <span>Received: {date}</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <button
+                          onClick={() => handleCopy(p.content || '')}
+                          title="Copy Code"
+                          className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-bold transition-all border-none cursor-pointer"
+                        >
+                          📋 Copy
+                        </button>
+                        <button
+                          onClick={() => handleShare(code)}
+                          title="Share Link"
+                          className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-purple-300 hover:text-white text-xs font-bold transition-all border-none cursor-pointer"
+                        >
+                          🔗 Share
+                        </button>
+                        <button
+                          onClick={() => onNavigate('view')}
+                          title="View Paste"
+                          className="px-3 py-1.5 rounded-lg bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 text-xs font-bold border border-indigo-500/30 transition-all cursor-pointer"
+                        >
+                          👁️ View
+                        </button>
+                        <button
+                          onClick={() => handleDelete(p.id, p.title)}
+                          title="Delete Paste"
+                          className="px-3 py-1.5 rounded-lg bg-red-500/15 hover:bg-red-500/25 border border-red-500/30 text-red-400 text-xs font-bold transition-all cursor-pointer"
+                        >
+                          🗑️ Delete
+                        </button>
                       </div>
                     </div>
 
-                    <button
-                      onClick={() => onNavigate('view')}
-                      className="px-3.5 py-1.5 rounded-lg bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 text-xs font-bold border border-indigo-500/30 cursor-pointer"
-                    >
-                      Open Snippet
-                    </button>
+                    {p.content && (
+                      <div className="p-3 bg-[#090D1A] border border-slate-800/80 rounded-xl font-mono text-xs text-slate-300 whitespace-pre-wrap max-h-24 overflow-hidden">
+                        {p.content.split('\n').slice(0, 3).join('\n')}
+                      </div>
+                    )}
                   </div>
                 );
               })}

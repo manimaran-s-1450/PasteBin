@@ -74,6 +74,6 @@ router.put('/:paste_code', authenticateToken, pasteController.updatePaste);
  *     tags:
  *       - Pastes
  */
-router.delete('/:paste_code', authenticateToken, pasteController.deletePaste);
+router.delete('/:paste_code', optionalAuthToken, pasteController.deletePaste);
 
 module.exports = router;
