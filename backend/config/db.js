@@ -5,41 +5,21 @@ const dotenv = require('dotenv');
 dotenv.config({ path: path.join(__dirname, '../.env') });
 
 function getDbConfig() {
-  const connectionUrl = process.env.MYSQL_PUBLIC_URL || process.env.MYSQL_URL || process.env.DATABASE_URL;
-
-  if (connectionUrl && connectionUrl.startsWith('mysql')) {
-    try {
-      const url = new URL(connectionUrl);
-      return {
-        host: url.hostname,
-        port: url.port ? parseInt(url.port, 10) : 3306,
-        user: url.username || 'root',
-        password: decodeURIComponent(url.password || ''),
-        database: (url.pathname || '/railway').replace('/', '') || 'railway',
-        waitForConnections: true,
-        connectionLimit: 10,
-        queueLimit: 0,
-        ssl: url.hostname.includes('railway.internal') || url.hostname === 'localhost' ? undefined : { rejectUnauthorized: false }
-      };
-    } catch (err) {
-      console.warn('[DB Config Warning]: Could not parse connection URL, falling back to individual env variables.');
-    }
-  }
-
-  const host = process.env.MYSQLHOST || process.env.DB_HOST || 'mysql.railway.internal';
-  const isInternalOrLocal = host.includes('railway.internal') || host === 'localhost' || host === '127.0.0.1';
+  const host = process.env.MYSQLHOST || process.env.DB_HOST || 'viaduct.proxy.rlwy.net';
+  const isInternal = host.includes('railway.internal');
+  const isLocal = host === 'localhost' || host === '127.0.0.1';
 
   return {
     host: host,
-    port: host.includes('railway.internal') ? 3306 : parseInt(process.env.MYSQLPORT || process.env.DB_PORT || '3306', 10),
+    port: isInternal ? 3306 : parseInt(process.env.MYSQLPORT || process.env.DB_PORT || '35471', 10),
     user: process.env.MYSQLUSER || process.env.DB_USER || 'root',
     password: process.env.MYSQLPASSWORD || process.env.DB_PASSWORD || 'iolYRriSeXZDFNuugVUWEeOCSxcUrlOe',
     database: process.env.MYSQLDATABASE || process.env.DB_NAME || 'railway',
     waitForConnections: true,
-    connectionLimit: parseInt(process.env.DB_CONNECTION_LIMIT || '10', 10),
+    connectionLimit: 10,
     queueLimit: 0,
     timezone: '+00:00',
-    ssl: isInternalOrLocal ? undefined : { rejectUnauthorized: false }
+    ssl: (isInternal || isLocal) ? undefined : { rejectUnauthorized: false }
   };
 }
 

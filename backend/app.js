@@ -8,7 +8,7 @@ const app = express();
 
 // 1. Configure Cross-Origin Resource Sharing (CORS)
 const corsOptions = {
-    origin: process.env.CLIENT_URL || '*',
+    origin: '*',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
 };
