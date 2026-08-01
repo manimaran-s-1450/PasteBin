@@ -31,7 +31,7 @@ function getDbConfig() {
 
   return {
     host: host,
-    port: parseInt(process.env.MYSQLPORT || process.env.DB_PORT || '3306', 10),
+    port: host.includes('railway.internal') ? 3306 : parseInt(process.env.MYSQLPORT || process.env.DB_PORT || '3306', 10),
     user: process.env.MYSQLUSER || process.env.DB_USER || 'root',
     password: process.env.MYSQLPASSWORD || process.env.DB_PASSWORD || 'iolYRriSeXZDFNuugVUWEeOCSxcUrlOe',
     database: process.env.MYSQLDATABASE || process.env.DB_NAME || 'railway',
