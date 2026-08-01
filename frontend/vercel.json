@@ -1,6 +1,11 @@
 {
-  "framework": "vite",
-  "buildCommand": "npm run build",
-  "outputDirectory": "dist",
-  "cleanUrls": true
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/create", "destination": "/create.html" },
+    { "source": "/history", "destination": "/history.html" },
+    { "source": "/view", "destination": "/view.html" },
+    { "source": "/edit", "destination": "/edit.html" },
+    { "source": "/docs", "destination": "/docs.html" },
+    { "source": "/about", "destination": "/about.html" }
+  ]
 }

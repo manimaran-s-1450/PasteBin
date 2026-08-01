@@ -4,6 +4,19 @@ import { defineConfig } from 'vite';
 export default defineConfig(() => {
   return {
     root: '.',
+    build: {
+      rollupOptions: {
+        input: {
+          main: path.resolve(__dirname, 'index.html'),
+          create: path.resolve(__dirname, 'create.html'),
+          history: path.resolve(__dirname, 'history.html'),
+          view: path.resolve(__dirname, 'view.html'),
+          edit: path.resolve(__dirname, 'edit.html'),
+          docs: path.resolve(__dirname, 'docs.html'),
+          about: path.resolve(__dirname, 'about.html'),
+        },
+      },
+    },
     resolve: {
       alias: {
         '@': path.resolve(__dirname, 'src'),
