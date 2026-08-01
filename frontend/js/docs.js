@@ -78,6 +78,9 @@ function initSwaggerDemoButton() {
   if (!btn) return;
 
   btn.addEventListener('click', () => {
-    alert('Swagger Documentation interface ready for backend integration at /api-docs');
+    const swaggerUrl = window.location.origin.includes('3000') || window.location.origin.includes('vercel.app')
+      ? 'http://localhost:5000/api-docs'
+      : '/api-docs';
+    window.open(swaggerUrl, '_blank');
   });
 }
