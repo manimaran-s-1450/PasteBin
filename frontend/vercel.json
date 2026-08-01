@@ -2,6 +2,7 @@
   "outputDirectory": "dist",
   "cleanUrls": true,
   "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api" },
     { "source": "/create", "destination": "/create.html" },
     { "source": "/history", "destination": "/history.html" },
     { "source": "/view", "destination": "/view.html" },
