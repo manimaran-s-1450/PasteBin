@@ -38,9 +38,44 @@ export function clearAuthSession() {
   localStorage.removeItem(AUTH_USER_KEY);
 }
 
-const getApiBaseUrl = () => (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'))
-  ? 'http://localhost:5000/api'
-  : 'https://pastebin-production-6477.up.railway.app/api';
+export function getApiBaseUrl() {
+  if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+    return 'http://localhost:5000/api';
+  }
+  return 'https://pastebin-production-6477.up.railway.app/api';
+}
+
+/**
+ * Handle Google OAuth Redirect Token Check
+ */
+export function checkGoogleOAuthRedirect() {
+  if (typeof window === 'undefined') return;
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const token = urlParams.get('auth_token');
+  const userJson = urlParams.get('auth_user');
+
+  if (token && userJson) {
+    try {
+      const user = JSON.parse(decodeURIComponent(userJson));
+      setAuthSession(token, user);
+      
+      // Clean URL params
+      const cleanUrl = window.location.pathname;
+      window.history.replaceState({}, document.title, cleanUrl);
+
+      // If on login/signup page, redirect to home
+      if (cleanUrl.includes('login.html') || cleanUrl.includes('signup.html')) {
+        window.location.href = 'index.html';
+      }
+    } catch (e) {
+      console.error('Google OAuth URL parse error:', e);
+    }
+  }
+}
+
+// Auto-run check on module load
+checkGoogleOAuthRedirect();
 
 export async function loginUser(emailOrUsername, password, remember_me = false) {
   const response = await fetch(`${getApiBaseUrl()}/auth/login`, {

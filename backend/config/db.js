@@ -31,33 +31,37 @@ async function testConnection() {
     const dbConfig = getDbConfig();
     console.log(`✅ Railway MySQL Connected! [Host: ${dbConfig.host}:${dbConfig.port} | Database: ${dbConfig.database}]`);
 
-    // 1. Create users table
+    // 1. Create users table with Google OAuth fields
     await connection.query(`
       CREATE TABLE IF NOT EXISTS users (
         id INT AUTO_INCREMENT PRIMARY KEY,
         full_name VARCHAR(255) NULL,
         username VARCHAR(50) NOT NULL UNIQUE,
         email VARCHAR(255) NOT NULL UNIQUE,
-        password VARCHAR(255) NOT NULL,
+        password VARCHAR(255) NULL,
         password_hash VARCHAR(255) NULL,
+        google_id VARCHAR(255) NULL,
+        profile_image TEXT NULL,
+        auth_provider VARCHAR(50) DEFAULT 'local',
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
 
     // Ensure full_name column exists
-    try {
-      await connection.query(`ALTER TABLE users ADD COLUMN full_name VARCHAR(255) NULL AFTER id;`);
-    } catch (e) {}
+    try { await connection.query(`ALTER TABLE users ADD COLUMN full_name VARCHAR(255) NULL AFTER id;`); } catch (e) {}
 
-    // Ensure password column exists
-    try {
-      await connection.query(`ALTER TABLE users ADD COLUMN password VARCHAR(255) NULL AFTER email;`);
-    } catch (e) {}
+    // Ensure password column is NULLABLE (for Google OAuth users)
+    try { await connection.query(`ALTER TABLE users MODIFY COLUMN password VARCHAR(255) NULL;`); } catch (e) {}
+    try { await connection.query(`ALTER TABLE users MODIFY COLUMN password_hash VARCHAR(255) NULL;`); } catch (e) {}
 
-    // Ensure password_hash column is NULLABLE
-    try {
-      await connection.query(`ALTER TABLE users MODIFY COLUMN password_hash VARCHAR(255) NULL;`);
-    } catch (e) {}
+    // Ensure google_id column exists
+    try { await connection.query(`ALTER TABLE users ADD COLUMN google_id VARCHAR(255) NULL AFTER password_hash;`); } catch (e) {}
+
+    // Ensure profile_image column exists
+    try { await connection.query(`ALTER TABLE users ADD COLUMN profile_image TEXT NULL AFTER google_id;`); } catch (e) {}
+
+    // Ensure auth_provider column exists
+    try { await connection.query(`ALTER TABLE users ADD COLUMN auth_provider VARCHAR(50) DEFAULT 'local' AFTER profile_image;`); } catch (e) {}
 
     // 2. Create pastes table
     await connection.query(`
@@ -74,9 +78,7 @@ async function testConnection() {
     `);
 
     // 3. Add user_id column to pastes if not exists
-    try {
-      await connection.query(`ALTER TABLE pastes ADD COLUMN user_id INT NULL AFTER paste_code;`);
-    } catch (e) {}
+    try { await connection.query(`ALTER TABLE pastes ADD COLUMN user_id INT NULL AFTER paste_code;`); } catch (e) {}
 
     // 4. Create received_pastes table
     await connection.query(`

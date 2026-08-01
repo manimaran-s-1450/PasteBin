@@ -1,4 +1,4 @@
-import { registerUser, setAuthSession } from './auth.js';
+import { registerUser, getApiBaseUrl, checkGoogleOAuthRedirect } from './auth.js';
 
 function showToast(message, type = 'info') {
   const existingToast = document.querySelector('.pastebin-toast');
@@ -22,13 +22,21 @@ function showToast(message, type = 'info') {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  checkGoogleOAuthRedirect();
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const errorMsg = urlParams.get('error');
+  if (errorMsg) {
+    showToast(decodeURIComponent(errorMsg), 'error');
+  }
+
   const form = document.getElementById('signup-form');
   const toggleBtn = document.getElementById('toggle-password-btn');
   const passwordInput = document.getElementById('signup-password');
   const submitBtn = document.getElementById('btn-signup-submit');
 
-  const githubBtn = document.getElementById('btn-social-github');
   const googleBtn = document.getElementById('btn-social-google');
+  const githubBtn = document.getElementById('btn-social-github');
 
   if (toggleBtn && passwordInput) {
     toggleBtn.addEventListener('click', () => {
@@ -37,45 +45,18 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Handle GitHub Social Login
-  if (githubBtn) {
-    githubBtn.addEventListener('click', async () => {
-      try {
-        showToast('Connecting to GitHub Auth...', 'info');
-        const demoUser = {
-          id: 9991,
-          full_name: 'GitHub Developer',
-          username: 'github_developer',
-          email: 'developer@github.com'
-        };
-        const demoToken = 'demo_github_jwt_token_2026';
-        setAuthSession(demoToken, demoUser);
-        showToast('Registered via GitHub! Redirecting to Home...', 'success');
-        setTimeout(() => { window.location.href = 'index.html'; }, 800);
-      } catch (err) {
-        showToast('GitHub login error', 'error');
-      }
+  // Real Google OAuth 2.0 Flow
+  if (googleBtn) {
+    googleBtn.addEventListener('click', () => {
+      showToast('Redirecting to Google Sign-In...', 'info');
+      window.location.href = `${getApiBaseUrl()}/auth/google`;
     });
   }
 
-  // Handle Google Social Login
-  if (googleBtn) {
-    googleBtn.addEventListener('click', async () => {
-      try {
-        showToast('Connecting to Google Auth...', 'info');
-        const demoUser = {
-          id: 9992,
-          full_name: 'Google User',
-          username: 'google_user',
-          email: 'user@gmail.com'
-        };
-        const demoToken = 'demo_google_jwt_token_2026';
-        setAuthSession(demoToken, demoUser);
-        showToast('Registered via Google! Redirecting to Home...', 'success');
-        setTimeout(() => { window.location.href = 'index.html'; }, 800);
-      } catch (err) {
-        showToast('Google login error', 'error');
-      }
+  // GitHub Social Demo
+  if (githubBtn) {
+    githubBtn.addEventListener('click', () => {
+      showToast('GitHub OAuth placeholder. Please use Google Sign-In or Email/Password.', 'info');
     });
   }
 
