@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PasteBin - My Profile</title>
+  <meta name="description" content="View and manage your PasteBin user profile and preferences.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%238B5CF6'><path d='M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2'/><rect x='8' y='2' width='8' height='4' rx='1' ry='1'/></svg>">
+  
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/landing.css">
+  <link rel="stylesheet" href="css/create.css">
+  <link rel="stylesheet" href="css/history.css">
+</head>
+<body>
+
+  <!-- Ambient Particles -->
+  <div id="particles-container" class="particles-container" aria-hidden="true"></div>
+
+  <!-- Sticky Glass Navbar Container -->
+  <div id="navbar-container"></div>
+
+  <!-- Profile Workspace Main Container -->
+  <main class="container" style="padding-top: 3rem; padding-bottom: 5rem; max-width: 900px;">
+    
+    <!-- Profile Hero Glass Card -->
+    <div class="create-glass-card" style="margin-bottom: 2rem; position: relative;">
+      <div style="display: flex; flex-direction: column; align-items: center; text-align: center; gap: 1.25rem;">
+        
+        <!-- Avatar Frame -->
+        <div id="profile-page-avatar-container" style="position: relative;">
+          <div id="profile-page-avatar" style="width: 86px; height: 86px; border-radius: 50%; border: 2.5px solid var(--accent-color); background: rgba(139, 92, 246, 0.15); display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 800; color: #FFFFFF; box-shadow: 0 0 30px var(--accent-glow); overflow: hidden;">
+            GU
+          </div>
+        </div>
+
+        <!-- User Information -->
+        <div>
+          <h1 id="profile-page-name" style="font-size: 1.85rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 0.35rem;">Guest User</h1>
+          <p id="profile-page-email" style="font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 0.75rem;">user@pastebin.com</p>
+          
+          <div style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.35rem 0.85rem; border-radius: 9999px; background: var(--accent-light); border: 1px solid rgba(139, 92, 246, 0.3); font-size: 0.825rem; font-weight: 600; color: var(--accent-color);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            <span id="profile-page-badge">Google Verified Account</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Account Stats Grid -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem; margin-bottom: 2rem;">
+      
+      <div class="stat-card">
+        <div class="stat-icon-box purple">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        </div>
+        <div class="stat-content">
+          <span class="stat-value" id="profile-stat-created">0</span>
+          <span class="stat-label">Pastes Created</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon-box green">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        </div>
+        <div class="stat-content">
+          <span class="stat-value" id="profile-stat-received">0</span>
+          <span class="stat-label">Pastes Received</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon-box blue">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+        </div>
+        <div class="stat-content">
+          <span class="stat-value">Active</span>
+          <span class="stat-label">Account Status</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Quick Actions Bar -->
+    <div class="create-glass-card" style="padding: 1.5rem 2rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <h3 style="font-size: 1.1rem; font-weight: 700;">Account Actions</h3>
+        <p style="font-size: 0.85rem; color: var(--text-secondary);">Manage your session and pastes instantly.</p>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+        <a href="create.html" class="btn btn-primary" style="padding: 0.6rem 1.25rem; font-size: 0.9rem; text-decoration: none;">➕ Create Paste</a>
+        <a href="history.html" class="btn btn-secondary" style="padding: 0.6rem 1.25rem; font-size: 0.9rem; text-decoration: none;">📄 My Pastes</a>
+        <button type="button" id="profile-page-signout-btn" class="btn" style="padding: 0.6rem 1.25rem; font-size: 0.9rem; background: rgba(239, 68, 68, 0.15); color: #EF4444; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 9999px; font-weight: 600; cursor: pointer;">🚪 Sign Out</button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Global Footer -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <div class="footer-brand">
+        <a href="index.html" class="nav-brand">
+          <div class="logo-icon small">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+          </div>
+          <span class="logo-text">Paste<span class="logo-highlight">Bin</span></span>
+        </a>
+        <p class="footer-tagline">The simplest way to share text and code instantly.</p>
+      </div>
+
+      <div class="footer-col">
+        <h4 class="footer-heading">Product</h4>
+        <a href="index.html" class="footer-link">Home</a>
+        <a href="create.html" class="footer-link">Create Paste</a>
+        <a href="history.html" class="footer-link">History</a>
+      </div>
+
+      <div class="footer-col">
+        <h4 class="footer-heading">Resources</h4>
+        <a href="https://github.com/manimaran-s-1450/PasteBin" target="_blank" rel="noopener noreferrer" class="footer-link">GitHub <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></a>
+        <a href="docs.html" class="footer-link">Swagger API <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></a>
+      </div>
+
+      <div class="footer-col">
+        <h4 class="footer-heading">About</h4>
+        <a href="about.html" class="footer-link">About PasteBin</a>
+        <a href="about.html" class="footer-link">Contact</a>
+      </div>
+
+      <div class="footer-col">
+        <h4 class="footer-heading">Stay connected</h4>
+        <div class="social-icons">
+          <a href="https://github.com/manimaran-s-1450/PasteBin" target="_blank" rel="noopener noreferrer" class="social-btn" aria-label="GitHub">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+          </a>
+          <a href="index.html" class="social-btn" aria-label="Website">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <p>&copy; 2026 PasteBin. All rights reserved. <span class="heart">💜</span></p>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="components/navbar.js"></script>
+  <script type="module" src="js/theme.js"></script>
+  <script type="module">
+    import { getCurrentUser, isLoggedIn, logoutUser } from './js/auth.js';
+    
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!isLoggedIn()) {
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      const user = getCurrentUser();
+      if (user) {
+        const displayName = user.fullName || user.username || user.name || 'User';
+        const email = user.email || 'user@pastebin.com';
+        const avatarUrl = user.avatarUrl || user.profilePicture || user.picture || null;
+        const initials = displayName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+
+        document.getElementById('profile-page-name').textContent = displayName;
+        document.getElementById('profile-page-email').textContent = email;
+
+        const avatarBox = document.getElementById('profile-page-avatar');
+        if (avatarUrl) {
+          avatarBox.innerHTML = `<img src="${avatarUrl}" alt="${displayName}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" />`;
+        } else {
+          avatarBox.textContent = initials;
+        }
+
+        // Populate stats from localStorage history
+        try {
+          const historyRaw = localStorage.getItem('pastebin_local_history_v1');
+          if (historyRaw) {
+            const pastes = JSON.parse(historyRaw);
+            document.getElementById('profile-stat-created').textContent = pastes.length;
+          }
+        } catch (e) {}
+      }
+
+      document.getElementById('profile-page-signout-btn').onclick = () => {
+        logoutUser();
+      };
+    });
+  </script>
+</body>
+</html>
