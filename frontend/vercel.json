@@ -1,11 +1,14 @@
 {
+  "version": 2,
   "cleanUrls": true,
-  "rewrites": [
-    { "source": "/create", "destination": "/create.html" },
-    { "source": "/history", "destination": "/history.html" },
-    { "source": "/view", "destination": "/view.html" },
-    { "source": "/edit", "destination": "/edit.html" },
-    { "source": "/docs", "destination": "/docs.html" },
-    { "source": "/about", "destination": "/about.html" }
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/create", "dest": "/create.html" },
+    { "src": "/history", "dest": "/history.html" },
+    { "src": "/view", "dest": "/view.html" },
+    { "src": "/edit", "dest": "/edit.html" },
+    { "src": "/docs", "dest": "/docs.html" },
+    { "src": "/about", "dest": "/about.html" },
+    { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
