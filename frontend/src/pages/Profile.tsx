@@ -31,23 +31,43 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate }) => {
 
     async function loadData() {
       setLoading(true);
-      try {
-        const [myRes, recRes] = await Promise.allSettled([
-          getMyPastes(),
-          getReceivedPastes()
-        ]);
+      const token = localStorage.getItem('pastebin_jwt_token_v1');
 
-        if (myRes.status === 'fulfilled' && myRes.value && myRes.value.success && myRes.value.data) {
-          setMyPastes(myRes.value.data);
+      if (token) {
+        try {
+          const [myRes, recRes] = await Promise.allSettled([
+            getMyPastes(),
+            getReceivedPastes()
+          ]);
+
+          if (myRes.status === 'fulfilled' && myRes.value && myRes.value.success && myRes.value.data) {
+            setMyPastes(myRes.value.data);
+          }
+          if (recRes.status === 'fulfilled' && recRes.value && recRes.value.success && recRes.value.data) {
+            setReceivedPastes(recRes.value.data);
+          }
+          setLoading(false);
+          return;
+        } catch (e) {
+          console.warn('Error loading backend profile paste stats:', e);
         }
-        if (recRes.status === 'fulfilled' && recRes.value && recRes.value.success && recRes.value.data) {
-          setReceivedPastes(recRes.value.data);
-        }
-      } catch (e) {
-        console.warn('Error loading profile paste stats:', e);
-      } finally {
-        setLoading(false);
       }
+
+      // Guest user fallback -> LocalStorage
+      try {
+        const guestCreated = localStorage.getItem('pastebin_guest_created_v1') || localStorage.getItem('pastebin_local_history_v1');
+        if (guestCreated) {
+          const parsed = JSON.parse(guestCreated);
+          if (Array.isArray(parsed)) setMyPastes(parsed);
+        }
+        const guestRec = localStorage.getItem('pastebin_guest_received_v1');
+        if (guestRec) {
+          const parsed = JSON.parse(guestRec);
+          if (Array.isArray(parsed)) setReceivedPastes(parsed);
+        }
+      } catch (e) {}
+
+      setLoading(false);
     }
 
     loadData();
@@ -98,7 +118,7 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate }) => {
         </div>
       </div>
 
-      {/* Account Stats Grid (My Pastes vs Received Pastes) */}
+      {/* Account Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
         
         <div 

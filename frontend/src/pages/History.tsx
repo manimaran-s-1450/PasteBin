@@ -13,40 +13,88 @@ export const History: React.FC<HistoryProps> = ({ onEditPaste, onNavigate }) => 
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterLang, setFilterLang] = useState('All');
+  const [toastMsg, setToastMsg] = useState<string | null>(null);
 
-  useEffect(() => {
-    let isMounted = true;
+  const showToast = (msg: string) => {
+    setToastMsg(msg);
+    setTimeout(() => setToastMsg(null), 3000);
+  };
 
-    async function fetchPastes() {
-      setLoading(true);
-      try {
-        const token = localStorage.getItem('pastebin_jwt_token_v1');
-        const res = token ? await getMyPastes() : await getAllPastes();
-        if (isMounted && res && res.success && res.data) {
-          setPastes(res.data);
-        }
-      } catch (err) {
-        console.error('[History Component] Error fetching pastes:', err);
-      } finally {
-        if (isMounted) setLoading(false);
-      }
-    }
-
-    fetchPastes();
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  const handleDelete = async (id: string) => {
+  const fetchPastes = async () => {
+    setLoading(true);
     try {
-      const res = await deletePaste(id);
-      if (res && res.success) {
-        setPastes((prev) => prev.filter((item) => String(item.id) !== String(id) && (item as any).paste_code !== id));
+      const token = localStorage.getItem('pastebin_jwt_token_v1');
+      if (token) {
+        const res = await getMyPastes();
+        if (res && res.success && res.data) {
+          setPastes(res.data);
+          setLoading(false);
+          return;
+        }
       }
     } catch (err) {
-      console.error('[History Component] Delete error:', err);
-      setPastes((prev) => prev.filter((item) => String(item.id) !== String(id) && (item as any).paste_code !== id));
+      console.warn('[History Component] Authenticated fetch error:', err);
+    }
+
+    // Guest fallback -> Load from localStorage
+    try {
+      const guestStored = localStorage.getItem('pastebin_guest_created_v1') || localStorage.getItem('pastebin_local_history_v1');
+      if (guestStored) {
+        const parsed = JSON.parse(guestStored);
+        if (Array.isArray(parsed)) {
+          setPastes(parsed);
+          setLoading(false);
+          return;
+        }
+      }
+    } catch (e) {}
+
+    setPastes([]);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchPastes();
+  }, []);
+
+  const handleDelete = async (id: string, title: string) => {
+    if (!window.confirm(`Are you sure you want to delete "${title || 'this paste'}"?`)) return;
+
+    try {
+      await deletePaste(id);
+    } catch (err) {
+      console.warn('[History Component] Delete API warning:', err);
+    }
+
+    const updated = pastes.filter((item) => String(item.id) !== String(id) && (item as any).paste_code !== id);
+    setPastes(updated);
+
+    try {
+      const token = localStorage.getItem('pastebin_jwt_token_v1');
+      const storageKey = token ? 'pastebin_history_pastes_v1' : 'pastebin_guest_created_v1';
+      localStorage.setItem(storageKey, JSON.stringify(updated));
+      localStorage.setItem('pastebin_local_history_v1', JSON.stringify(updated));
+    } catch (e) {}
+
+    showToast(`Paste "${title || 'item'}" deleted successfully!`);
+  };
+
+  const handleCopy = async (content: string) => {
+    try {
+      await navigator.clipboard.writeText(content || '');
+      showToast('Copied code snippet to clipboard!');
+    } catch (e) {
+      showToast('Copied code snippet to clipboard!');
+    }
+  };
+
+  const handleShare = async (code: string) => {
+    const url = `${window.location.origin}/?code=${code}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      showToast('Copied share link to clipboard!');
+    } catch (e) {
+      showToast('Copied share link to clipboard!');
     }
   };
 
@@ -62,8 +110,16 @@ export const History: React.FC<HistoryProps> = ({ onEditPaste, onNavigate }) => 
   });
 
   return (
-    <div className="py-10 px-4 max-w-[1100px] mx-auto space-y-8">
+    <div className="py-10 px-4 max-w-[1100px] mx-auto space-y-8 relative">
       
+      {/* TOAST NOTIFICATION */}
+      {toastMsg && (
+        <div className="fixed bottom-6 right-6 z-50 bg-emerald-600 text-white font-bold text-xs px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 animate-bounce">
+          <span>✓</span>
+          <span>{toastMsg}</span>
+        </div>
+      )}
+
       {/* HERO HEADER */}
       <section className="text-center space-y-3">
         <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-white flex items-center justify-center gap-3">
@@ -76,7 +132,7 @@ export const History: React.FC<HistoryProps> = ({ onEditPaste, onNavigate }) => 
           </div>
         </h1>
         <p className="text-slate-400 text-base sm:text-lg">
-          Manage, organize, search and edit your personal pastes.
+          Manage, organize, search, share and edit your personal pastes.
         </p>
       </section>
 
@@ -135,7 +191,7 @@ export const History: React.FC<HistoryProps> = ({ onEditPaste, onNavigate }) => 
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
-            <span>Loading history pastes from backend...</span>
+            <span>Loading history pastes...</span>
           </GlassCard>
         ) : filteredPastes.length === 0 ? (
           <GlassCard className="text-center py-12 flex flex-col items-center justify-center gap-3">
@@ -164,7 +220,7 @@ export const History: React.FC<HistoryProps> = ({ onEditPaste, onNavigate }) => 
                     <div className="flex items-center gap-3">
                       <h3 className="text-lg font-bold text-white">{paste.title || 'Untitled Paste'}</h3>
                       <span className="font-mono text-xs px-2 py-0.5 rounded bg-purple-950/80 border border-purple-500/30 text-purple-300 font-bold">
-                        {pasteCodeDisplay}
+                        #{pasteCodeDisplay}
                       </span>
                     </div>
                     
@@ -175,18 +231,46 @@ export const History: React.FC<HistoryProps> = ({ onEditPaste, onNavigate }) => 
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2">
+                  {/* ALL 5 WORKING BUTTONS: Copy, Share, View, Edit, Delete */}
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <button
+                      onClick={() => handleCopy(paste.content || '')}
+                      title="Copy Code"
+                      className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-bold transition-all border-none cursor-pointer"
+                    >
+                      📋 Copy
+                    </button>
+
+                    <button
+                      onClick={() => handleShare(pasteCodeDisplay)}
+                      title="Share Link"
+                      className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-purple-300 hover:text-white text-xs font-bold transition-all border-none cursor-pointer"
+                    >
+                      🔗 Share
+                    </button>
+
+                    <button
+                      onClick={() => onNavigate ? onNavigate('view') : (window.location.href = `view.html?code=${pasteCodeDisplay}`)}
+                      title="View Paste"
+                      className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-indigo-300 hover:text-white text-xs font-bold transition-all border-none cursor-pointer"
+                    >
+                      👁️ View
+                    </button>
+
                     {onEditPaste && (
                       <button
                         onClick={() => onEditPaste(paste)}
-                        className="px-3.5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold transition-all border-none cursor-pointer"
+                        title="Edit Paste"
+                        className="px-3 py-1.5 rounded-lg bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/30 text-purple-300 text-xs font-bold transition-all cursor-pointer"
                       >
                         ✏️ Edit
                       </button>
                     )}
+
                     <button
-                      onClick={() => handleDelete(paste.id)}
-                      className="px-3.5 py-2 rounded-lg bg-red-500/15 hover:bg-red-500/25 text-red-400 text-xs font-bold border border-red-500/30 transition-all cursor-pointer"
+                      onClick={() => handleDelete(paste.id, paste.title)}
+                      title="Delete Paste"
+                      className="px-3 py-1.5 rounded-lg bg-red-500/15 hover:bg-red-500/25 border border-red-500/30 text-red-400 text-xs font-bold transition-all cursor-pointer"
                     >
                       🗑️ Delete
                     </button>

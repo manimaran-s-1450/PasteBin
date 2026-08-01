@@ -34,35 +34,63 @@ async function initHistoryDashboard() {
  * Load Pastes Data from MySQL Express Backend API
  */
 async function loadPastesFromStorage() {
-  try {
-    const getApiBaseUrl = () => (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'))
-      ? 'http://localhost:5000/api'
-      : 'https://pastebin-production-6477.up.railway.app/api';
-    
-    const token = localStorage.getItem('pastebin_jwt_token_v1');
-    const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
-    const endpoint = token ? '/pastes/my' : '/pastes';
-    const response = await fetch(`${getApiBaseUrl()}${endpoint}`, { headers });
-    const resData = await response.json();
+  const token = localStorage.getItem('pastebin_jwt_token_v1');
 
-    if (resData && resData.success && Array.isArray(resData.data)) {
-      pastesState = resData.data.map(p => ({
-        id: p.id,
-        code: p.paste_code || String(p.id),
-        title: p.title || 'Untitled Paste',
-        language: p.language || 'JavaScript',
-        createdAt: p.created_at || new Date().toISOString(),
-        updatedAt: 'Just now',
-        views: p.viewsCount || 1,
-        copies: 0,
-        shares: 0,
-        content: p.content || ''
-      }));
-      renderDashboard();
-      return;
+  if (token) {
+    try {
+      const getApiBaseUrl = () => (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'))
+        ? 'http://localhost:5000/api'
+        : 'https://pastebin-production-6477.up.railway.app/api';
+      
+      const headers = { 'Authorization': `Bearer ${token}` };
+      const response = await fetch(`${getApiBaseUrl()}/pastes/my`, { headers });
+      const resData = await response.json();
+
+      if (resData && resData.success && Array.isArray(resData.data)) {
+        pastesState = resData.data.map(p => ({
+          id: p.id,
+          code: p.paste_code || String(p.id),
+          title: p.title || 'Untitled Paste',
+          language: p.language || 'JavaScript',
+          createdAt: p.created_at || new Date().toISOString(),
+          updatedAt: 'Just now',
+          views: p.viewsCount || 1,
+          copies: 0,
+          shares: 0,
+          content: p.content || ''
+        }));
+        renderDashboard();
+        return;
+      }
+    } catch (err) {
+      console.error('[History API Error]:', err);
     }
-  } catch (err) {
-    console.error('[History API Error]:', err);
+  }
+
+  // Guest User -> Load strictly from localStorage history
+  try {
+    const guestStored = localStorage.getItem('pastebin_guest_created_v1') || localStorage.getItem('pastebin_local_history_v1');
+    if (guestStored) {
+      const parsed = JSON.parse(guestStored);
+      if (Array.isArray(parsed)) {
+        pastesState = parsed.map(p => ({
+          id: p.id || Date.now(),
+          code: p.code || p.paste_code || String(p.id),
+          title: p.title || 'Untitled Paste',
+          language: p.language || 'JavaScript',
+          createdAt: p.createdAt || p.created_at || new Date().toISOString(),
+          updatedAt: 'Just now',
+          views: p.views || 1,
+          copies: 0,
+          shares: 0,
+          content: p.content || ''
+        }));
+        renderDashboard();
+        return;
+      }
+    }
+  } catch (e) {
+    console.warn('[Guest History Error]', e);
   }
 
   pastesState = [];
@@ -639,14 +667,17 @@ async function handleConfirmDelete() {
 
   const target = pastesState.find(p => String(p.id) === String(pendingDeleteId) || String(p.code) === String(pendingDeleteId));
   const deleteCode = target ? (target.code || target.id) : pendingDeleteId;
+  const token = localStorage.getItem('pastebin_jwt_token_v1');
 
   try {
-    // Real API DELETE request to Express + MySQL backend
     const getApiBaseUrl = () => (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'))
       ? 'http://localhost:5000/api'
       : 'https://pastebin-production-6477.up.railway.app/api';
+    
+    const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
     await fetch(`${getApiBaseUrl()}/pastes/${encodeURIComponent(deleteCode)}`, {
-      method: 'DELETE'
+      method: 'DELETE',
+      headers
     });
   } catch (err) {
     console.error('[History API Delete Error]:', err);
@@ -654,8 +685,13 @@ async function handleConfirmDelete() {
 
   pastesState = pastesState.filter(p => String(p.id) !== String(pendingDeleteId) && String(p.code) !== String(pendingDeleteId));
 
+  // Sync LocalStorage backup
+  const storageKey = token ? 'pastebin_history_pastes_v1' : 'pastebin_guest_created_v1';
+  localStorage.setItem(storageKey, JSON.stringify(pastesState));
+  localStorage.setItem('pastebin_local_history_v1', JSON.stringify(pastesState));
+
   closeDeleteModal();
-  showToast(`Paste "${target ? target.title : 'item'}" deleted permanently`, 'info');
+  showToast(`Paste "${target ? target.title : 'item'}" deleted successfully`, 'success');
   renderDashboard();
 }
 

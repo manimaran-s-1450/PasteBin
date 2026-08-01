@@ -278,11 +278,15 @@ function initCreatePasteButton() {
       const getApiBaseUrl = () => (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'))
         ? 'http://localhost:5000/api'
         : 'https://pastebin-production-6477.up.railway.app/api';
+      const token = localStorage.getItem('pastebin_jwt_token_v1');
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const response = await fetch(`${getApiBaseUrl()}/pastes`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers,
         body: JSON.stringify({
           title,
           language,
@@ -297,8 +301,8 @@ function initCreatePasteButton() {
       if (resData && resData.success) {
         const pasteCode = resData.data?.paste_code || resData.data?.id || 'GT5WAQFI';
         
-        // Also save to LocalStorage history backup
-        const HISTORY_STORAGE_KEY = 'pastebin_history_pastes_v1';
+        // Save to LocalStorage history backup
+        const HISTORY_STORAGE_KEY = token ? 'pastebin_history_pastes_v1' : 'pastebin_guest_created_v1';
         let pastes = [];
         const stored = localStorage.getItem(HISTORY_STORAGE_KEY);
         if (stored) {
@@ -314,6 +318,7 @@ function initCreatePasteButton() {
           content: content
         });
         localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(pastes));
+        localStorage.setItem('pastebin_local_history_v1', JSON.stringify(pastes));
 
         showToast('Paste created successfully!', 'success');
         loadRecentPastes();

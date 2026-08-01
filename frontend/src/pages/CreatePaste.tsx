@@ -77,14 +77,22 @@ export const CreatePaste: React.FC<CreatePasteProps> = ({ onNavigate }) => {
       const result = await createPaste(formData);
 
       if (result && result.success) {
-        // Store backend response data directly in state
         setCreatedPaste(result.data || null);
 
-        // Extract generated paste_code from backend response object
         const backendCode = (result.data as any)?.paste_code || result.data?.id || 'GT5WAQFI';
         setCreatedPasteCode(backendCode);
 
-        // Open Success Modal popup (form is NOT reset until "Create Another" is clicked)
+        // Update local state storage for instantaneous synchronization
+        try {
+          const token = localStorage.getItem('pastebin_jwt_token_v1');
+          const storageKey = token ? 'pastebin_history_pastes_v1' : 'pastebin_guest_created_v1';
+          const stored = localStorage.getItem(storageKey);
+          let list = stored ? JSON.parse(stored) : [];
+          list.unshift(result.data);
+          localStorage.setItem(storageKey, JSON.stringify(list));
+          localStorage.setItem('pastebin_local_history_v1', JSON.stringify(list));
+        } catch (e) {}
+
         setShowSuccessModal(true);
       }
     } catch (err: any) {

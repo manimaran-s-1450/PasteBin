@@ -362,6 +362,15 @@ async function retrieveAndRenderPaste(codeOrId) {
         content: pData.content || ''
       };
       currentLoadedPaste = pasteObj;
+      if (!token) {
+        try {
+          const guestRecStr = localStorage.getItem('pastebin_guest_received_v1');
+          let list = guestRecStr ? JSON.parse(guestRecStr) : [];
+          list = list.filter(item => (item.code || item.paste_code) !== pasteObj.code);
+          list.unshift(pasteObj);
+          localStorage.setItem('pastebin_guest_received_v1', JSON.stringify(list));
+        } catch(e) {}
+      }
       renderPasteViewerPage(pasteObj);
       showToast('Paste retrieved successfully!', 'success');
       return;
