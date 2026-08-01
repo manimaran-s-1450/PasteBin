@@ -1,29 +1,52 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { PageRoute } from '../App';
 
 /**
  * Navbar Component
  * --------------------------------------------------------------------------
  * Purpose:
  * Header navigation bar for PasteBin Pro.
- * Provides desktop horizontal menu, theme switcher pill, brand logo,
- * and mobile slide-out navigation drawer.
+ * Provides desktop horizontal menu, profile avatar with glass dropdown,
+ * theme switcher pill, brand logo, and mobile slide-out navigation drawer.
+ * Uses internal state-based onNavigate without browser URL routing.
  * --------------------------------------------------------------------------
  */
 
 export interface NavbarProps {
-  activePage: 'home' | 'create' | 'view' | 'history' | 'docs' | 'about' | 'edit';
-  onNavigate: (page: 'home' | 'create' | 'view' | 'history' | 'docs' | 'about' | 'edit') => void;
+  activePage: PageRoute;
+  onNavigate: (page: PageRoute) => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  const [user, setUser] = useState<{
+    fullName?: string;
+    username?: string;
+    email?: string;
+    avatarUrl?: string;
+  } | null>(null);
+
+  useEffect(() => {
+    try {
+      const storedUser = localStorage.getItem('pastebin_user_profile_v1');
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+      }
+    } catch (e) {}
+  }, []);
 
   const toggleTheme = () => {
     const nextTheme = theme === 'dark' ? 'light' : 'dark';
     setTheme(nextTheme);
     document.documentElement.setAttribute('data-theme', nextTheme);
   };
+
+  const displayName = user?.fullName || user?.username || 'John Smith';
+  const email = user?.email || 'john@gmail.com';
+  const avatarUrl = user?.avatarUrl || null;
+  const initials = displayName ? displayName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'JS';
 
   const navItems = [
     { id: 'home', label: 'Home' },
@@ -34,11 +57,19 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate }) => {
     { id: 'about', label: 'About' },
   ] as const;
 
+  const handleSignOut = () => {
+    setProfileDropdownOpen(false);
+    localStorage.removeItem('pastebin_jwt_token_v1');
+    localStorage.removeItem('pastebin_user_profile_v1');
+    setUser(null);
+    onNavigate('home');
+  };
+
   return (
     <header className="sticky top-0 z-50 bg-[#09090B]/85 backdrop-blur-xl border-b border-slate-800/80 transition-all">
       <div className="max-w-[1280px] mx-auto px-4 h-18 flex items-center justify-between gap-4">
         
-        {/* Brand Logo */}
+        <!-- Brand Logo -->
         <button 
           onClick={() => onNavigate('home')} 
           className="flex items-center gap-3 bg-transparent border-none p-0 cursor-pointer text-left focus:outline-none"
@@ -54,7 +85,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate }) => {
           </span>
         </button>
 
-        {/* Desktop Navigation Links */}
+        <!-- Desktop Navigation Links -->
         <nav className="hidden md:flex items-center justify-center gap-8 flex-1 max-w-[680px]">
           {navItems.map((item) => {
             const isActive = activePage === item.id;
@@ -75,9 +106,102 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate }) => {
           })}
         </nav>
 
-        {/* Right Side Actions: Realistic Theme Toggle Pill */}
+        <!-- Right Side Actions: Profile Avatar -> Theme Toggle -> Hamburger Menu -->
         <div className="flex items-center gap-3">
           
+          {/* Profile Avatar Button (Placed IMMEDIATELY BEFORE Theme Toggle) */}
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+              className="w-8.5 h-8.5 md:w-9 md:h-9 lg:w-10 lg:h-10 rounded-full border-1.5 border-purple-500/40 bg-purple-950/30 flex items-center justify-center text-white font-bold text-xs md:text-sm cursor-pointer shadow-[0_0_12px_rgba(139,92,246,0.25)] hover:scale-105 hover:border-purple-400 hover:shadow-[0_0_18px_rgba(139,92,246,0.5)] transition-all overflow-hidden p-0 outline-none"
+              aria-label="User Profile Menu"
+            >
+              {avatarUrl ? (
+                <img src={avatarUrl} alt={displayName} className="w-full h-full object-cover rounded-full" />
+              ) : (
+                <span>{initials}</span>
+              )}
+            </button>
+
+            {/* Glass Profile Dropdown Card */}
+            {profileDropdownOpen && (
+              <div 
+                className="absolute top-[calc(100%+0.75rem)] right-0 w-64 bg-[#111827]/95 backdrop-blur-2xl border border-purple-500/35 rounded-2xl p-3 shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_35px_rgba(139,92,246,0.25)] flex flex-col gap-2 z-50 text-left"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Header User Info */}
+                <div className="flex items-center gap-3 p-2">
+                  <div className="w-10 h-10 rounded-full border border-purple-500 bg-purple-950/50 flex items-center justify-center font-bold text-white shrink-0 overflow-hidden">
+                    {avatarUrl ? (
+                      <img src={avatarUrl} alt={displayName} className="w-full h-full object-cover" />
+                    ) : (
+                      <span>{initials}</span>
+                    )}
+                  </div>
+                  <div className="flex flex-col min-w-0">
+                    <span className="text-sm font-bold text-white truncate">{displayName}</span>
+                    <span className="text-xs text-slate-400 truncate">{email}</span>
+                  </div>
+                </div>
+
+                <div className="h-px bg-slate-800 my-1" />
+
+                {/* Dropdown Menu Items */}
+                <div className="flex flex-col gap-1">
+                  <button
+                    onClick={() => {
+                      setProfileDropdownOpen(false);
+                      onNavigate('profile');
+                    }}
+                    className={`flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold border-none bg-transparent cursor-pointer transition-all text-left ${
+                      activePage === 'profile' ? 'bg-purple-600/30 text-purple-300 font-bold' : 'text-slate-300 hover:bg-purple-500/15 hover:text-white'
+                    }`}
+                  >
+                    👤 My Profile
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setProfileDropdownOpen(false);
+                      onNavigate('history');
+                    }}
+                    className="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:bg-purple-500/15 hover:text-white border-none bg-transparent cursor-pointer transition-all text-left"
+                  >
+                    📄 My Pastes
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setProfileDropdownOpen(false);
+                      onNavigate('create');
+                    }}
+                    className="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:bg-purple-500/15 hover:text-white border-none bg-transparent cursor-pointer transition-all text-left"
+                  >
+                    ➕ Create Paste
+                  </button>
+
+                  <button
+                    onClick={toggleTheme}
+                    className="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:bg-purple-500/15 hover:text-white border-none bg-transparent cursor-pointer transition-all text-left"
+                  >
+                    🌙 Toggle Theme
+                  </button>
+                </div>
+
+                <div className="h-px bg-slate-800 my-1" />
+
+                <button
+                  onClick={handleSignOut}
+                  className="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-bold text-rose-400 hover:bg-rose-500/20 border-none bg-transparent cursor-pointer transition-all text-left"
+                >
+                  🚪 Sign Out
+                </button>
+
+              </div>
+            )}
+          </div>
+
           {/* Theme Switcher Pill */}
           <div 
             onClick={toggleTheme}
@@ -119,7 +243,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate }) => {
           {/* Mobile Hamburger Toggle Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800/60 border-none bg-transparent"
+            className="md:hidden p-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800/60 border-none bg-transparent cursor-pointer"
             aria-label="Toggle Navigation Drawer"
           >
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.2">
@@ -150,6 +274,20 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate }) => {
               {item.label}
             </button>
           ))}
+
+          <button
+            onClick={() => {
+              onNavigate('profile');
+              setMobileMenuOpen(false);
+            }}
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all text-left border-none ${
+              activePage === 'profile'
+                ? 'bg-purple-600 text-white font-bold'
+                : 'text-purple-300 bg-purple-950/40 hover:bg-purple-900/50'
+            }`}
+          >
+            👤 My Profile
+          </button>
         </div>
       )}
 

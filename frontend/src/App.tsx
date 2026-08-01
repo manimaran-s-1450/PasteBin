@@ -8,6 +8,7 @@ import EditPaste from './pages/EditPaste';
 import History from './pages/History';
 import Documentation from './pages/Documentation';
 import About from './pages/About';
+import Profile from './pages/Profile';
 import { PasteItem } from './services/api';
 
 /**
@@ -19,7 +20,7 @@ import { PasteItem } from './services/api';
  * --------------------------------------------------------------------------
  */
 
-export type PageRoute = 'home' | 'create' | 'view' | 'history' | 'docs' | 'about' | 'edit';
+export type PageRoute = 'home' | 'create' | 'view' | 'history' | 'docs' | 'about' | 'edit' | 'profile';
 
 export default function App() {
   const [activePage, setActivePage] = useState<PageRoute>('home');
@@ -51,6 +52,7 @@ export default function App() {
         {activePage === 'history' && <History onEditPaste={handleEditPaste} />}
         {activePage === 'docs' && <Documentation />}
         {activePage === 'about' && <About />}
+        {activePage === 'profile' && <Profile onNavigate={handleNavigate} />}
       </div>
 
       {/* Shared Footer */}
