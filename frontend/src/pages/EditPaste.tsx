@@ -12,31 +12,13 @@ import { getPasteById, updatePaste, PasteItem } from '../services/api';
  */
 
 const DEFAULT_SAMPLE_PASTE = {
-  id: 'PASTE-1001',
-  code: 'gt6DlQ94',
-  title: 'Binary Search Implementation',
+  id: '',
+  code: '',
+  title: '',
   language: 'JavaScript',
   expiresIn: 'never',
   visibility: 'public',
-  content: `// Binary Search Implementation in JavaScript
-function binarySearch(arr, target) {
-  let left = 0;
-  let right = arr.length - 1;
-
-  while (left <= right) {
-    const mid = Math.floor((left + right) / 2);
-    
-    if (arr[mid] === target) {
-      return mid; // Target index found
-    } else if (arr[mid] < target) {
-      left = mid + 1;
-    } else {
-      right = mid - 1;
-    }
-  }
-
-  return -1; // Target element not found
-}`
+  content: ''
 };
 
 const EXT_MAP: Record<string, string> = {

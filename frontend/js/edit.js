@@ -79,16 +79,16 @@ async function processEditUrlParams() {
     }
   }
 
-  // Fallback to sample data if standalone mode
+  // Fallback to empty inputs if no paste specified
   if (!currentEditPaste) {
     currentEditPaste = {
-      id: 'PASTE-1001',
-      code: 'gt6DlQ94',
-      title: 'Binary Search Implementation',
+      id: '',
+      code: '',
+      title: '',
       language: 'JavaScript',
       visibility: 'public',
       expiresIn: 'never',
-      content: `// Binary Search Implementation in JavaScript\nfunction binarySearch(arr, target) {\n  let left = 0;\n  let right = arr.length - 1;\n  while (left <= right) {\n    const mid = Math.floor((left + right) / 2);\n    if (arr[mid] === target) return mid;\n    else if (arr[mid] < target) left = mid + 1;\n    else right = mid - 1;\n  }\n  return -1;\n}`
+      content: ''
     };
   }
 

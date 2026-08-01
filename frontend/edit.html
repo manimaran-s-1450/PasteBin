@@ -132,7 +132,7 @@
                 name="title" 
                 class="form-control-input" 
                 placeholder="Enter your paste title..."
-                value="Binary Search Implementation"
+                value=""
                 autocomplete="off"
                 required
               >
@@ -235,7 +235,7 @@
                           <polyline points="14 2 14 8 20 8"></polyline>
                         </svg>
                       </span>
-                      <span id="editor-file-ext">binary-search.js</span>
+                      <span id="editor-file-ext">untitled.js</span>
                     </div>
                   </div>
 
@@ -259,25 +259,7 @@
                       placeholder="// Enter or paste your code or text here..." 
                       spellcheck="false"
                       required
-                    >// Binary Search Implementation in JavaScript
-function binarySearch(arr, target) {
-  let left = 0;
-  let right = arr.length - 1;
-
-  while (left <= right) {
-    const mid = Math.floor((left + right) / 2);
-    
-    if (arr[mid] === target) {
-      return mid; // Target index found
-    } else if (arr[mid] < target) {
-      left = mid + 1;
-    } else {
-      right = mid - 1;
-    }
-  }
-
-  return -1; // Target element not found
-}</textarea>
+                    ></textarea>
                   </div>
                 </div>
 
