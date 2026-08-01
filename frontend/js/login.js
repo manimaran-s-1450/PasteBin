@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('login-form');
   const toggleBtn = document.getElementById('toggle-password-btn');
   const passwordInput = document.getElementById('login-password');
+  const submitBtn = document.getElementById('btn-login-submit');
 
   if (toggleBtn && passwordInput) {
     toggleBtn.addEventListener('click', () => {
@@ -38,16 +39,32 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
       const identity = document.getElementById('login-identity').value.trim();
       const password = passwordInput.value;
+      const rememberMe = document.getElementById('remember-me')?.checked || false;
+
+      if (!identity || !password) {
+        showToast('Please enter your email/username and password.', 'error');
+        return;
+      }
 
       try {
-        showToast('Authenticating account...', 'info');
-        await loginUser(identity, password);
-        showToast('Signed in successfully! Redirecting...', 'success');
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.innerHTML = `<span>Signing in...</span>`;
+        }
+
+        showToast('Authenticating credentials...', 'info');
+        await loginUser(identity, password, rememberMe);
+        showToast('Signed in successfully! Redirecting to Home...', 'success');
+
         setTimeout(() => {
-          window.location.href = 'history.html';
+          window.location.href = 'index.html';
         }, 800);
       } catch (err) {
-        showToast(err.message || 'Authentication failed. Check details.', 'error');
+        showToast(err.message || 'Authentication failed. Please check credentials.', 'error');
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = `<span>Sign In</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12" 5 19 12 12 19"></polyline></svg>`;
+        }
       }
     });
   }

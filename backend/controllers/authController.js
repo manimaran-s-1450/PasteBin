@@ -5,10 +5,14 @@ const { JWT_SECRET } = require('../middleware/authMiddleware');
 
 async function register(req, res, next) {
   try {
-    const { username, email, password } = req.body;
+    const { full_name, username, email, password, confirm_password } = req.body;
 
     if (!username || !email || !password) {
       return res.status(400).json({ success: false, message: 'Username, email, and password are required.' });
+    }
+
+    if (confirm_password && password !== confirm_password) {
+      return res.status(400).json({ success: false, message: 'Passwords do not match. Please verify your password confirmation.' });
     }
 
     if (username.trim().length < 3) {
@@ -17,6 +21,12 @@ async function register(req, res, next) {
 
     if (password.length < 6) {
       return res.status(400).json({ success: false, message: 'Password must be at least 6 characters long.' });
+    }
+
+    // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      return res.status(400).json({ success: false, message: 'Please enter a valid email address.' });
     }
 
     const existingEmail = await userModel.findUserByEmail(email);
@@ -33,9 +43,10 @@ async function register(req, res, next) {
     const passwordHash = await bcrypt.hash(password, salt);
 
     const newUser = await userModel.createUser({
+      fullName: full_name || null,
       username: username.trim(),
       email: email.trim(),
-      passwordHash
+      password: passwordHash
     });
 
     const token = jwt.sign(
@@ -51,6 +62,7 @@ async function register(req, res, next) {
         token,
         user: {
           id: newUser.id,
+          full_name: newUser.full_name,
           username: newUser.username,
           email: newUser.email
         }
@@ -63,39 +75,43 @@ async function register(req, res, next) {
 
 async function login(req, res, next) {
   try {
-    const { emailOrUsername, password } = req.body;
+    const { emailOrUsername, email, username, password, remember_me } = req.body;
+    const identity = emailOrUsername || email || username;
 
-    if (!emailOrUsername || !password) {
-      return res.status(400).json({ success: false, message: 'Please provide email/username and password.' });
+    if (!identity || !password) {
+      return res.status(400).json({ success: false, message: 'Please provide your email/username and password.' });
     }
 
-    let user = await userModel.findUserByEmail(emailOrUsername);
+    let user = await userModel.findUserByEmail(identity);
     if (!user) {
-      user = await userModel.findUserByUsername(emailOrUsername);
+      user = await userModel.findUserByUsername(identity);
     }
 
     if (!user) {
-      return res.status(401).json({ success: false, message: 'Invalid credentials. User not found.' });
+      return res.status(401).json({ success: false, message: 'Invalid credentials. Account not found.' });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password_hash);
+    const passwordField = user.password || user.password_hash;
+    const isMatch = await bcrypt.compare(password, passwordField);
     if (!isMatch) {
       return res.status(401).json({ success: false, message: 'Invalid password. Please try again.' });
     }
 
+    const expiresIn = remember_me ? '30d' : '7d';
     const token = jwt.sign(
       { id: user.id, username: user.username, email: user.email },
       JWT_SECRET,
-      { expiresIn: '30d' }
+      { expiresIn }
     );
 
     res.status(200).json({
       success: true,
-      message: 'Logged in successfully!',
+      message: 'Signed in successfully!',
       data: {
         token,
         user: {
           id: user.id,
+          full_name: user.full_name,
           username: user.username,
           email: user.email
         }
@@ -106,7 +122,7 @@ async function login(req, res, next) {
   }
 }
 
-async function getMe(req, res, next) {
+async function getProfile(req, res, next) {
   try {
     const user = await userModel.findUserById(req.user.id);
     if (!user) {
@@ -121,8 +137,16 @@ async function getMe(req, res, next) {
   }
 }
 
+async function logout(req, res) {
+  res.status(200).json({
+    success: true,
+    message: 'Logged out successfully.'
+  });
+}
+
 module.exports = {
   register,
   login,
-  getMe
+  getProfile,
+  logout
 };

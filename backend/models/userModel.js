@@ -1,11 +1,16 @@
 const { pool } = require('../config/db');
 
-async function createUser({ username, email, passwordHash }) {
+async function createUser({ fullName, username, email, password }) {
   const [result] = await pool.execute(
-    'INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)',
-    [username.toLowerCase().trim(), email.toLowerCase().trim(), passwordHash]
+    'INSERT INTO users (full_name, username, email, password) VALUES (?, ?, ?, ?)',
+    [
+      fullName ? fullName.trim() : null,
+      username.toLowerCase().trim(),
+      email.toLowerCase().trim(),
+      password
+    ]
   );
-  return { id: result.insertId, username, email };
+  return { id: result.insertId, full_name: fullName, username, email };
 }
 
 async function findUserByEmail(email) {
@@ -26,7 +31,7 @@ async function findUserByUsername(username) {
 
 async function findUserById(id) {
   const [rows] = await pool.execute(
-    'SELECT id, username, email, created_at FROM users WHERE id = ?',
+    'SELECT id, full_name, username, email, created_at FROM users WHERE id = ?',
     [id]
   );
   return rows[0] || null;

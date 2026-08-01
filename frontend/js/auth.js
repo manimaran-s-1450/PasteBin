@@ -42,11 +42,11 @@ const getApiBaseUrl = () => (typeof window !== 'undefined' && (window.location.h
   ? 'http://localhost:5000/api'
   : 'https://pastebin-production-6477.up.railway.app/api';
 
-export async function loginUser(emailOrUsername, password) {
+export async function loginUser(emailOrUsername, password, remember_me = false) {
   const response = await fetch(`${getApiBaseUrl()}/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ emailOrUsername, password })
+    body: JSON.stringify({ emailOrUsername, password, remember_me })
   });
 
   const resData = await response.json();
@@ -58,11 +58,11 @@ export async function loginUser(emailOrUsername, password) {
   return resData.data;
 }
 
-export async function registerUser(username, email, password) {
+export async function registerUser(username, email, password, full_name = '', confirm_password = '') {
   const response = await fetch(`${getApiBaseUrl()}/auth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username, email, password })
+    body: JSON.stringify({ username, email, password, full_name, confirm_password })
   });
 
   const resData = await response.json();
@@ -72,6 +72,23 @@ export async function registerUser(username, email, password) {
 
   setAuthSession(resData.data.token, resData.data.user);
   return resData.data;
+}
+
+export async function fetchProfile() {
+  const token = getAuthToken();
+  if (!token) return null;
+
+  const response = await fetch(`${getApiBaseUrl()}/auth/profile`, {
+    method: 'GET',
+    headers: { ...getAuthHeaders() }
+  });
+
+  const resData = await response.json();
+  if (response.ok && resData.success) {
+    localStorage.setItem(AUTH_USER_KEY, JSON.stringify(resData.data));
+    return resData.data;
+  }
+  return null;
 }
 
 export function logoutUser() {

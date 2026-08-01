@@ -35,12 +35,27 @@ async function testConnection() {
     await connection.query(`
       CREATE TABLE IF NOT EXISTS users (
         id INT AUTO_INCREMENT PRIMARY KEY,
+        full_name VARCHAR(255) NULL,
         username VARCHAR(50) NOT NULL UNIQUE,
         email VARCHAR(255) NOT NULL UNIQUE,
-        password_hash VARCHAR(255) NOT NULL,
+        password VARCHAR(255) NOT NULL,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
+
+    // Ensure full_name column exists
+    try {
+      await connection.query(`ALTER TABLE users ADD COLUMN full_name VARCHAR(255) NULL AFTER id;`);
+    } catch (e) {
+      // Column already exists
+    }
+
+    // Ensure password column exists (if password_hash was used previously)
+    try {
+      await connection.query(`ALTER TABLE users ADD COLUMN password VARCHAR(255) NOT NULL AFTER email;`);
+    } catch (e) {
+      // Column already exists
+    }
 
     // 2. Create pastes table
     await connection.query(`

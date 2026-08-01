@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('signup-form');
   const toggleBtn = document.getElementById('toggle-password-btn');
   const passwordInput = document.getElementById('signup-password');
+  const submitBtn = document.getElementById('btn-signup-submit');
 
   if (toggleBtn && passwordInput) {
     toggleBtn.addEventListener('click', () => {
@@ -36,19 +37,36 @@ document.addEventListener('DOMContentLoaded', () => {
   if (form) {
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
+      const fullName = document.getElementById('signup-fullname')?.value.trim() || '';
       const username = document.getElementById('signup-username').value.trim();
       const email = document.getElementById('signup-email').value.trim();
       const password = passwordInput.value;
+      const confirmPassword = document.getElementById('signup-confirm-password')?.value || '';
+
+      if (confirmPassword && password !== confirmPassword) {
+        showToast('Passwords do not match. Please verify.', 'error');
+        return;
+      }
 
       try {
-        showToast('Creating account...', 'info');
-        await registerUser(username, email, password);
-        showToast('Account created successfully! Redirecting...', 'success');
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.innerHTML = `<span>Creating Account...</span>`;
+        }
+
+        showToast('Registering user account...', 'info');
+        await registerUser(username, email, password, fullName, confirmPassword);
+        showToast('Account created successfully! Redirecting to Home...', 'success');
+
         setTimeout(() => {
-          window.location.href = 'history.html';
+          window.location.href = 'index.html';
         }, 800);
       } catch (err) {
         showToast(err.message || 'Registration failed. Please try again.', 'error');
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = `<span>Create Account</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12" 5 19 12 12 19"></polyline></svg>`;
+        }
       }
     });
   }
