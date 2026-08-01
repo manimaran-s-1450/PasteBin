@@ -594,7 +594,9 @@ async function handleConfirmDelete() {
   }
 
   const paste = pendingPasteObj || pastesState.find(p => String(p.id) === String(pendingDeleteId) || String(p.code) === String(pendingDeleteId));
-  const deleteCode = paste ? (paste.code || paste.id) : pendingDeleteId;
+  const targetId = paste ? paste.id : pendingDeleteId;
+  const targetCode = paste ? paste.code : pendingDeleteId;
+  const deleteCode = targetCode || targetId;
   const token = localStorage.getItem('pastebin_jwt_token_v1');
 
   try {
@@ -611,8 +613,13 @@ async function handleConfirmDelete() {
     console.error('[History API Delete Error]:', err);
   }
 
-  // Remove paste from state
-  pastesState = pastesState.filter(p => String(p.id) !== String(deleteCode) && String(p.code) !== String(deleteCode));
+  // Thoroughly remove paste from state
+  pastesState = pastesState.filter(p => 
+    String(p.id) !== String(targetId) &&
+    String(p.code) !== String(targetCode) &&
+    String(p.id) !== String(deleteCode) &&
+    String(p.code) !== String(deleteCode)
+  );
 
   // Sync LocalStorage backup
   const storageKey = token ? 'pastebin_history_pastes_v1' : 'pastebin_guest_created_v1';
