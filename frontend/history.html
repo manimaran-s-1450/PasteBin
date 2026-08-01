@@ -123,18 +123,18 @@
           </div>
         </div>
 
-        <!-- 2. Total Views -->
-        <div class="stat-card" id="stat-views-card">
+        <!-- 2. Total Received -->
+        <div class="stat-card" id="stat-received-card">
           <div class="stat-icon-wrapper icon-cyan">
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-              <circle cx="12" cy="12" r="3"></circle>
+              <polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline>
+              <path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path>
             </svg>
           </div>
           <div class="stat-content">
-            <div class="stat-value" id="stat-views-count">0</div>
-            <div class="stat-label">Total Views</div>
-            <div class="stat-desc">Total views across all pastes</div>
+            <div class="stat-value" id="stat-received-count">0</div>
+            <div class="stat-label">Total Received</div>
+            <div class="stat-desc">Total received pastes</div>
           </div>
         </div>
 
@@ -203,14 +203,17 @@
         <div class="filter-sort-row">
           <div class="filter-chips-scroll" role="tablist" aria-label="Filter pastes by type or language">
             <button type="button" class="filter-chip active" data-filter="all" role="tab" aria-selected="true">All</button>
-            <button type="button" class="filter-chip" data-filter="Java" role="tab" aria-selected="false">Java</button>
-            <button type="button" class="filter-chip" data-filter="Python" role="tab" aria-selected="false">Python</button>
-            <button type="button" class="filter-chip" data-filter="C++" role="tab" aria-selected="false">C++</button>
             <button type="button" class="filter-chip" data-filter="JavaScript" role="tab" aria-selected="false">JavaScript</button>
+            <button type="button" class="filter-chip" data-filter="TypeScript" role="tab" aria-selected="false">TypeScript</button>
+            <button type="button" class="filter-chip" data-filter="Python" role="tab" aria-selected="false">Python</button>
+            <button type="button" class="filter-chip" data-filter="Java" role="tab" aria-selected="false">Java</button>
+            <button type="button" class="filter-chip" data-filter="C" role="tab" aria-selected="false">C</button>
+            <button type="button" class="filter-chip" data-filter="C++" role="tab" aria-selected="false">C++</button>
+            <button type="button" class="filter-chip" data-filter="HTML" role="tab" aria-selected="false">HTML</button>
+            <button type="button" class="filter-chip" data-filter="CSS" role="tab" aria-selected="false">CSS</button>
             <button type="button" class="filter-chip" data-filter="SQL" role="tab" aria-selected="false">SQL</button>
+            <button type="button" class="filter-chip" data-filter="JSON" role="tab" aria-selected="false">JSON</button>
             <button type="button" class="filter-chip" data-filter="Plain Text" role="tab" aria-selected="false">Plain Text</button>
-            <button type="button" class="filter-chip" data-filter="Go" role="tab" aria-selected="false">Go</button>
-            <button type="button" class="filter-chip" data-filter="Rust" role="tab" aria-selected="false">Rust</button>
           </div>
 
           <div class="sort-dropdown-wrapper">

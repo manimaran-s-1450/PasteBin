@@ -100,18 +100,18 @@ function renderDashboard() {
  */
 function renderStats() {
   const totalCount = pastesState.length;
-  const totalViews = pastesState.reduce((sum, p) => sum + (p.views || p.viewsCount || 1), 0);
+  const receivedCount = pastesState.filter(p => p.isReceived || p.type === 'received').length;
   const languagesSet = new Set(pastesState.map(p => p.language).filter(Boolean));
   const languagesCount = languagesSet.size;
   const totalLines = pastesState.reduce((sum, p) => sum + (p.content ? p.content.split('\n').length : 1), 0);
 
   const totalEl = document.getElementById('stat-total-count');
-  const viewsEl = document.getElementById('stat-views-count');
+  const receivedEl = document.getElementById('stat-received-count') || document.getElementById('stat-views-count');
   const langEl = document.getElementById('stat-languages-count');
   const linesEl = document.getElementById('stat-lines-count');
 
   if (totalEl) totalEl.textContent = totalCount;
-  if (viewsEl) viewsEl.textContent = totalViews;
+  if (receivedEl) receivedEl.textContent = receivedCount;
   if (langEl) langEl.textContent = languagesCount;
   if (linesEl) linesEl.textContent = totalLines;
 }
