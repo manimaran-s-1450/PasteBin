@@ -494,26 +494,27 @@ body.menu-open {
   background-color: var(--accent-light);
 }
 
-/* 3. Mobile Centered Footer Layout (< 768px) */
+/* 3. Mobile Centered 2-Column Grid Block Footer Layout (< 768px) */
 @media (max-width: 768px) {
   .footer-content {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-    text-align: center !important;
-    gap: 1.85rem !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1.75rem 1.25rem !important;
+    max-width: 320px !important;
+    margin: 0 auto !important;
     padding-bottom: 1.75rem !important;
+    justify-content: center !important;
   }
 
   .footer-brand {
+    grid-column: 1 / -1 !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
     justify-content: center !important;
     text-align: center !important;
     width: 100% !important;
-    grid-column: auto !important;
+    margin-bottom: 0.25rem !important;
   }
 
   .footer-tagline {
@@ -525,15 +526,16 @@ body.menu-open {
   .footer-col {
     display: flex !important;
     flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-    text-align: center !important;
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+    text-align: left !important;
     width: 100% !important;
     gap: 0.5rem !important;
+    padding-left: 0.25rem !important;
   }
 
   .footer-heading {
-    text-align: center !important;
+    text-align: left !important;
     margin-bottom: 0.35rem !important;
     font-size: 0.9rem !important;
   }
@@ -541,17 +543,17 @@ body.menu-open {
   .footer-link {
     display: inline-flex !important;
     align-items: center !important;
-    justify-content: center !important;
+    justify-content: flex-start !important;
     gap: 0.35rem !important;
-    text-align: center !important;
+    text-align: left !important;
   }
 
   .social-icons {
     display: flex !important;
     align-items: center !important;
-    justify-content: center !important;
+    justify-content: flex-start !important;
     gap: 0.75rem !important;
-    margin: 0.25rem auto 0 !important;
+    margin-top: 0.25rem !important;
   }
 
   .footer-bottom-inner, .footer-bottom {
