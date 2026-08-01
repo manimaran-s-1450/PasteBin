@@ -48,7 +48,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
           <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-300">Resources</h4>
           <button onClick={() => onNavigate('docs')} className="text-left text-xs text-slate-400 hover:text-white bg-transparent border-none p-0 cursor-pointer">Documentation</button>
           <button onClick={() => onNavigate('about')} className="text-left text-xs text-slate-400 hover:text-white bg-transparent border-none p-0 cursor-pointer">About PasteBin</button>
-          <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-xs text-slate-400 hover:text-white">GitHub Repository</a>
+          <a href="https://github.com/manimaran-s-1450/PasteBin" target="_blank" rel="noopener noreferrer" className="text-xs text-slate-400 hover:text-white">GitHub Repository</a>
         </div>
 
         {/* Legal & Copyright */}

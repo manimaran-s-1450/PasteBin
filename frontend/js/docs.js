@@ -27,7 +27,7 @@ function initScrollSpy() {
   let isClickScrolling = false;
   let clickTimeout = null;
 
-  // 1. Click Listener for Immediate Purple Active Bar Feedback
+  // 1. Click Listener for Immediate Active Bar Feedback
   navLinks.forEach((link) => {
     link.addEventListener('click', (e) => {
       const href = link.getAttribute('href');
@@ -44,12 +44,12 @@ function initScrollSpy() {
           isClickScrolling = true;
           if (clickTimeout) clearTimeout(clickTimeout);
 
-          const targetTop = targetSec.getBoundingClientRect().top + window.pageYOffset - 100;
+          const targetTop = href === '#overview' ? 0 : targetSec.getBoundingClientRect().top + window.pageYOffset - 100;
           window.scrollTo({ top: Math.max(0, targetTop), behavior: 'smooth' });
 
           clickTimeout = setTimeout(() => {
             isClickScrolling = false;
-          }, 800);
+          }, 1000);
         }
       }
     });
@@ -59,16 +59,17 @@ function initScrollSpy() {
   function onScroll() {
     if (isClickScrolling) return;
 
-    let currentSectionId = '';
-    const scrollPos = window.scrollY + 160;
-
-    sections.forEach((sec) => {
-      const top = sec.offsetTop;
-      const height = sec.offsetHeight;
-      if (scrollPos >= top && scrollPos < top + height) {
-        currentSectionId = sec.getAttribute('id');
-      }
-    });
+    let currentSectionId = 'overview';
+    if (window.scrollY > 220) {
+      const scrollPos = window.scrollY + 140;
+      sections.forEach((sec) => {
+        const top = sec.offsetTop;
+        const height = sec.offsetHeight;
+        if (scrollPos >= top && scrollPos < top + height) {
+          currentSectionId = sec.getAttribute('id');
+        }
+      });
+    }
 
     if (currentSectionId) {
       navLinks.forEach((link) => {
@@ -98,7 +99,7 @@ function initMobileJumpSelector() {
     if (targetHash) {
       const targetElement = document.querySelector(targetHash);
       if (targetElement) {
-        const targetTop = targetElement.getBoundingClientRect().top + window.pageYOffset - 100;
+        const targetTop = targetHash === '#overview' ? 0 : targetElement.getBoundingClientRect().top + window.pageYOffset - 100;
         window.scrollTo({ top: Math.max(0, targetTop), behavior: 'smooth' });
       }
     }
