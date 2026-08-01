@@ -1,13 +1,13 @@
 /**
  * Paste History Dashboard Controller
  * Handles search, filter chips, sorting, pagination, stats recalculation,
- * delete modal confirmation, copy code, and share link actions.
+ * delete action, copy code, and share link actions.
  */
 
 // Local Storage Key
 const HISTORY_STORAGE_KEY = 'pastebin_history_pastes_v1';
 
-// Initial Sample Pastes Data (Empty by default to load strictly from MySQL DB)
+// Initial Sample Pastes Data
 const SEED_PASTES = [];
 
 // App State
@@ -17,7 +17,6 @@ let activeFilter = 'all';
 let activeSort = 'newest';
 let currentPage = 1;
 const ITEMS_PER_PAGE = 6;
-let pendingDeleteId = null;
 
 /**
  * Initialize History Page Dashboard
@@ -26,12 +25,11 @@ async function initHistoryDashboard() {
   await loadPastesFromStorage();
   checkUrlHashSearch();
   initSearchAndFilters();
-  initDeleteModal();
   initGridActionListeners();
 }
 
 /**
- * Load Pastes Data from MySQL Express Backend API
+ * Load Pastes Data from MySQL Express Backend API or Guest LocalStorage
  */
 async function loadPastesFromStorage() {
   const token = localStorage.getItem('pastebin_jwt_token_v1');
@@ -69,7 +67,7 @@ async function loadPastesFromStorage() {
 
   // Guest User -> Load strictly from localStorage history
   try {
-    const guestStored = localStorage.getItem('pastebin_guest_created_v1') || localStorage.getItem('pastebin_local_history_v1');
+    const guestStored = localStorage.getItem('pastebin_guest_created_v1');
     if (guestStored) {
       const parsed = JSON.parse(guestStored);
       if (Array.isArray(parsed)) {
@@ -97,10 +95,6 @@ async function loadPastesFromStorage() {
   renderDashboard();
 }
 
-function savePastesToStorage() {
-  localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(pastesState));
-}
-
 /**
  * Check if URL contains #search or query parameters
  */
@@ -109,75 +103,60 @@ function checkUrlHashSearch() {
     const searchInput = document.getElementById('history-search-input');
     if (searchInput) {
       setTimeout(() => {
-        searchInput.focus();
         searchInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        searchInput.focus();
       }, 300);
     }
   }
 }
 
 /**
- * Main Render Controller
+ * Render Complete Dashboard (Stats, Filtered Grid & Pagination)
  */
 function renderDashboard() {
-  renderStats();
-  const filtered = getFilteredAndSortedPastes();
+  updateStats();
+  const filtered = filterAndSortPastes();
   renderGrid(filtered);
   renderPagination(filtered.length);
 }
 
 /**
- * Render Statistics Cards
+ * Recalculate and update top statistics cards
  */
-function renderStats() {
-  const totalCount = pastesState.length;
-  const receivedCount = pastesState.filter(p => p.isReceived || p.type === 'received').length;
-  const languagesSet = new Set(pastesState.map(p => p.language).filter(Boolean));
-  const languagesCount = languagesSet.size;
-  const totalLines = pastesState.reduce((sum, p) => sum + (p.content ? p.content.split('\n').length : 1), 0);
+function updateStats() {
+  const totalCountEl = document.getElementById('stat-total-pastes');
+  const totalViewsEl = document.getElementById('stat-total-views');
+  const publicCountEl = document.getElementById('stat-public-pastes');
 
-  const totalEl = document.getElementById('stat-total-count');
-  const receivedEl = document.getElementById('stat-received-count') || document.getElementById('stat-views-count');
-  const langEl = document.getElementById('stat-languages-count');
-  const linesEl = document.getElementById('stat-lines-count');
+  const totalPastes = pastesState.length;
+  const totalViews = pastesState.reduce((acc, p) => acc + (p.views || 1), 0);
+  const publicPastes = pastesState.filter(p => p.visibility === 'public' || !p.visibility).length;
 
-  if (totalEl) totalEl.textContent = totalCount;
-  if (receivedEl) receivedEl.textContent = receivedCount;
-  if (langEl) langEl.textContent = languagesCount;
-  if (linesEl) linesEl.textContent = totalLines;
+  if (totalCountEl) totalCountEl.textContent = totalPastes;
+  if (totalViewsEl) totalViewsEl.textContent = totalViews;
+  if (publicCountEl) publicCountEl.textContent = publicPastes;
 }
 
 /**
- * Filter & Sort Logic
+ * Filter and Sort Pastes based on current state
  */
-function getFilteredAndSortedPastes() {
+function filterAndSortPastes() {
   let result = [...pastesState];
 
-  // 1. Search Filter
+  // 1. Search Query Filter
   if (searchQuery.trim() !== '') {
     const q = searchQuery.toLowerCase().trim();
     result = result.filter(p => 
       p.title.toLowerCase().includes(q) ||
       p.code.toLowerCase().includes(q) ||
       p.language.toLowerCase().includes(q) ||
-      (p.content && p.content.toLowerCase().includes(q))
+      p.content.toLowerCase().includes(q)
     );
   }
 
-  // 2. Chip Filter
+  // 2. Language/Category Filter
   if (activeFilter !== 'all') {
-    if (activeFilter === 'public' || activeFilter === 'private') {
-      result = result.filter(p => p.visibility === activeFilter);
-    } else if (activeFilter.toLowerCase() === 'plain text') {
-      result = result.filter(p => 
-        p.language.toLowerCase() === 'plain text' || 
-        p.language.toLowerCase() === 'text' || 
-        p.language.toLowerCase() === 'plaintext'
-      );
-    } else {
-      // Language filter
-      result = result.filter(p => p.language.toLowerCase() === activeFilter.toLowerCase());
-    }
+    result = result.filter(p => p.language.toLowerCase() === activeFilter.toLowerCase());
   }
 
   // 3. Sorting
@@ -221,7 +200,6 @@ function renderGrid(filteredPastes) {
   emptyState.classList.add('hidden');
   if (paginationWrapper) paginationWrapper.classList.remove('hidden');
 
-  // Calculate slice for current page
   const totalPages = Math.ceil(filteredPastes.length / ITEMS_PER_PAGE);
   if (currentPage > totalPages) currentPage = Math.max(1, totalPages);
 
@@ -313,7 +291,6 @@ function renderGrid(filteredPastes) {
               <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
               <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
             </svg>
-            <span>Edit</span>
           </button>
 
           <button type="button" class="action-btn secondary-action-btn copy-btn" data-action="copy" data-tooltip="Copy Code" aria-label="Copy Code">
@@ -321,7 +298,6 @@ function renderGrid(filteredPastes) {
               <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
               <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
             </svg>
-            <span>Copy</span>
           </button>
 
           <button type="button" class="action-btn secondary-action-btn share-btn" data-action="share" data-tooltip="Share Link" aria-label="Share Link">
@@ -332,7 +308,6 @@ function renderGrid(filteredPastes) {
               <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
               <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
             </svg>
-            <span>Share</span>
           </button>
         </div>
 
@@ -355,48 +330,63 @@ function renderGrid(filteredPastes) {
  */
 function renderPagination(totalItems) {
   const wrapper = document.getElementById('pagination-wrapper');
+  const numbersContainer = document.getElementById('pagination-numbers');
   const prevBtn = document.getElementById('prev-page-btn');
   const nextBtn = document.getElementById('next-page-btn');
-  const numbersContainer = document.getElementById('pagination-numbers');
 
-  if (!wrapper || !prevBtn || !nextBtn || !numbersContainer) return;
+  if (!wrapper || !numbersContainer) return;
 
-  const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE) || 1;
+  const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
 
-  prevBtn.disabled = currentPage <= 1;
-  nextBtn.disabled = currentPage >= totalPages;
-
-  numbersContainer.innerHTML = '';
-  for (let i = 1; i <= totalPages; i++) {
-    const numBtn = document.createElement('button');
-    numBtn.type = 'button';
-    numBtn.className = `page-num-btn ${i === currentPage ? 'active' : ''}`;
-    numBtn.textContent = i;
-    numBtn.addEventListener('click', () => {
-      currentPage = i;
-      renderDashboard();
-    });
-    numbersContainer.appendChild(numBtn);
+  if (totalPages <= 1) {
+    wrapper.classList.add('hidden');
+    return;
   }
 
-  // Prev / Next button listeners
-  prevBtn.onclick = () => {
-    if (currentPage > 1) {
-      currentPage--;
-      renderDashboard();
-    }
-  };
+  wrapper.classList.remove('hidden');
 
-  nextBtn.onclick = () => {
-    if (currentPage < totalPages) {
-      currentPage++;
+  let numbersHtml = '';
+  for (let i = 1; i <= totalPages; i++) {
+    const isActive = i === currentPage;
+    numbersHtml += `
+      <button type="button" class="page-number ${isActive ? 'active' : ''}" data-page="${i}" aria-label="Page ${i}">
+        ${i}
+      </button>
+    `;
+  }
+  numbersContainer.innerHTML = numbersHtml;
+
+  if (prevBtn) prevBtn.disabled = currentPage === 1;
+  if (nextBtn) nextBtn.disabled = currentPage === totalPages;
+
+  numbersContainer.querySelectorAll('.page-number').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentPage = parseInt(btn.getAttribute('data-page'), 10);
       renderDashboard();
-    }
-  };
+    });
+  });
+
+  if (prevBtn) {
+    prevBtn.onclick = () => {
+      if (currentPage > 1) {
+        currentPage--;
+        renderDashboard();
+      }
+    };
+  }
+
+  if (nextBtn) {
+    nextBtn.onclick = () => {
+      if (currentPage < totalPages) {
+        currentPage++;
+        renderDashboard();
+      }
+    };
+  }
 }
 
 /**
- * Initialize Search & Filters listeners
+ * Filter Chips and Search Input Event Listeners
  */
 function initSearchAndFilters() {
   const searchInput = document.getElementById('history-search-input');
@@ -458,8 +448,7 @@ function initGridActionListeners() {
   const grid = document.getElementById('pastes-grid');
   if (!grid) return;
 
-  grid.addEventListener('click', (e) => {
-    // Match ANY button or clickable icon element inside paste-card
+  grid.addEventListener('click', async (e) => {
     const btn = e.target.closest('button, .action-btn, [data-action]');
     if (!btn) return;
 
@@ -472,7 +461,6 @@ function initGridActionListeners() {
 
     if (!paste) return;
 
-    // Detect action from data-action or class names
     let action = btn.getAttribute('data-action');
     if (!action) {
       if (btn.classList.contains('edit-btn')) action = 'edit';
@@ -500,10 +488,45 @@ function initGridActionListeners() {
         break;
 
       case 'delete':
-        openDeleteModal(paste);
+        if (window.confirm(`Are you sure you want to delete "${paste.title || 'this paste'}"?`)) {
+          await executeDeletePaste(paste);
+        }
         break;
     }
   });
+}
+
+/**
+ * Guaranteed Delete Action Handler
+ */
+async function executeDeletePaste(paste) {
+  if (!paste) return;
+  const deleteCode = paste.code || paste.id;
+  const token = localStorage.getItem('pastebin_jwt_token_v1');
+
+  try {
+    const getApiBaseUrl = () => (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'))
+      ? 'http://localhost:5000/api'
+      : 'https://pastebin-production-6477.up.railway.app/api';
+    
+    const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+    await fetch(`${getApiBaseUrl()}/pastes/${encodeURIComponent(deleteCode)}`, {
+      method: 'DELETE',
+      headers
+    });
+  } catch (err) {
+    console.error('[History API Delete Error]:', err);
+  }
+
+  pastesState = pastesState.filter(p => String(p.id) !== String(paste.id) && String(p.code) !== String(paste.code));
+
+  // Sync LocalStorage backup
+  const storageKey = token ? 'pastebin_history_pastes_v1' : 'pastebin_guest_created_v1';
+  localStorage.setItem(storageKey, JSON.stringify(pastesState));
+  localStorage.setItem('pastebin_local_history_v1', JSON.stringify(pastesState));
+
+  showToast(`Paste "${paste.title || 'item'}" deleted successfully`, 'success');
+  renderDashboard();
 }
 
 /**
@@ -526,30 +549,6 @@ async function copySnippetCode(paste, btn) {
     }
     
     paste.copies = (paste.copies || 0) + 1;
-
-    // Visual button feedback: checkmark + emerald glow
-    if (btn) {
-      const originalHtml = btn.innerHTML;
-      const originalBg = btn.style.backgroundColor;
-      const originalBorder = btn.style.borderColor;
-      const originalColor = btn.style.color;
-
-      btn.style.backgroundColor = 'rgba(34, 197, 94, 0.25)';
-      btn.style.borderColor = 'rgba(34, 197, 94, 0.6)';
-      btn.style.color = '#4ADE80';
-      btn.innerHTML = `
-        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="20 6 9 17 4 12"></polyline>
-        </svg>
-      `;
-
-      setTimeout(() => {
-        btn.innerHTML = originalHtml;
-        btn.style.backgroundColor = originalBg;
-        btn.style.borderColor = originalBorder;
-        btn.style.color = originalColor;
-      }, 2000);
-    }
 
     showToast('Copied code to clipboard!', 'success');
   } catch (e) {
@@ -579,120 +578,10 @@ async function sharePasteLink(paste, btn) {
 
     paste.shares = (paste.shares || 0) + 1;
 
-    // Visual button feedback: checkmark + emerald glow
-    if (btn) {
-      const originalHtml = btn.innerHTML;
-      const originalBg = btn.style.backgroundColor;
-      const originalBorder = btn.style.borderColor;
-      const originalColor = btn.style.color;
-
-      btn.style.backgroundColor = 'rgba(34, 197, 94, 0.25)';
-      btn.style.borderColor = 'rgba(34, 197, 94, 0.6)';
-      btn.style.color = '#4ADE80';
-      btn.innerHTML = `
-        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="20 6 9 17 4 12"></polyline>
-        </svg>
-      `;
-
-      setTimeout(() => {
-        btn.innerHTML = originalHtml;
-        btn.style.backgroundColor = originalBg;
-        btn.style.borderColor = originalBorder;
-        btn.style.color = originalColor;
-      }, 2000);
-    }
-
     showToast('Copied share link to clipboard!', 'success');
   } catch (e) {
     showToast('Copied share link to clipboard!', 'success');
   }
-}
-
-/**
- * Delete Confirmation Modal Controller
- */
-function initDeleteModal() {
-  const backdrop = document.getElementById('delete-modal-backdrop');
-  const cancelBtn = document.getElementById('cancel-delete-btn');
-  const confirmBtn = document.getElementById('confirm-delete-btn');
-
-  if (cancelBtn) {
-    cancelBtn.addEventListener('click', closeDeleteModal);
-  }
-
-  if (confirmBtn) {
-    confirmBtn.addEventListener('click', handleConfirmDelete);
-  }
-
-  if (backdrop) {
-    backdrop.addEventListener('click', (e) => {
-      if (e.target === backdrop) closeDeleteModal();
-    });
-  }
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && backdrop && !backdrop.classList.contains('hidden')) {
-      closeDeleteModal();
-    }
-  });
-}
-
-function openDeleteModal(paste) {
-  pendingDeleteId = paste.id;
-  const backdrop = document.getElementById('delete-modal-backdrop');
-  const titleEl = document.getElementById('delete-target-title');
-  const codeEl = document.getElementById('delete-target-code');
-
-  if (titleEl) titleEl.textContent = paste.title;
-  if (codeEl) codeEl.textContent = paste.code;
-
-  if (backdrop) {
-    backdrop.classList.remove('hidden');
-    backdrop.setAttribute('aria-hidden', 'false');
-  }
-}
-
-function closeDeleteModal() {
-  pendingDeleteId = null;
-  const backdrop = document.getElementById('delete-modal-backdrop');
-  if (backdrop) {
-    backdrop.classList.add('hidden');
-    backdrop.setAttribute('aria-hidden', 'true');
-  }
-}
-
-async function handleConfirmDelete() {
-  if (!pendingDeleteId) return;
-
-  const target = pastesState.find(p => String(p.id) === String(pendingDeleteId) || String(p.code) === String(pendingDeleteId));
-  const deleteCode = target ? (target.code || target.id) : pendingDeleteId;
-  const token = localStorage.getItem('pastebin_jwt_token_v1');
-
-  try {
-    const getApiBaseUrl = () => (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'))
-      ? 'http://localhost:5000/api'
-      : 'https://pastebin-production-6477.up.railway.app/api';
-    
-    const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
-    await fetch(`${getApiBaseUrl()}/pastes/${encodeURIComponent(deleteCode)}`, {
-      method: 'DELETE',
-      headers
-    });
-  } catch (err) {
-    console.error('[History API Delete Error]:', err);
-  }
-
-  pastesState = pastesState.filter(p => String(p.id) !== String(pendingDeleteId) && String(p.code) !== String(pendingDeleteId));
-
-  // Sync LocalStorage backup
-  const storageKey = token ? 'pastebin_history_pastes_v1' : 'pastebin_guest_created_v1';
-  localStorage.setItem(storageKey, JSON.stringify(pastesState));
-  localStorage.setItem('pastebin_local_history_v1', JSON.stringify(pastesState));
-
-  closeDeleteModal();
-  showToast(`Paste "${target ? target.title : 'item'}" deleted successfully`, 'success');
-  renderDashboard();
 }
 
 /**
