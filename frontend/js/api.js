@@ -2,11 +2,9 @@
  * API Service for interacting with Express Backend via Fetch API
  */
 
-const LIVE_BACKEND_URL = 'https://pastebin-production-6477.up.railway.app/api';
-
-const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+const API_BASE_URL = (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && window.location.port === '3000')
   ? 'http://localhost:5000/api'
-  : LIVE_BACKEND_URL;
+  : '/api';
 
 export async function fetchPastes(page = 1, limit = 10) {
   const response = await fetch(`${API_BASE_URL}/pastes?page=${page}&limit=${limit}`);

@@ -27,12 +27,10 @@ import axios from 'axios';
  */
 
 const getApiBaseUrl = () => {
-  if (typeof window !== 'undefined') {
-    return (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-      ? 'http://localhost:5000/api'
-      : 'https://pastebin-production-6477.up.railway.app/api';
+  if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && window.location.port === '3000') {
+    return 'http://localhost:5000/api';
   }
-  return 'https://pastebin-production-6477.up.railway.app/api';
+  return '/api';
 };
 
 const apiClient = axios.create({
