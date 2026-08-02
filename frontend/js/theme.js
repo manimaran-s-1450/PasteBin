@@ -177,8 +177,8 @@ function initMobileDrawer() {
     overlay = document.createElement('div');
     overlay.id = 'drawer-overlay';
     overlay.style.cssText = `
-      position: fixed; inset: 0; z-index: 998;
-      background: rgba(0,0,0,0.65); backdrop-filter: blur(4px);
+      position: fixed; inset: 0; z-index: 99990;
+      background: rgba(0,0,0,0.75); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
       display: none; opacity: 0; transition: opacity 0.25s ease;
     `;
     document.body.appendChild(overlay);
