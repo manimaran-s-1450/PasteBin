@@ -995,11 +995,31 @@ body.drawer-open header a:not(.mobile-drawer-link) {
 }
 
 .auth-modal-footer {
-  padding: 1rem 1.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 0.75rem;
+  padding: 1.25rem 1.5rem;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 0.85rem !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.auth-modal-footer .btn,
+.auth-modal-footer button,
+.auth-modal-footer a {
+  flex: 1 1 50% !important;
+  height: 44px !important;
+  min-height: 44px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  padding: 0 1rem !important;
+  font-size: 0.9rem !important;
+  font-weight: 700 !important;
+  white-space: nowrap !important;
+  box-sizing: border-box !important;
+  border-radius: 12px !important;
 }
 
 .why-signin-list {
