@@ -40,11 +40,37 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate }) => {
     } catch (e) {}
   }, []);
 
+  // Close profile dropdown when clicking anywhere outside
+  useEffect(() => {
+    if (!profileDropdownOpen) return;
+    const handler = () => setProfileDropdownOpen(false);
+    document.addEventListener('click', handler);
+    return () => document.removeEventListener('click', handler);
+  }, [profileDropdownOpen]);
+
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    document.body.style.overflow = mobileMenuOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [mobileMenuOpen]);
+
   const toggleTheme = () => {
     const nextTheme = theme === 'dark' ? 'light' : 'dark';
     setTheme(nextTheme);
     document.documentElement.setAttribute('data-theme', nextTheme);
     localStorage.setItem('pastebin_theme', nextTheme);
+  };
+
+  // Open mobile menu: close dropdown first. Open dropdown: close mobile menu first.
+  const handleMobileMenuToggle = () => {
+    setProfileDropdownOpen(false);
+    setMobileMenuOpen(prev => !prev);
+  };
+
+  const handleProfileDropdownToggle = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setMobileMenuOpen(false);
+    setProfileDropdownOpen(prev => !prev);
   };
 
   const displayName = user?.fullName || user?.username || 'John Smith';
@@ -117,7 +143,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate }) => {
           <div className="relative">
             <button
               type="button"
-              onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+              onClick={handleProfileDropdownToggle}
               className="w-8.5 h-8.5 md:w-9 md:h-9 lg:w-10 lg:h-10 rounded-full border-1.5 border-purple-500/40 bg-purple-950/30 flex items-center justify-center text-white font-bold text-xs md:text-sm cursor-pointer shadow-[0_0_12px_rgba(139,92,246,0.25)] hover:scale-105 hover:border-purple-400 hover:shadow-[0_0_18px_rgba(139,92,246,0.5)] transition-all overflow-hidden p-0 outline-none"
               aria-label="User Profile Menu"
             >
@@ -246,9 +272,10 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate }) => {
 
           {/* Mobile Hamburger Toggle Button */}
           <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800/60 border-none bg-transparent cursor-pointer"
+            onClick={handleMobileMenuToggle}
+            className="md:hidden p-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800/60 border-none bg-transparent cursor-pointer flex items-center justify-center"
             aria-label="Toggle Navigation Drawer"
+            aria-expanded={mobileMenuOpen}
           >
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.2">
               <path d={mobileMenuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"} />
@@ -259,39 +286,64 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate }) => {
 
       </div>
 
+      {/* Mobile Menu Backdrop Overlay */}
+      {mobileMenuOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden"
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
+
       {/* Mobile Slide-Out Drawer Navigation */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-slate-900/95 backdrop-blur-2xl border-b border-slate-800 p-4 flex flex-col gap-2">
-          {navItems.map((item) => (
+        <div className="fixed top-0 right-0 bottom-0 z-50 w-[min(300px,85vw)] md:hidden bg-[#0d0d14] border-l border-purple-500/20 shadow-[-8px_0_40px_rgba(0,0,0,0.6)] flex flex-col" style={{transform: 'translateX(0)', transition: 'transform 0.3s ease'}}>
+          {/* Drawer Header */}
+          <div className="flex items-center justify-between px-5 py-4 border-b border-purple-500/15">
+            <span className="text-lg font-extrabold text-white tracking-tight">
+              Paste<span className="text-purple-400">Bin</span>
+            </span>
             <button
-              key={item.id}
+              onClick={() => setMobileMenuOpen(false)}
+              className="w-9 h-9 rounded-xl bg-white/5 text-slate-400 hover:text-white border-none cursor-pointer flex items-center justify-center"
+              aria-label="Close Menu"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.4"><path d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+          </div>
+
+          {/* Drawer Nav Links */}
+          <nav className="flex flex-col gap-1 p-4 flex-1 overflow-y-auto">
+            {navItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => {
+                  onNavigate(item.id);
+                  setMobileMenuOpen(false);
+                }}
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all text-left border-none cursor-pointer w-full ${
+                  activePage === item.id
+                    ? 'bg-purple-600 text-white font-bold'
+                    : 'text-slate-300 bg-slate-800/40 hover:bg-slate-800'
+                }`}
+              >
+                {item.label}
+              </button>
+            ))}
+
+            <button
               onClick={() => {
-                onNavigate(item.id);
+                onNavigate('profile');
                 setMobileMenuOpen(false);
               }}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all text-left border-none ${
-                activePage === item.id
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all text-left border-none cursor-pointer w-full ${
+                activePage === 'profile'
                   ? 'bg-purple-600 text-white font-bold'
-                  : 'text-slate-300 bg-slate-800/40 hover:bg-slate-800'
+                  : 'text-purple-300 bg-purple-950/40 hover:bg-purple-900/50'
               }`}
             >
-              {item.label}
+              👤 My Profile
             </button>
-          ))}
-
-          <button
-            onClick={() => {
-              onNavigate('profile');
-              setMobileMenuOpen(false);
-            }}
-            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all text-left border-none ${
-              activePage === 'profile'
-                ? 'bg-purple-600 text-white font-bold'
-                : 'text-purple-300 bg-purple-950/40 hover:bg-purple-900/50'
-            }`}
-          >
-            👤 My Profile
-          </button>
+          </nav>
         </div>
       )}
 

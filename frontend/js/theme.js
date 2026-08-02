@@ -162,35 +162,134 @@ function initCopyBtn() {
 
 /**
  * Responsive Mobile Navigation Drawer Logic
+ * Dynamically creates the mobile drawer from existing nav links.
  */
 function initMobileDrawer() {
   const menuBtn = document.getElementById('mobile-menu-btn');
-  const drawer = document.getElementById('mobile-drawer');
-  const closeBtn = document.getElementById('drawer-close-btn');
-  const overlay = document.getElementById('drawer-overlay');
+  if (!menuBtn) return;
 
-  if (!menuBtn || !drawer) return;
+  // If a pre-built drawer already exists just wire it up
+  let drawer = document.getElementById('mobile-drawer');
+  let overlay = document.getElementById('drawer-overlay');
+
+  if (!drawer) {
+    // Build the overlay backdrop
+    overlay = document.createElement('div');
+    overlay.id = 'drawer-overlay';
+    overlay.style.cssText = `
+      position: fixed; inset: 0; z-index: 998;
+      background: rgba(0,0,0,0.65); backdrop-filter: blur(4px);
+      display: none; opacity: 0; transition: opacity 0.25s ease;
+    `;
+    document.body.appendChild(overlay);
+
+    // Collect nav links from the existing static navbar
+    const navLinks = document.querySelectorAll('.nav-links .nav-link, nav .nav-link');
+    let linksHtml = '';
+    navLinks.forEach(link => {
+      const isActive = link.classList.contains('active');
+      linksHtml += `
+        <a href="${link.getAttribute('href') || '#'}"
+           class="mobile-drawer-link${isActive ? ' active' : ''}"
+           ${link.dataset.feature ? `data-feature="${link.dataset.feature}"` : ''}>
+          ${link.textContent.trim()}
+        </a>`;
+    });
+
+    // Build the slide-out panel
+    drawer = document.createElement('aside');
+    drawer.id = 'mobile-drawer';
+    drawer.style.cssText = `
+      position: fixed; top: 0; right: 0; height: 100vh; width: min(300px, 85vw);
+      z-index: 999; background: #0d0d14;
+      border-left: 1px solid rgba(139,92,246,0.18);
+      box-shadow: -8px 0 40px rgba(0,0,0,0.6);
+      display: flex; flex-direction: column;
+      transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+      overflow-y: auto; padding: 0;
+    `;
+    drawer.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:1.25rem 1.25rem 1rem;border-bottom:1px solid rgba(139,92,246,0.12);">
+        <span style="font-size:1.15rem;font-weight:800;color:#fff;letter-spacing:-0.02em;">
+          Paste<span style="color:#a78bfa;">Bin</span>
+        </span>
+        <button id="drawer-close-btn" type="button"
+          style="width:36px;height:36px;border-radius:10px;border:none;background:rgba(255,255,255,0.06);color:#94a3b8;cursor:pointer;display:flex;align-items:center;justify-content:center;"
+          aria-label="Close Menu">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <nav style="display:flex;flex-direction:column;gap:4px;padding:1rem;">
+        ${linksHtml || `
+          <a href="index.html" class="mobile-drawer-link">Home</a>
+          <a href="create.html" class="mobile-drawer-link">Create Paste</a>
+          <a href="view.html" class="mobile-drawer-link">Receive Paste</a>
+          <a href="history.html" class="mobile-drawer-link">History</a>
+          <a href="docs.html" class="mobile-drawer-link">Documentation</a>
+          <a href="about.html" class="mobile-drawer-link">About</a>
+        `}
+      </nav>
+    `;
+
+    // Inject styles for drawer links
+    if (!document.getElementById('mobile-drawer-styles')) {
+      const style = document.createElement('style');
+      style.id = 'mobile-drawer-styles';
+      style.textContent = `
+        #mobile-drawer .mobile-drawer-link {
+          display: block; padding: 0.75rem 1rem;
+          border-radius: 12px; font-size: 0.9rem; font-weight: 600;
+          color: #cbd5e1; text-decoration: none;
+          transition: background 0.18s, color 0.18s;
+          border: none; background: transparent; cursor: pointer;
+        }
+        #mobile-drawer .mobile-drawer-link:hover,
+        #mobile-drawer .mobile-drawer-link.active {
+          background: rgba(139,92,246,0.16); color: #fff;
+        }
+        #mobile-drawer .mobile-drawer-link.active {
+          color: #a78bfa; font-weight: 700;
+        }
+        #mobile-drawer.drawer-open {
+          transform: translateX(0) !important;
+        }
+        #drawer-overlay.drawer-open {
+          display: block !important; opacity: 1 !important;
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
+    document.body.appendChild(drawer);
+  }
 
   function openDrawer() {
-    drawer.classList.add('active');
-    if (overlay) overlay.classList.add('active');
+    drawer.classList.add('drawer-open');
+    overlay.classList.add('drawer-open');
+    if (overlay.style) { overlay.style.display = 'block'; setTimeout(() => { overlay.style.opacity = '1'; }, 10); }
     document.body.style.overflow = 'hidden';
+    menuBtn.setAttribute('aria-expanded', 'true');
   }
 
   function closeDrawer() {
-    drawer.classList.remove('active');
-    if (overlay) overlay.classList.remove('active');
+    drawer.classList.remove('drawer-open');
+    overlay.classList.remove('drawer-open');
+    if (overlay.style) { overlay.style.opacity = '0'; setTimeout(() => { overlay.style.display = 'none'; }, 260); }
     document.body.style.overflow = '';
+    menuBtn.setAttribute('aria-expanded', 'false');
   }
 
+  // Replace any previous onclick to avoid duplicates
   menuBtn.onclick = openDrawer;
 
+  const closeBtn = document.getElementById('drawer-close-btn');
   if (closeBtn) closeBtn.onclick = closeDrawer;
-  if (overlay) overlay.onclick = closeDrawer;
+  overlay.onclick = closeDrawer;
 
-  const drawerLinks = drawer.querySelectorAll('a');
-  drawerLinks.forEach(link => {
-    link.onclick = closeDrawer;
+  drawer.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', closeDrawer);
   });
 
   document.addEventListener('keydown', (e) => {

@@ -37,6 +37,13 @@ async function initHistoryDashboard() {
 async function loadPastesFromStorage() {
   const token = localStorage.getItem('pastebin_jwt_token_v1');
 
+  // One-time migration: clear old localStorage guest keys that existed before sessionStorage switch
+  try {
+    localStorage.removeItem('pastebin_guest_created_v1');
+    localStorage.removeItem('pastebin_guest_received_v1');
+    localStorage.removeItem('pastebin_local_history_v1');
+  } catch (e) {}
+
   if (token) {
     try {
       const getApiBaseUrl = () => (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'))
@@ -68,9 +75,9 @@ async function loadPastesFromStorage() {
     }
   }
 
-  // Guest User -> Load strictly from localStorage history
+  // Guest User -> Load strictly from sessionStorage history
   try {
-    const guestStored = localStorage.getItem('pastebin_guest_created_v1') || localStorage.getItem('pastebin_local_history_v1');
+    const guestStored = sessionStorage.getItem('pastebin_guest_created_v1');
     if (guestStored) {
       const parsed = JSON.parse(guestStored);
       if (Array.isArray(parsed)) {
@@ -160,7 +167,7 @@ function updateStats() {
       } catch(e) {}
     } else {
       try {
-        const guestRec = localStorage.getItem('pastebin_guest_received_v1');
+        const guestRec = sessionStorage.getItem('pastebin_guest_received_v1');
         const recList = guestRec ? JSON.parse(guestRec) : [];
         receivedCountEl.textContent = recList.length;
       } catch(e) {
@@ -226,6 +233,19 @@ function renderGrid(filteredPastes) {
   if (filteredPastes.length === 0) {
     grid.innerHTML = '';
     emptyState.classList.remove('hidden');
+
+    const token = localStorage.getItem('pastebin_jwt_token_v1');
+    const emptyTitleEl = emptyState.querySelector('.empty-title');
+    const emptyDescEl = emptyState.querySelector('.empty-desc');
+
+    if (!token) {
+      if (emptyTitleEl) emptyTitleEl.textContent = 'No Session History';
+      if (emptyDescEl) emptyDescEl.textContent = 'Your temporary paste history will appear here while this browser session is active.';
+    } else {
+      if (emptyTitleEl) emptyTitleEl.textContent = 'No Pastes Yet';
+      if (emptyDescEl) emptyDescEl.textContent = "You haven't created any pastes yet.";
+    }
+
     if (paginationWrapper) paginationWrapper.classList.add('hidden');
     return;
   }
@@ -597,27 +617,38 @@ async function handleConfirmDelete() {
   const deleteCode = paste ? (paste.code || paste.id) : pendingDeleteId;
   const token = localStorage.getItem('pastebin_jwt_token_v1');
 
-  try {
-    const getApiBaseUrl = () => (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'))
-      ? 'http://localhost:5000/api'
-      : 'https://pastebin-production-6477.up.railway.app/api';
-    
-    const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
-    await fetch(`${getApiBaseUrl()}/pastes/${encodeURIComponent(deleteCode)}`, {
-      method: 'DELETE',
-      headers
+  if (!token) {
+    // Guest User -> Delete from sessionStorage ONLY
+    pastesState = pastesState.filter(p => {
+      const matchId = String(p.id) === String(deleteCode);
+      const matchCode = String(p.code) === String(deleteCode);
+      return !matchId && !matchCode;
     });
-  } catch (err) {
-    console.error('[History API Delete Error]:', err);
+    try {
+      sessionStorage.setItem('pastebin_guest_created_v1', JSON.stringify(pastesState));
+    } catch (e) {}
+  } else {
+    // Authenticated User -> Delete from Railway MySQL backend
+    try {
+      const getApiBaseUrl = () => (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'))
+        ? 'http://localhost:5000/api'
+        : 'https://pastebin-production-6477.up.railway.app/api';
+      
+      const headers = { 'Authorization': `Bearer ${token}` };
+      await fetch(`${getApiBaseUrl()}/pastes/${encodeURIComponent(deleteCode)}`, {
+        method: 'DELETE',
+        headers
+      });
+    } catch (err) {
+      console.error('[History API Delete Error]:', err);
+    }
+
+    pastesState = pastesState.filter(p => {
+      const matchId = String(p.id) === String(deleteCode);
+      const matchCode = String(p.code) === String(deleteCode) || String(p.paste_code) === String(deleteCode);
+      return !matchId && !matchCode;
+    });
   }
-
-  // Remove paste from state
-  pastesState = pastesState.filter(p => String(p.id) !== String(deleteCode) && String(p.code) !== String(deleteCode));
-
-  // Sync LocalStorage backup
-  const storageKey = token ? 'pastebin_history_pastes_v1' : 'pastebin_guest_created_v1';
-  localStorage.setItem(storageKey, JSON.stringify(pastesState));
-  localStorage.setItem('pastebin_local_history_v1', JSON.stringify(pastesState));
 
   // Close modal, notify user & instantly re-render History page!
   closeDeleteModal();

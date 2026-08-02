@@ -301,24 +301,28 @@ function initCreatePasteButton() {
       if (resData && resData.success) {
         const pasteCode = resData.data?.paste_code || resData.data?.id || 'GT5WAQFI';
         
-        // Save to LocalStorage history backup
-        const HISTORY_STORAGE_KEY = token ? 'pastebin_history_pastes_v1' : 'pastebin_guest_created_v1';
-        let pastes = [];
-        const stored = localStorage.getItem(HISTORY_STORAGE_KEY);
-        if (stored) {
-          try { pastes = JSON.parse(stored); } catch (err) { pastes = []; }
+        if (!token) {
+          // Guest User -> Save ONLY to sessionStorage
+          try {
+            let guestPastes = [];
+            const stored = sessionStorage.getItem('pastebin_guest_created_v1');
+            if (stored) {
+              try { guestPastes = JSON.parse(stored); } catch (err) { guestPastes = []; }
+            }
+            guestPastes.unshift({
+              id: resData.data?.id || Date.now(),
+              code: pasteCode,
+              title: title,
+              language: language,
+              visibility: visibility,
+              createdAt: new Date().toISOString(),
+              content: content
+            });
+            sessionStorage.setItem('pastebin_guest_created_v1', JSON.stringify(guestPastes));
+          } catch (e) {
+            showToast('Unable to access session storage', 'error');
+          }
         }
-        pastes.unshift({
-          id: resData.data?.id || Date.now(),
-          code: pasteCode,
-          title: title,
-          language: language,
-          visibility: visibility,
-          createdAt: new Date().toISOString(),
-          content: content
-        });
-        localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(pastes));
-        localStorage.setItem('pastebin_local_history_v1', JSON.stringify(pastes));
 
         showToast('Paste created successfully!', 'success');
         loadRecentPastes();

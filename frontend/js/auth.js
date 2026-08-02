@@ -36,6 +36,10 @@ export function setAuthSession(token, user) {
 export function clearAuthSession() {
   localStorage.removeItem(AUTH_TOKEN_KEY);
   localStorage.removeItem(AUTH_USER_KEY);
+  try {
+    sessionStorage.removeItem('pastebin_guest_created_v1');
+    sessionStorage.removeItem('pastebin_guest_received_v1');
+  } catch (e) {}
 }
 
 export function getApiBaseUrl() {

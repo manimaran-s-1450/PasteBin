@@ -59,16 +59,16 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate }) => {
         }
       }
 
-      // Guest user fallback -> Guest LocalStorage only
+      // Guest user fallback -> sessionStorage ONLY
       try {
-        const guestCreated = localStorage.getItem('pastebin_guest_created_v1');
+        const guestCreated = sessionStorage.getItem('pastebin_guest_created_v1');
         if (guestCreated) {
           const parsed = JSON.parse(guestCreated);
           if (Array.isArray(parsed)) setMyPastes(parsed);
         } else {
           setMyPastes([]);
         }
-        const guestRec = localStorage.getItem('pastebin_guest_received_v1');
+        const guestRec = sessionStorage.getItem('pastebin_guest_received_v1');
         if (guestRec) {
           const parsed = JSON.parse(guestRec);
           if (Array.isArray(parsed)) setReceivedPastes(parsed);
@@ -89,10 +89,14 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate }) => {
   const handleDelete = async (id: string, title: string) => {
     if (!window.confirm(`Are you sure you want to delete "${title || 'this paste'}"?`)) return;
 
-    try {
-      await deletePaste(id);
-    } catch (err) {
-      console.warn('[Profile Component] Delete API warning:', err);
+    const token = localStorage.getItem('pastebin_jwt_token_v1');
+
+    if (token) {
+      try {
+        await deletePaste(id);
+      } catch (err) {
+        console.warn('[Profile Component] Delete API warning:', err);
+      }
     }
 
     const updatedMy = myPastes.filter((item) => String(item.id) !== String(id) && (item as any).paste_code !== id);
@@ -101,12 +105,12 @@ export const Profile: React.FC<ProfileProps> = ({ onNavigate }) => {
     setMyPastes(updatedMy);
     setReceivedPastes(updatedRec);
 
-    try {
-      const token = localStorage.getItem('pastebin_jwt_token_v1');
-      const storageKey = token ? 'pastebin_history_pastes_v1' : 'pastebin_guest_created_v1';
-      localStorage.setItem(storageKey, JSON.stringify(updatedMy));
-      localStorage.setItem('pastebin_local_history_v1', JSON.stringify(updatedMy));
-    } catch (e) {}
+    if (!token) {
+      try {
+        sessionStorage.setItem('pastebin_guest_created_v1', JSON.stringify(updatedMy));
+        sessionStorage.setItem('pastebin_guest_received_v1', JSON.stringify(updatedRec));
+      } catch (e) {}
+    }
 
     showToast(`Paste "${title || 'item'}" deleted successfully!`);
   };

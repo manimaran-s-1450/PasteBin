@@ -82,15 +82,16 @@ export const CreatePaste: React.FC<CreatePasteProps> = ({ onNavigate }) => {
         const backendCode = (result.data as any)?.paste_code || result.data?.id || 'GT5WAQFI';
         setCreatedPasteCode(backendCode);
 
-        // Update local state storage for instantaneous synchronization
+        // Update session/local state storage for instantaneous synchronization
         try {
           const token = localStorage.getItem('pastebin_jwt_token_v1');
-          const storageKey = token ? 'pastebin_history_pastes_v1' : 'pastebin_guest_created_v1';
-          const stored = localStorage.getItem(storageKey);
-          let list = stored ? JSON.parse(stored) : [];
-          list.unshift(result.data);
-          localStorage.setItem(storageKey, JSON.stringify(list));
-          localStorage.setItem('pastebin_local_history_v1', JSON.stringify(list));
+          if (!token) {
+            // Guest User -> sessionStorage ONLY
+            const stored = sessionStorage.getItem('pastebin_guest_created_v1');
+            let list = stored ? JSON.parse(stored) : [];
+            list.unshift(result.data);
+            sessionStorage.setItem('pastebin_guest_created_v1', JSON.stringify(list));
+          }
         } catch (e) {}
 
         setShowSuccessModal(true);

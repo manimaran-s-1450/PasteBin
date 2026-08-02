@@ -25,6 +25,15 @@ export const History: React.FC<HistoryProps> = ({ onEditPaste, onNavigate }) => 
 
   const fetchPastes = async () => {
     setLoading(true);
+
+    // Clean up old localStorage guest keys (migration from pre-sessionStorage era)
+    try {
+      localStorage.removeItem('pastebin_guest_created_v1');
+      localStorage.removeItem('pastebin_guest_received_v1');
+      localStorage.removeItem('pastebin_local_history_v1');
+      localStorage.removeItem('pastebin_history_pastes_v1');
+    } catch (e) {}
+
     try {
       const token = localStorage.getItem('pastebin_jwt_token_v1');
       if (token) {
@@ -39,9 +48,9 @@ export const History: React.FC<HistoryProps> = ({ onEditPaste, onNavigate }) => 
       console.warn('[History Component] Authenticated fetch error:', err);
     }
 
-    // Guest fallback -> Load from localStorage
+    // Guest fallback -> Load from sessionStorage ONLY
     try {
-      const guestStored = localStorage.getItem('pastebin_guest_created_v1') || localStorage.getItem('pastebin_local_history_v1');
+      const guestStored = sessionStorage.getItem('pastebin_guest_created_v1');
       if (guestStored) {
         const parsed = JSON.parse(guestStored);
         if (Array.isArray(parsed)) {
@@ -63,24 +72,32 @@ export const History: React.FC<HistoryProps> = ({ onEditPaste, onNavigate }) => 
   const handleConfirmDelete = async () => {
     if (!deleteTargetPaste) return;
     const target = deleteTargetPaste;
-    const id = target.id;
+    const targetId = String(target.id);
+    const targetCode = String((target as any).paste_code || (target as any).code || target.id);
     const title = target.title;
+    const token = localStorage.getItem('pastebin_jwt_token_v1');
 
-    try {
-      await deletePaste(id);
-    } catch (err) {
-      console.warn('[History Component] Delete API warning:', err);
+    if (token) {
+      try {
+        await deletePaste(target.id);
+      } catch (err) {
+        console.warn('[History Component] Delete API warning:', err);
+      }
     }
 
-    const updated = pastes.filter((item) => String(item.id) !== String(id) && (item as any).paste_code !== id);
+    // Remove by matching any of: id, paste_code, code
+    const updated = pastes.filter((item) => {
+      const itemId = String(item.id);
+      const itemCode = String((item as any).paste_code || (item as any).code || item.id);
+      return itemId !== targetId && itemCode !== targetCode;
+    });
     setPastes(updated);
 
-    try {
-      const token = localStorage.getItem('pastebin_jwt_token_v1');
-      const storageKey = token ? 'pastebin_history_pastes_v1' : 'pastebin_guest_created_v1';
-      localStorage.setItem(storageKey, JSON.stringify(updated));
-      localStorage.setItem('pastebin_local_history_v1', JSON.stringify(updated));
-    } catch (e) {}
+    if (!token) {
+      try {
+        sessionStorage.setItem('pastebin_guest_created_v1', JSON.stringify(updated));
+      } catch (e) {}
+    }
 
     setDeleteTargetPaste(null);
     showToast(`Paste "${title || 'item'}" deleted successfully!`);
@@ -248,8 +265,17 @@ export const History: React.FC<HistoryProps> = ({ onEditPaste, onNavigate }) => 
             <div className="w-14 h-14 rounded-2xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center text-2xl font-bold">
               📄
             </div>
-            <h3 className="text-xl font-extrabold text-white">No Pastes Yet</h3>
-            <p className="text-slate-400 text-sm max-w-sm">You haven't created any pastes yet.</p>
+            {localStorage.getItem('pastebin_jwt_token_v1') ? (
+              <>
+                <h3 className="text-xl font-extrabold text-white">No Pastes Yet</h3>
+                <p className="text-slate-400 text-sm max-w-sm">You haven't created any pastes yet.</p>
+              </>
+            ) : (
+              <>
+                <h3 className="text-xl font-extrabold text-white">No Session History</h3>
+                <p className="text-slate-400 text-sm max-w-sm">Your temporary paste history will appear here while this browser session is active.</p>
+              </>
+            )}
             <button
               onClick={() => onNavigate ? onNavigate('create') : (window.location.href = 'create.html')}
               className="mt-2 px-6 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-sm shadow-[0_4px_15px_rgba(139,92,246,0.35)] transition-all border-none cursor-pointer"

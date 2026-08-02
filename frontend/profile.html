@@ -203,14 +203,14 @@
           } catch (e) {}
         } else {
           try {
-            const guestCreated = localStorage.getItem('pastebin_guest_created_v1');
+            const guestCreated = sessionStorage.getItem('pastebin_guest_created_v1');
             if (guestCreated) {
               const pastes = JSON.parse(guestCreated);
               document.getElementById('profile-stat-created').textContent = pastes.length;
             } else {
               document.getElementById('profile-stat-created').textContent = 0;
             }
-            const guestRec = localStorage.getItem('pastebin_guest_received_v1');
+            const guestRec = sessionStorage.getItem('pastebin_guest_received_v1');
             if (guestRec) {
               const pastes = JSON.parse(guestRec);
               document.getElementById('profile-stat-received').textContent = pastes.length;
