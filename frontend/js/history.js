@@ -619,6 +619,10 @@ function initGridActionListeners() {
         break;
 
       case 'edit':
+        if ((paste.category || 'pasted') === 'received') {
+          showOwnerOnlyWarning('edit');
+          return;
+        }
         window.location.href = `edit.html?code=${encodeURIComponent(paste.code || paste.id)}`;
         break;
 
@@ -631,9 +635,106 @@ function initGridActionListeners() {
         break;
 
       case 'delete':
+        if ((paste.category || 'pasted') === 'received') {
+          showOwnerOnlyWarning('delete');
+          return;
+        }
         openDeleteModal(paste);
         break;
     }
+  });
+}
+
+/**
+ * Show owner-only warning modal for non-owner edit/delete attempts
+ */
+function showOwnerOnlyWarning(action) {
+  const actionLabel = action === 'edit' ? 'Edit' : 'Delete';
+  const actionIcon = action === 'edit'
+    ? `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`
+    : `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>`;
+
+  // Remove any existing warning modal
+  const existing = document.getElementById('owner-only-warning-modal');
+  if (existing) existing.remove();
+
+  const modal = document.createElement('div');
+  modal.id = 'owner-only-warning-modal';
+  modal.style.cssText = `
+    position: fixed; inset: 0; z-index: 9999;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.75); backdrop-filter: blur(10px);
+    padding: 1rem;
+  `;
+  modal.innerHTML = `
+    <div style="
+      background: #111827;
+      border: 1px solid rgba(239, 68, 68, 0.45);
+      border-radius: 24px;
+      padding: 2rem;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+      position: relative;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 30px rgba(239,68,68,0.2);
+      overflow: hidden;
+    ">
+      <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #EF4444, #F97316, #EF4444);"></div>
+
+      <div style="
+        width: 56px; height: 56px;
+        background: rgba(239, 68, 68, 0.12);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        border-radius: 16px;
+        display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 1.25rem;
+        box-shadow: 0 0 20px rgba(239,68,68,0.15);
+      ">${actionIcon}</div>
+
+      <h3 style="font-size: 1.2rem; font-weight: 800; color: #fff; margin: 0 0 0.5rem;">
+        ${actionLabel} Access Denied
+      </h3>
+      <p style="font-size: 0.83rem; color: #9CA3AF; margin: 0 0 1.5rem; line-height: 1.6;">
+        You cannot <strong style="color: #F87171;">${actionLabel.toLowerCase()}</strong> this paste.<br>
+        Only the <strong style="color: #C4B5FD;">original owner</strong> who created this paste has permission to ${actionLabel.toLowerCase()} or delete it.<br><br>
+        You received this paste — you can view and copy it, but modifications are restricted to the creator.
+      </p>
+
+      <button id="owner-warn-ok-btn" style="
+        width: 100%;
+        padding: 0.75rem 1.5rem;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #7C3AED, #6D28D9);
+        color: #fff;
+        font-weight: 700;
+        font-size: 0.875rem;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 4px 18px rgba(124,58,237,0.4);
+        transition: all 0.2s;
+      ">Got it</button>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  const okBtn = document.getElementById('owner-warn-ok-btn');
+  if (okBtn) {
+    okBtn.addEventListener('click', () => modal.remove());
+    okBtn.addEventListener('mouseenter', () => {
+      okBtn.style.background = 'linear-gradient(135deg, #8B5CF6, #7C3AED)';
+      okBtn.style.transform = 'translateY(-1px)';
+    });
+    okBtn.addEventListener('mouseleave', () => {
+      okBtn.style.background = 'linear-gradient(135deg, #7C3AED, #6D28D9)';
+      okBtn.style.transform = '';
+    });
+  }
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) modal.remove();
+  });
+  document.addEventListener('keydown', function escClose(e) {
+    if (e.key === 'Escape') { modal.remove(); document.removeEventListener('keydown', escClose); }
   });
 }
 

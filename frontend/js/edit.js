@@ -58,17 +58,54 @@ async function processEditUrlParams() {
       const getApiBaseUrl = () => (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'))
         ? 'http://localhost:5000/api'
         : 'https://pastebin-production-6477.up.railway.app/api';
-      const response = await fetch(`${getApiBaseUrl()}/pastes/${encodeURIComponent(searchKey)}`);
+
+      const token = localStorage.getItem('pastebin_jwt_token_v1');
+      const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+      const response = await fetch(`${getApiBaseUrl()}/pastes/${encodeURIComponent(searchKey)}`, { headers });
       const resData = await response.json();
+
       if (resData && resData.success && resData.data) {
         const pData = resData.data;
+
+        // === OWNERSHIP GUARD ===
+        // If a token exists, decode its user_id and compare with the paste's user_id
+        if (token) {
+          try {
+            const userProfile = JSON.parse(localStorage.getItem('pastebin_user_profile_v1') || '{}');
+            const myUserId = userProfile.id || userProfile.user_id || userProfile.userId;
+            const pasteOwnerId = pData.user_id;
+
+            if (pasteOwnerId && myUserId && String(pasteOwnerId) !== String(myUserId)) {
+              showEditAccessDenied(pData.title || 'this paste', searchKey);
+              return;
+            }
+          } catch (jwtErr) {
+            console.warn('[Edit Ownership Check]:', jwtErr);
+          }
+        } else {
+          // Guest user: check if they created this paste in session
+          try {
+            const guestCreated = sessionStorage.getItem('pastebin_guest_created_v1');
+            const guestList = guestCreated ? JSON.parse(guestCreated) : [];
+            const ownsPaste = guestList.some(p => 
+              String(p.code || p.paste_code) === String(searchKey) ||
+              String(p.id) === String(searchKey)
+            );
+            if (!ownsPaste && pData.user_id) {
+              // Paste belongs to a registered user; guest can't edit
+              showEditAccessDenied(pData.title || 'this paste', searchKey);
+              return;
+            }
+          } catch (e) {}
+        }
+
         currentEditPaste = {
           id: pData.id,
           code: pData.paste_code || searchKey,
           title: pData.title || '',
           language: pData.language || 'JavaScript',
-          visibility: 'public',
-          expiresIn: 'never',
+          visibility: pData.visibility || 'public',
+          expiresIn: pData.expires_at || 'never',
           content: pData.content || ''
         };
         populateFormFields(currentEditPaste);
@@ -93,6 +130,106 @@ async function processEditUrlParams() {
   }
 
   populateFormFields(currentEditPaste);
+}
+
+/**
+ * Show full-page access-denied warning when a non-owner tries to edit
+ */
+function showEditAccessDenied(pasteTitle, pasteCode) {
+  // Disable the entire form
+  const form = document.getElementById('edit-paste-form');
+  if (form) {
+    form.style.pointerEvents = 'none';
+    form.style.opacity = '0.35';
+    form.style.filter = 'blur(3px)';
+  }
+
+  const existing = document.getElementById('edit-access-denied-modal');
+  if (existing) existing.remove();
+
+  const modal = document.createElement('div');
+  modal.id = 'edit-access-denied-modal';
+  modal.style.cssText = `
+    position: fixed; inset: 0; z-index: 9999;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.82); backdrop-filter: blur(12px);
+    padding: 1rem;
+  `;
+  modal.innerHTML = `
+    <div style="
+      background: #0F172A;
+      border: 1px solid rgba(239,68,68,0.5);
+      border-radius: 28px;
+      padding: 2.5rem 2rem;
+      max-width: 460px;
+      width: 100%;
+      text-align: center;
+      position: relative;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.9), 0 0 40px rgba(239,68,68,0.2);
+      overflow: hidden;
+    ">
+      <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #EF4444, #F97316, #EF4444);"></div>
+
+      <div style="
+        width: 72px; height: 72px;
+        background: rgba(239,68,68,0.12);
+        border: 1px solid rgba(239,68,68,0.35);
+        border-radius: 20px;
+        display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 1.5rem;
+        box-shadow: 0 0 30px rgba(239,68,68,0.2);
+        font-size: 2rem;
+      ">🔒</div>
+
+      <h2 style="font-size: 1.45rem; font-weight: 800; color: #fff; margin: 0 0 0.65rem;">
+        Edit Access Denied
+      </h2>
+      <p style="font-size: 0.875rem; color: #94A3B8; margin: 0 0 0.75rem; line-height: 1.65;">
+        You are trying to edit <strong style="color: #C4B5FD;">"${pasteTitle}"</strong>.
+      </p>
+      <p style="font-size: 0.84rem; color: #64748B; margin: 0 0 2rem; line-height: 1.65;">
+        Only the <strong style="color: #A78BFA;">original creator</strong> of this paste can edit or delete it.<br>
+        You can <strong style="color: #60A5FA;">view</strong> and <strong style="color: #60A5FA;">copy</strong> this paste, but modifications are not permitted.
+      </p>
+
+      <div style="display: flex; gap: 0.75rem; justify-content: center;">
+        <a href="view.html?code=${encodeURIComponent(pasteCode)}" style="
+          flex: 1;
+          padding: 0.75rem 1.25rem;
+          border-radius: 14px;
+          background: rgba(99,102,241,0.2);
+          border: 1px solid rgba(99,102,241,0.4);
+          color: #A5B4FC;
+          font-weight: 700;
+          font-size: 0.875rem;
+          text-decoration: none;
+          display: flex; align-items: center; justify-content: center; gap: 0.4rem;
+          transition: all 0.2s;
+        " onmouseover="this.style.background='rgba(99,102,241,0.35)'" onmouseout="this.style.background='rgba(99,102,241,0.2)'">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          View Paste
+        </a>
+        <a href="history.html" style="
+          flex: 1;
+          padding: 0.75rem 1.25rem;
+          border-radius: 14px;
+          background: linear-gradient(135deg, #7C3AED, #6D28D9);
+          border: none;
+          color: #fff;
+          font-weight: 700;
+          font-size: 0.875rem;
+          text-decoration: none;
+          display: flex; align-items: center; justify-content: center; gap: 0.4rem;
+          box-shadow: 0 4px 18px rgba(124,58,237,0.4);
+          transition: all 0.2s;
+        " onmouseover="this.style.background='linear-gradient(135deg, #8B5CF6, #7C3AED)'" onmouseout="this.style.background='linear-gradient(135deg, #7C3AED, #6D28D9)'">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 3"/><path d="M3.05 11a9 9 0 1 1 .5 4m-.5 5v-5h5"/></svg>
+          Go to History
+        </a>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
 }
 
 /**
