@@ -139,10 +139,10 @@ function initCopyBtn() {
       showToast('Copied code snippet to clipboard!', 'success');
       
       copyBtn.innerHTML = `
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="20 6 9 17 4 12"></polyline>
         </svg>
-        <span style="color: #10B981;">Copied!</span>
+        <span style="color: #A855F7;">Copied!</span>
       `;
 
       setTimeout(() => {

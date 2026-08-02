@@ -136,7 +136,7 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({
             </span>
             <div className="w-8 h-8 rounded-xl bg-purple-600/20 group-hover:bg-purple-600/40 text-purple-300 flex items-center justify-center transition-all flex-shrink-0">
               {copiedCode ? (
-                <svg className="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                <svg className="w-4 h-4 text-purple-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
                   <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
               ) : (
@@ -179,9 +179,9 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({
         </div>
 
         {/* QUICK ACTIONS & VISUAL HIERARCHY (VECTOR SVG ICONS) */}
-        <div className="space-y-3 pt-2">
+        <div className="space-y-2 pt-2">
           
-          <div className="text-[11px] font-extrabold uppercase tracking-[0.15em] text-slate-400 text-left">
+          <div className="text-[11px] font-extrabold uppercase tracking-[0.18em] text-slate-400">
             Quick Actions
           </div>
 
@@ -192,7 +192,7 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({
           >
             {copiedCode ? (
               <>
-                <svg className="w-4 h-4 text-emerald-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                <svg className="w-4 h-4 text-purple-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
                   <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
                 <span>Copied!</span>

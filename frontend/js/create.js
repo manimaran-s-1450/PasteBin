@@ -424,14 +424,21 @@ function initModalInteractions() {
     navigator.clipboard.writeText(code);
     
     if (copyCodeBtn) {
-      const orig = copyCodeBtn.textContent;
-      copyCodeBtn.textContent = '✅ Copied!';
-      setTimeout(() => { copyCodeBtn.textContent = orig; }, 2000);
+      const orig = copyCodeBtn.innerHTML;
+      copyCodeBtn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; margin-right:6px;"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Copied!</span>`;
+      setTimeout(() => { copyCodeBtn.innerHTML = orig; }, 2000);
     }
 
     if (heroIcon) {
-      heroIcon.textContent = '✅';
-      setTimeout(() => { heroIcon.textContent = '📋'; }, 2000);
+      const origHtml = heroIcon.innerHTML;
+      heroIcon.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+      heroIcon.style.backgroundColor = 'rgba(168, 85, 247, 0.25)';
+      heroIcon.style.borderColor = 'rgba(168, 85, 247, 0.5)';
+      setTimeout(() => { 
+        heroIcon.innerHTML = origHtml;
+        heroIcon.style.backgroundColor = '';
+        heroIcon.style.borderColor = '';
+      }, 2000);
     }
 
     showToast(`Copied paste code (${code}) to clipboard!`, 'success');
@@ -459,9 +466,9 @@ function initModalInteractions() {
       const code = document.getElementById('modal-paste-code')?.textContent || 'GT5WAQFI';
       const shareUrl = `http://localhost:3000/paste/${code}`;
       navigator.clipboard.writeText(shareUrl);
-      const orig = copyLinkBtn.textContent;
-      copyLinkBtn.textContent = '✅ Copied!';
-      setTimeout(() => { copyLinkBtn.textContent = orig; }, 2000);
+      const orig = copyLinkBtn.innerHTML;
+      copyLinkBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; margin-right:4px;"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Copied!</span>`;
+      setTimeout(() => { copyLinkBtn.innerHTML = orig; }, 2000);
       showToast('Copied share link to clipboard!', 'success');
     });
   }
