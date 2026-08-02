@@ -205,47 +205,30 @@ function renderDashboard() {
  * Recalculate and update top statistics cards
  */
 function updateStats() {
-  const totalCountEl = document.getElementById('stat-total-count') || document.getElementById('stat-total-pastes');
+  const totalCountEl    = document.getElementById('stat-total-count');
   const receivedCountEl = document.getElementById('stat-received-count');
   const languagesCountEl = document.getElementById('stat-languages-count');
-  const linesCountEl = document.getElementById('stat-lines-count');
+  const linesCountEl    = document.getElementById('stat-lines-count');
 
-  const totalPastes = pastesState.length;
-  const uniqueLangs = new Set(pastesState.map(p => (p.language || '').trim()).filter(Boolean)).size;
+  // 1. Total Pastes = pastes the user CREATED (category === 'pasted')
+  const pastedPastes   = pastesState.filter(p => (p.category || 'pasted') === 'pasted');
+  const receivedPastes = pastesState.filter(p => p.category === 'received');
+
+  // 2. Unique languages across ALL pastes (pasted + received)
+  const uniqueLangs = new Set(
+    pastesState.map(p => (p.language || '').trim()).filter(Boolean)
+  ).size;
+
+  // 3. Total lines of code across ALL pastes
   const totalLines = pastesState.reduce((sum, p) => {
     if (!p.content) return sum;
     return sum + p.content.split('\n').length;
   }, 0);
 
-  if (totalCountEl) totalCountEl.textContent = totalPastes;
+  if (totalCountEl)    totalCountEl.textContent    = pastedPastes.length;
+  if (receivedCountEl) receivedCountEl.textContent  = receivedPastes.length;
   if (languagesCountEl) languagesCountEl.textContent = uniqueLangs;
-  if (linesCountEl) linesCountEl.textContent = totalLines;
-
-  if (receivedCountEl) {
-    const token = localStorage.getItem('pastebin_jwt_token_v1');
-    if (token) {
-      try {
-        const getApiBaseUrl = () => (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'))
-          ? 'http://localhost:5000/api'
-          : 'https://pastebin-production-6477.up.railway.app/api';
-        fetch(`${getApiBaseUrl()}/pastes/received`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        }).then(r => r.json()).then(resData => {
-          if (resData && resData.success && Array.isArray(resData.data)) {
-            receivedCountEl.textContent = resData.data.length;
-          }
-        }).catch(() => {});
-      } catch(e) {}
-    } else {
-      try {
-        const guestRec = sessionStorage.getItem('pastebin_guest_received_v1');
-        const recList = guestRec ? JSON.parse(guestRec) : [];
-        receivedCountEl.textContent = recList.length;
-      } catch(e) {
-        receivedCountEl.textContent = 0;
-      }
-    }
-  }
+  if (linesCountEl)    linesCountEl.textContent     = totalLines;
 }
 
 /**
