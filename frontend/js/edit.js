@@ -226,7 +226,7 @@ function populateFormFields(paste) {
 
   if (titleInput) titleInput.value = paste.title || '';
   if (langSelect) langSelect.value = paste.language || 'JavaScript';
-  if (expSelect) expSelect.value = paste.expiresIn || '24h';
+  if (expSelect) expSelect.value = paste.expiresIn || paste.expires_in || (paste.expires_at ? '1h' : 'never');
   if (textarea) textarea.value = paste.content || '';
 
   if (visInput) visInput.value = paste.visibility || 'public';

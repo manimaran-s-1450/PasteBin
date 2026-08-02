@@ -354,6 +354,8 @@ async function retrieveAndRenderPaste(codeOrId) {
         title: pData.title || 'Untitled Paste',
         language: pData.language || 'JavaScript',
         visibility: pData.visibility || 'public',
+        expires_at: pData.expires_at || pData.expiresAt,
+        expiresIn: pData.expiresIn || pData.expires_in,
         createdAt: pData.created_at || new Date().toISOString(),
         updatedAt: 'Just now',
         views: pData.viewsCount || 1,
