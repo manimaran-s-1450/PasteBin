@@ -215,14 +215,26 @@ function initMobileDrawer() {
     drawer.id = 'mobile-drawer';
     drawer.style.cssText = `
       position: fixed; top: 0; right: 0; height: 100vh; width: min(300px, 85vw);
-      z-index: 99995; background: #0d0d14;
-      border-left: 1px solid rgba(139,92,246,0.2);
-      box-shadow: -8px 0 40px rgba(0,0,0,0.7);
+      z-index: 99995; background: rgba(13, 13, 20, 0.92);
+      backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+      border-left: 1px solid rgba(139,92,246,0.3);
+      box-shadow: -10px 0 50px rgba(0,0,0,0.8);
       display: flex; flex-direction: column;
       transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
-      overflow-y: auto; padding-top: 4.5rem;
+      overflow-y: auto; padding-top: 0;
     `;
     drawer.innerHTML = `
+      <div style="display:flex;align-items:center;gap:0.75rem;padding:1.25rem 1.25rem 1rem;border-bottom:1px solid rgba(139,92,246,0.2);flex-shrink:0;">
+        <div style="width:32px;height:32px;border-radius:10px;background:#8b5cf6;color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 15px rgba(139,92,246,0.4);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="16 18 22 12 16 6"></polyline>
+            <polyline points="8 6 2 12 8 18"></polyline>
+          </svg>
+        </div>
+        <span style="font-size:1.1rem;font-weight:800;color:#fff;letter-spacing:-0.02em;">
+          Paste<span style="color:#a78bfa;">Bin</span>
+        </span>
+      </div>
       <nav style="display:flex;flex-direction:column;gap:6px;padding:1.25rem;">
         ${linksHtml || `
           <a href="index.html" class="mobile-drawer-link">${getVioletIcon('Home')}<span>Home</span></a>

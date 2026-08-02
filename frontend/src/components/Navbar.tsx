@@ -296,7 +296,20 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate }) => {
 
       {/* Mobile Slide-Out Drawer Navigation */}
       {mobileMenuOpen && (
-        <div className="fixed top-0 right-0 bottom-0 z-[99995] w-[min(300px,85vw)] md:hidden bg-[#0d0d14] border-l border-purple-500/20 shadow-[-8px_0_40px_rgba(0,0,0,0.6)] flex flex-col pt-18">
+        <div className="fixed top-0 right-0 bottom-0 z-[99995] w-[min(300px,85vw)] md:hidden bg-[#0d0d14]/92 backdrop-blur-2xl border-l border-purple-500/30 shadow-[-10px_0_50px_rgba(0,0,0,0.8)] flex flex-col">
+          {/* Top Header inside Drawer */}
+          <div className="h-18 px-5 flex items-center gap-3 border-b border-purple-500/20 shrink-0">
+            <div className="w-8 h-8 rounded-xl bg-purple-600 text-white flex items-center justify-center shadow-[0_0_15px_rgba(139,92,246,0.4)]">
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <polyline points="16 18 22 12 16 6"></polyline>
+                <polyline points="8 6 2 12 8 18"></polyline>
+              </svg>
+            </div>
+            <span className="text-base font-extrabold text-white tracking-tight">
+              Paste<span className="text-purple-400">Bin</span>
+            </span>
+          </div>
+
           {/* Drawer Nav Links */}
           <nav className="flex flex-col gap-1.5 p-4 flex-1 overflow-y-auto">
             {navItems.map((item) => (
