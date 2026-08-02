@@ -146,7 +146,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate }) => {
             <button
               type="button"
               onClick={handleProfileDropdownToggle}
-              className="w-8.5 h-8.5 md:w-9 md:h-9 lg:w-10 lg:h-10 rounded-full border-1.5 border-purple-400 bg-gradient-to-br from-purple-600 to-indigo-700 text-white font-extrabold flex items-center justify-center text-xs md:text-sm cursor-pointer shadow-[0_2px_10px_rgba(124,58,237,0.35)] hover:scale-105 hover:border-purple-300 transition-all overflow-hidden p-0 outline-none"
+              className="w-9.5 h-9.5 min-w-[38px] min-h-[38px] aspect-square rounded-full border-none bg-[#7C3AED] text-white font-extrabold flex items-center justify-center text-sm cursor-pointer shrink-0 shadow-[0_0_16px_rgba(139,92,246,0.5)] hover:scale-105 transition-all overflow-hidden p-0 outline-none"
               aria-label="User Profile Menu"
             >
               {avatarUrl ? (
