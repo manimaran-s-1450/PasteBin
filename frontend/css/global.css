@@ -745,6 +745,48 @@ body.drawer-open header a:not(.mobile-drawer-link) {
   color: #475569 !important;
 }
 
+.recent-pastes-empty-box {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 2.5rem 1.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: 16px;
+  background: rgba(17, 24, 39, 0.6);
+  border: 1.5px dashed rgba(139, 92, 246, 0.35);
+  color: #E2E8F0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+[data-theme="light"] .recent-pastes-empty-box {
+  background: #FFFFFF !important;
+  border: 1.5px dashed rgba(139, 92, 246, 0.4) !important;
+  color: #0F172A !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.1) !important;
+}
+
+[data-theme="light"] .paste-card {
+  background: #FFFFFF !important;
+  border-color: rgba(139, 92, 246, 0.25) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06) !important;
+}
+
+[data-theme="light"] .paste-card .card-code-preview {
+  background: #F8FAFC !important;
+  border-color: #E2E8F0 !important;
+}
+
+[data-theme="light"] .paste-card .card-code-preview pre code {
+  color: #0F172A !important;
+}
+
+[data-theme="light"] .paste-card .card-stats-row {
+  color: #475569 !important;
+  border-top-color: #E2E8F0 !important;
+}
+
 @media (max-width: 991px) {
   .nav-profile-btn {
     width: 38px;

@@ -568,7 +568,7 @@ async function loadRecentPastes() {
   }
 
   if (!userPastes || userPastes.length === 0) {
-    container.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 2.5rem 1rem; color: #94A3B8; font-size: 0.95rem; background: rgba(17,24,39,0.4); border: 1px dashed rgba(139,92,246,0.25); border-radius: 16px;">No pastes in your history yet. Create your first paste above!</div>`;
+    container.innerHTML = `<div class="recent-pastes-empty-box">No pastes in your history yet. Create your first paste above!</div>`;
     return;
   }
 
