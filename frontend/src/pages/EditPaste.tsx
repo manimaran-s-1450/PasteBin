@@ -176,9 +176,11 @@ export const EditPaste: React.FC<EditPasteProps> = ({ pasteCode, pasteToEdit, on
     setUpdating(true);
     try {
       // Real API PUT request to Express + MySQL backend
-      const res = await updatePaste(formData.code || formData.id, {
+      const res = await apiService.updatePaste(targetCode, {
         title: formData.title,
         language: formData.language,
+        visibility: formData.visibility,
+        expiresIn: formData.expiresIn,
         content: formData.content
       });
 

@@ -133,6 +133,8 @@ export async function updatePaste(id: string, payload: UpdatePastePayload): Prom
   const backendPayload = {
     title: payload.title,
     language: payload.language,
+    visibility: payload.visibility,
+    expires_in: payload.expiresIn,
     content: payload.content
   };
 

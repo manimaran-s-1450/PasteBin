@@ -226,7 +226,7 @@ async function deletePasteByCode(pasteCode, userId = null) {
 /**
  * Updates an existing paste record safely (verifying user ownership)
  */
-async function updatePasteByCode(pasteCode, { title, language, visibility, content }, userId = null) {
+async function updatePasteByCode(pasteCode, { title, language, visibility, expires_in, content }, userId = null) {
   const isNumeric = /^\d+$/.test(String(pasteCode).trim());
   const checkQuery = isNumeric
     ? `SELECT id, user_id FROM pastes WHERE id = ? OR paste_code = ? LIMIT 1`
@@ -243,12 +243,26 @@ async function updatePasteByCode(pasteCode, { title, language, visibility, conte
     return { found: true, owner: false, data: null };
   }
 
-  const updateQuery = isNumeric
-    ? `UPDATE pastes SET title = ?, language = ?, visibility = ?, content = ? WHERE id = ? OR paste_code = ?`
-    : `UPDATE pastes SET title = ?, language = ?, visibility = ?, content = ? WHERE paste_code = ?`;
-  const updateParams = isNumeric
-    ? [title || null, language || 'Plain Text', visibility || 'public', content, pasteCode, pasteCode]
-    : [title || null, language || 'Plain Text', visibility || 'public', content, pasteCode];
+  const expiresAt = expires_in !== undefined ? calculateExpiresAt(expires_in) : undefined;
+
+  let updateQuery;
+  let updateParams;
+
+  if (expiresAt !== undefined) {
+    updateQuery = isNumeric
+      ? `UPDATE pastes SET title = ?, language = ?, visibility = ?, expires_at = ?, content = ? WHERE id = ? OR paste_code = ?`
+      : `UPDATE pastes SET title = ?, language = ?, visibility = ?, expires_at = ?, content = ? WHERE paste_code = ?`;
+    updateParams = isNumeric
+      ? [title || null, language || 'Plain Text', visibility || 'public', expiresAt, content, pasteCode, pasteCode]
+      : [title || null, language || 'Plain Text', visibility || 'public', expiresAt, content, pasteCode];
+  } else {
+    updateQuery = isNumeric
+      ? `UPDATE pastes SET title = ?, language = ?, visibility = ?, content = ? WHERE id = ? OR paste_code = ?`
+      : `UPDATE pastes SET title = ?, language = ?, visibility = ?, content = ? WHERE paste_code = ?`;
+    updateParams = isNumeric
+      ? [title || null, language || 'Plain Text', visibility || 'public', content, pasteCode, pasteCode]
+      : [title || null, language || 'Plain Text', visibility || 'public', content, pasteCode];
+  }
 
   await pool.execute(updateQuery, updateParams);
 

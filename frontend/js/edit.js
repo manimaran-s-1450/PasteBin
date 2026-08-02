@@ -128,12 +128,15 @@ function initEditForm() {
       const titleInput = document.getElementById('paste-title');
       const langSelect = document.getElementById('paste-language');
       const visInput = document.getElementById('paste-visibility-input');
+      const expiresSelect = document.getElementById('paste-expiration');
       const textarea = document.getElementById('paste-content');
 
       if (!titleInput || !textarea) return;
 
       const title = titleInput.value.trim() || 'Untitled Paste';
       const language = langSelect ? langSelect.value : 'JavaScript';
+      const visibility = visInput ? visInput.value : 'public';
+      const expiresIn = expiresSelect ? expiresSelect.value : 'never';
       const content = textarea.value;
 
       if (!content.trim()) {
@@ -152,7 +155,7 @@ function initEditForm() {
             let list = guestStored ? JSON.parse(guestStored) : [];
             list = list.map(item => {
               if (String(item.id) === String(codeOrId) || String(item.code) === String(codeOrId)) {
-                return { ...item, title, language, content, updatedAt: new Date().toISOString() };
+                return { ...item, title, language, visibility, expiresIn, content, updatedAt: new Date().toISOString() };
               }
               return item;
             });
@@ -181,6 +184,8 @@ function initEditForm() {
             body: JSON.stringify({
               title,
               language,
+              visibility,
+              expires_in: expiresIn,
               content
             })
           });

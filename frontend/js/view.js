@@ -413,6 +413,17 @@ function renderPasteViewerPage(paste) {
   const readingTimeStr = calculateReadingTime(wordCount);
   const formattedCreated = formatDate(paste.createdAt);
 
+  let formattedExpires = 'Never';
+  const rawExpires = paste.expires_at || paste.expiresAt || paste.expiresIn;
+  if (rawExpires && rawExpires !== 'never' && rawExpires !== 'Never') {
+    const expDate = new Date(rawExpires);
+    if (!isNaN(expDate.getTime())) {
+      formattedExpires = expDate.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    } else {
+      formattedExpires = String(rawExpires);
+    }
+  }
+
   const extMap = {
     'JavaScript': 'js',
     'TypeScript': 'ts',
@@ -494,6 +505,14 @@ function renderPasteViewerPage(paste) {
                     <polyline points="12 6 12 12 16 14"></polyline>
                   </svg>
                   Updated ${escapeHtml(paste.updatedAt || 'Recently')}
+                </span>
+
+                <span class="badge-item expiration-badge" title="Expiration Status" style="background: rgba(139, 92, 246, 0.15); border: 1px solid rgba(139, 92, 246, 0.3); color: #A78BFA;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  </svg>
+                  Expires: ${escapeHtml(formattedExpires)}
                 </span>
               </div>
             </div>

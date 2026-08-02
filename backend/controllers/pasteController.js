@@ -213,8 +213,9 @@ async function deletePaste(req, res, next) {
 async function updatePaste(req, res, next) {
   try {
     const { paste_code } = req.params;
-    const { title, content, language } = req.body;
+    const { title, content, language, visibility, expires_in, expiresIn } = req.body;
     const userId = req.user ? (req.user.id || req.user.user_id || req.user.google_id) : null;
+    const expirationVal = expires_in || expiresIn || null;
 
     if (!paste_code || typeof paste_code !== 'string' || paste_code.trim() === '') {
       return res.status(400).json({
@@ -241,6 +242,8 @@ async function updatePaste(req, res, next) {
     const result = await pasteModel.updatePasteByCode(paste_code.trim(), {
       title: formattedTitle,
       language: formattedLanguage,
+      visibility: visibility || 'public',
+      expires_in: expirationVal,
       content: content.trim()
     }, userId);
 
