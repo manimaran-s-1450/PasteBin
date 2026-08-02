@@ -357,7 +357,8 @@ async function retrieveAndRenderPaste(codeOrId) {
         expires_at: pData.expires_at || pData.expiresAt,
         expiresIn: pData.expiresIn || pData.expires_in,
         createdAt: pData.created_at || new Date().toISOString(),
-        updatedAt: 'Just now',
+        updatedAt: pData.updated_at || pData.updatedAt || null,
+        owner_id: pData.user_id || null,
         views: pData.viewsCount || 1,
         copies: 0,
         shares: 0,
@@ -652,13 +653,21 @@ function renderPasteViewerPage(paste) {
             <span>Share</span>
           </button>
 
-          <a href="edit.html?code=${paste.code}" class="btn btn-outline action-btn-outline">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-            </svg>
-            <span>Edit</span>
-          </a>
+${(function(){
+            const _token = localStorage.getItem('pastebin_jwt_token_v1');
+            if (!_token) return '';
+            const _profile = JSON.parse(localStorage.getItem('pastebin_user_profile_v1') || '{}');
+            const _myId = String(_profile.id || _profile.user_id || '');
+            const _ownerId = String(paste.owner_id || '');
+            if (!_myId || !_ownerId || _myId !== _ownerId) return '';
+            return `<a href="edit.html?code=${paste.code}" class="btn btn-outline action-btn-outline">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+              </svg>
+              <span>Edit</span>
+            </a>`;
+          })()}
         </div>
 
         <!-- 4. RELATED PASTES SECTION -->
@@ -766,13 +775,7 @@ function renderPasteViewerPage(paste) {
               <strong class="stat-value lang-highlight">${escapeHtml(paste.language)}</strong>
             </li>
 
-            <li class="stat-item">
-              <span class="stat-label">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line></svg>
-                Visibility
-              </span>
-              <strong class="stat-value capital">${escapeHtml(paste.visibility)}</strong>
-            </li>
+
 
             <li class="stat-item">
               <span class="stat-label">
@@ -787,7 +790,7 @@ function renderPasteViewerPage(paste) {
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6"></path><path d="M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path></svg>
                 Updated
               </span>
-              <strong class="stat-value muted">${escapeHtml(paste.updatedAt || 'Just now')}</strong>
+              <strong class="stat-value muted">${paste.updatedAt ? escapeHtml(formatDate(paste.updatedAt)) : escapeHtml(formatDate(paste.createdAt))}</strong>
             </li>
           </ul>
 
