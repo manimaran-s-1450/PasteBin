@@ -157,7 +157,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate }) => {
             {/* Glass Profile Dropdown Card */}
             {profileDropdownOpen && (
               <div 
-                className="absolute top-[calc(100%+0.75rem)] right-0 w-64 bg-[#111827]/95 backdrop-blur-2xl border border-purple-500/35 rounded-2xl p-3 shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_35px_rgba(139,92,246,0.25)] flex flex-col gap-2 z-50 text-left"
+                className="absolute md:absolute max-md:fixed top-[calc(100%+0.75rem)] max-md:top-18 right-0 max-md:right-4 max-md:left-auto w-64 max-md:w-[calc(100vw-2rem)] max-md:max-w-[320px] bg-[#111827]/95 backdrop-blur-2xl border border-purple-500/35 rounded-2xl p-3 shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_35px_rgba(139,92,246,0.25)] flex flex-col gap-2 z-[99999] text-left"
                 onClick={(e) => e.stopPropagation()}
               >
                 {/* Header User Info */}
