@@ -589,6 +589,7 @@ function openDeleteModal(paste) {
 
   if (backdrop) {
     backdrop.classList.remove('hidden');
+    backdrop.classList.add('open');
     backdrop.setAttribute('aria-hidden', 'false');
   }
 }
@@ -600,6 +601,7 @@ function closeDeleteModal() {
   const backdrop = document.getElementById('delete-modal-backdrop');
   if (backdrop) {
     backdrop.classList.add('hidden');
+    backdrop.classList.remove('open');
     backdrop.setAttribute('aria-hidden', 'true');
   }
 }
