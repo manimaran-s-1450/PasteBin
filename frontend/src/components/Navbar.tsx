@@ -99,10 +99,12 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate }) => {
     <header className="sticky top-0 z-50 bg-[#09090B]/85 backdrop-blur-xl border-b border-slate-800/80 transition-all">
       <div className="max-w-[1280px] mx-auto px-4 h-18 flex items-center justify-between gap-4">
         
-        <!-- Brand Logo -->
+        {/* Brand Logo */}
         <button 
           onClick={() => onNavigate('home')} 
-          className="flex items-center gap-3 bg-transparent border-none p-0 cursor-pointer text-left focus:outline-none"
+          className={`flex items-center gap-3 bg-transparent border-none p-0 cursor-pointer text-left focus:outline-none transition-all duration-300 ${
+            mobileMenuOpen ? 'blur-md opacity-35 pointer-events-none' : ''
+          }`}
         >
           <div className="w-8 h-8 rounded-xl bg-purple-600 text-white flex items-center justify-center shadow-[0_0_15px_rgba(139,92,246,0.4)]">
             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -140,7 +142,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate }) => {
         <div className="flex items-center gap-3">
           
           {/* Profile Avatar Button (Placed IMMEDIATELY BEFORE Theme Toggle) */}
-          <div className="relative">
+          <div className={`relative transition-all duration-300 ${mobileMenuOpen ? 'blur-md opacity-35 pointer-events-none' : ''}`}>
             <button
               type="button"
               onClick={handleProfileDropdownToggle}
@@ -235,7 +237,9 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate }) => {
           {/* Theme Switcher Pill */}
           <div 
             onClick={toggleTheme}
-            className="flex items-center gap-1 bg-[#111827] border border-slate-800 p-1 rounded-full cursor-pointer shadow-inner"
+            className={`flex items-center gap-1 bg-[#111827] border border-slate-800 p-1 rounded-full cursor-pointer shadow-inner transition-all duration-300 ${
+              mobileMenuOpen ? 'blur-md opacity-35 pointer-events-none' : ''
+            }`}
             role="button"
             tabIndex={0}
             aria-label="Toggle Theme"

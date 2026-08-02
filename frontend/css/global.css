@@ -722,6 +722,19 @@ body.menu-open {
   visibility: visible;
 }
 
+/* Blur top navbar logo & left header when mobile drawer is open */
+body.drawer-open .nav-brand,
+body.drawer-open .logo-icon,
+body.drawer-open .logo-text,
+body.drawer-open .nav-left,
+body.drawer-open header button:not(#mobile-menu-btn),
+body.drawer-open header a:not(.mobile-drawer-link) {
+  filter: blur(8px) !important;
+  opacity: 0.4 !important;
+  transition: filter 0.3s ease, opacity 0.3s ease;
+  pointer-events: none !important;
+}
+
 @media (max-width: 768px) {
   .nav-profile-dropdown {
     position: fixed;
