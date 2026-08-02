@@ -14,11 +14,20 @@ const SEED_PASTES = [];
 let pastesState = [];
 let searchQuery = '';
 let activeFilter = 'all';
+let activeCategory = 'all';
 let activeSort = 'newest';
 let currentPage = 1;
 const ITEMS_PER_PAGE = 6;
 let pendingDeleteId = null;
 let pendingPasteObj = null;
+
+function isUnexpired(p) {
+  const raw = p.expires_at || p.expiresAt || p.expires_in || p.expiresIn;
+  if (!raw || raw === 'never' || raw === 'Never') return true;
+  const expDate = new Date(raw);
+  if (isNaN(expDate.getTime())) return true;
+  return expDate.getTime() > Date.now();
+}
 
 /**
  * Initialize History Page Dashboard
@@ -37,12 +46,13 @@ async function initHistoryDashboard() {
 async function loadPastesFromStorage() {
   const token = localStorage.getItem('pastebin_jwt_token_v1');
 
-  // One-time migration: clear old localStorage guest keys that existed before sessionStorage switch
   try {
     localStorage.removeItem('pastebin_guest_created_v1');
     localStorage.removeItem('pastebin_guest_received_v1');
     localStorage.removeItem('pastebin_local_history_v1');
   } catch (e) {}
+
+  let combined = [];
 
   if (token) {
     try {
@@ -51,57 +61,118 @@ async function loadPastesFromStorage() {
         : 'https://pastebin-production-6477.up.railway.app/api';
       
       const headers = { 'Authorization': `Bearer ${token}` };
-      const response = await fetch(`${getApiBaseUrl()}/pastes/my`, { headers });
-      const resData = await response.json();
+      const [myRes, recRes] = await Promise.all([
+        fetch(`${getApiBaseUrl()}/pastes/my`, { headers }).then(r => r.json()).catch(() => null),
+        fetch(`${getApiBaseUrl()}/pastes/received`, { headers }).then(r => r.json()).catch(() => null)
+      ]);
 
-      if (resData && resData.success && Array.isArray(resData.data)) {
-        pastesState = resData.data.map(p => ({
-          id: p.id,
-          code: p.paste_code || String(p.id),
-          title: p.title || 'Untitled Paste',
-          language: p.language || 'JavaScript',
-          createdAt: p.created_at || new Date().toISOString(),
-          updatedAt: 'Just now',
-          views: p.viewsCount || 1,
-          copies: 0,
-          shares: 0,
-          content: p.content || ''
-        }));
-        renderDashboard();
-        return;
+      if (myRes && myRes.success && Array.isArray(myRes.data)) {
+        myRes.data.forEach(p => {
+          combined.push({
+            id: p.id,
+            code: p.paste_code || String(p.id),
+            title: p.title || 'Untitled Paste',
+            language: p.language || 'JavaScript',
+            category: 'pasted',
+            expires_at: p.expires_at,
+            createdAt: p.created_at || new Date().toISOString(),
+            updatedAt: 'Just now',
+            views: p.viewsCount || 1,
+            copies: 0,
+            shares: 0,
+            content: p.content || ''
+          });
+        });
       }
+
+      if (recRes && recRes.success && Array.isArray(recRes.data)) {
+        const myCodes = new Set(combined.map(item => item.code));
+        recRes.data.forEach(p => {
+          const code = p.paste_code || String(p.id);
+          if (!myCodes.has(code)) {
+            combined.push({
+              id: p.id,
+              code: code,
+              title: p.title || 'Untitled Paste',
+              language: p.language || 'JavaScript',
+              category: 'received',
+              expires_at: p.expires_at,
+              createdAt: p.created_at || new Date().toISOString(),
+              updatedAt: 'Just now',
+              views: p.viewsCount || 1,
+              copies: 0,
+              shares: 0,
+              content: p.content || ''
+            });
+          }
+        });
+      }
+
+      pastesState = combined.filter(isUnexpired);
+      renderDashboard();
+      return;
     } catch (err) {
       console.error('[History API Error]:', err);
     }
   }
 
-  // Guest User -> Load strictly from sessionStorage history
+  // Guest User -> Load strictly from sessionStorage history (created & received)
   try {
-    const guestStored = sessionStorage.getItem('pastebin_guest_created_v1');
-    if (guestStored) {
-      const parsed = JSON.parse(guestStored);
+    const guestCreatedStr = sessionStorage.getItem('pastebin_guest_created_v1');
+    const guestRecStr = sessionStorage.getItem('pastebin_guest_received_v1');
+
+    if (guestCreatedStr) {
+      const parsed = JSON.parse(guestCreatedStr);
       if (Array.isArray(parsed)) {
-        pastesState = parsed.map(p => ({
-          id: p.id || Date.now(),
-          code: p.code || p.paste_code || String(p.id),
-          title: p.title || 'Untitled Paste',
-          language: p.language || 'JavaScript',
-          createdAt: p.createdAt || p.created_at || new Date().toISOString(),
-          updatedAt: 'Just now',
-          views: p.views || 1,
-          copies: 0,
-          shares: 0,
-          content: p.content || ''
-        }));
-        renderDashboard();
-        return;
+        parsed.forEach(p => {
+          combined.push({
+            id: p.id || Date.now(),
+            code: p.code || p.paste_code || String(p.id),
+            title: p.title || 'Untitled Paste',
+            language: p.language || 'JavaScript',
+            category: 'pasted',
+            expires_at: p.expires_at || p.expiresAt || p.expiresIn,
+            createdAt: p.createdAt || p.created_at || new Date().toISOString(),
+            updatedAt: 'Just now',
+            views: p.views || 1,
+            copies: 0,
+            shares: 0,
+            content: p.content || ''
+          });
+        });
+      }
+    }
+
+    if (guestRecStr) {
+      const parsedRec = JSON.parse(guestRecStr);
+      if (Array.isArray(parsedRec)) {
+        const myCodes = new Set(combined.map(item => item.code));
+        parsedRec.forEach(p => {
+          const code = p.code || p.paste_code || String(p.id);
+          if (!myCodes.has(code)) {
+            combined.push({
+              id: p.id || Date.now(),
+              code: code,
+              title: p.title || 'Untitled Paste',
+              language: p.language || 'JavaScript',
+              category: 'received',
+              expires_at: p.expires_at || p.expiresAt || p.expiresIn,
+              createdAt: p.createdAt || p.created_at || new Date().toISOString(),
+              updatedAt: 'Just now',
+              views: p.views || 1,
+              copies: 0,
+              shares: 0,
+              content: p.content || ''
+            });
+          }
+        });
       }
     }
   } catch (e) {
     console.warn('[Guest History Error]', e);
   }
 
-  pastesState = [];
+  pastesState = combined.filter(isUnexpired);
   renderDashboard();
 }
 
@@ -183,7 +254,15 @@ function updateStats() {
 function filterAndSortPastes() {
   let result = [...pastesState];
 
-  // 1. Search Query Filter
+  // 0. Expiration Filter
+  result = result.filter(isUnexpired);
+
+  // 1. Category Segregation Filter
+  if (activeCategory !== 'all') {
+    result = result.filter(p => (p.category || 'pasted').toLowerCase() === activeCategory.toLowerCase());
+  }
+
+  // 2. Search Query Filter
   if (searchQuery.trim() !== '') {
     const q = searchQuery.toLowerCase().trim();
     result = result.filter(p => 
@@ -194,12 +273,12 @@ function filterAndSortPastes() {
     );
   }
 
-  // 2. Language/Category Filter
+  // 3. Language Filter
   if (activeFilter !== 'all') {
     result = result.filter(p => p.language.toLowerCase() === activeFilter.toLowerCase());
   }
 
-  // 3. Sorting
+  // 4. Sorting
   result.sort((a, b) => {
     switch (activeSort) {
       case 'newest':
@@ -272,7 +351,7 @@ function renderGrid(filteredPastes) {
           <span>${escapeHtml(paste.language)}</span>
         </span>
 
-        <span class="paste-id-badge">#${paste.id}</span>
+        <span class="paste-type-badge ${paste.category === 'received' ? 'received-tag' : 'pasted-tag'}">${paste.category === 'received' ? 'Received' : 'Pasted'}</span>
       </div>
 
       <!-- Main Info: Title & Code -->
@@ -444,8 +523,19 @@ function renderPagination(totalItems) {
 function initSearchAndFilters() {
   const searchInput = document.getElementById('history-search-input');
   const clearBtn = document.getElementById('search-clear-btn');
+  const categoryTabs = document.querySelectorAll('.category-tab');
   const filterChips = document.querySelectorAll('.filter-chip');
   const sortSelect = document.getElementById('sort-select');
+
+  categoryTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      categoryTabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      activeCategory = tab.getAttribute('data-category') || 'all';
+      currentPage = 1;
+      renderDashboard();
+    });
+  });
 
   if (searchInput) {
     searchInput.addEventListener('input', (e) => {
