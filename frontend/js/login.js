@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const submitBtn = document.getElementById('btn-login-submit');
 
   const googleBtn = document.getElementById('btn-social-google');
-  const githubBtn = document.getElementById('btn-social-github');
+  const guestBtn = document.getElementById('btn-social-guest') || document.getElementById('btn-social-github');
 
   if (toggleBtn && passwordInput) {
     toggleBtn.addEventListener('click', () => {
@@ -53,10 +53,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // GitHub Social Demo
-  if (githubBtn) {
-    githubBtn.addEventListener('click', () => {
-      showToast('GitHub OAuth placeholder. Please use Google Sign-In or Email/Password.', 'info');
+  // Guest User Flow
+  if (guestBtn) {
+    guestBtn.addEventListener('click', () => {
+      showToast('Continuing as Guest User...', 'info');
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 500);
     });
   }
 
