@@ -581,3 +581,53 @@ html, body {
     grid-template-columns: 1fr;
   }
 }
+
+/* Custom Modern Checkbox Styling for Auth Pages */
+.auth-remember-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1.5rem;
+  user-select: none;
+}
+
+.auth-custom-checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid #4B5563;
+  border-radius: 5px;
+  background-color: #111827;
+  cursor: pointer;
+  display: grid;
+  place-content: center;
+  transition: all 0.2s ease-in-out;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.auth-custom-checkbox:hover {
+  border-color: #8B5CF6;
+  box-shadow: 0 0 8px rgba(139, 92, 246, 0.3);
+}
+
+.auth-custom-checkbox:checked {
+  background-color: #8B5CF6;
+  border-color: #A855F7;
+  box-shadow: 0 0 10px rgba(139, 92, 246, 0.4);
+}
+
+.auth-custom-checkbox:checked::before {
+  content: "";
+  width: 10px;
+  height: 5px;
+  border-left: 2.2px solid #FFFFFF;
+  border-bottom: 2.2px solid #FFFFFF;
+  transform: rotate(-45deg) translate(0.5px, -0.5px);
+}
+
+.auth-custom-checkbox:focus-visible {
+  outline: 2px solid #A855F7;
+  outline-offset: 2px;
+}
