@@ -638,6 +638,11 @@ body.menu-open {
   outline: none;
 }
 
+.nav-drawer-link svg, #mobile-drawer .mobile-drawer-link svg {
+  stroke: #A78BFA !important;
+  flex-shrink: 0;
+}
+
 .nav-profile-btn:hover {
   transform: scale(1.05);
   box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);

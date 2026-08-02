@@ -183,16 +183,30 @@ function initMobileDrawer() {
     `;
     document.body.appendChild(overlay);
 
+    const getVioletIcon = (label) => {
+      const text = label.toLowerCase();
+      if (text.includes('home')) return '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>';
+      if (text.includes('create')) return '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>';
+      if (text.includes('receive')) return '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>';
+      if (text.includes('history')) return '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>';
+      if (text.includes('doc')) return '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>';
+      if (text.includes('about')) return '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>';
+      if (text.includes('profile')) return '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>';
+      return '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle></svg>';
+    };
+
     // Collect nav links from the existing static navbar
     const navLinks = document.querySelectorAll('.nav-links .nav-link, nav .nav-link');
     let linksHtml = '';
     navLinks.forEach(link => {
       const isActive = link.classList.contains('active');
+      const text = link.textContent.trim();
       linksHtml += `
         <a href="${link.getAttribute('href') || '#'}"
            class="mobile-drawer-link${isActive ? ' active' : ''}"
            ${link.dataset.feature ? `data-feature="${link.dataset.feature}"` : ''}>
-          ${link.textContent.trim()}
+          ${getVioletIcon(text)}
+          <span>${text}</span>
         </a>`;
     });
 
@@ -201,34 +215,22 @@ function initMobileDrawer() {
     drawer.id = 'mobile-drawer';
     drawer.style.cssText = `
       position: fixed; top: 0; right: 0; height: 100vh; width: min(300px, 85vw);
-      z-index: 999; background: #0d0d14;
-      border-left: 1px solid rgba(139,92,246,0.18);
-      box-shadow: -8px 0 40px rgba(0,0,0,0.6);
+      z-index: 99995; background: #0d0d14;
+      border-left: 1px solid rgba(139,92,246,0.2);
+      box-shadow: -8px 0 40px rgba(0,0,0,0.7);
       display: flex; flex-direction: column;
       transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
-      overflow-y: auto; padding: 0;
+      overflow-y: auto; padding-top: 4.5rem;
     `;
     drawer.innerHTML = `
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:1.25rem 1.25rem 1rem;border-bottom:1px solid rgba(139,92,246,0.12);">
-        <span style="font-size:1.15rem;font-weight:800;color:#fff;letter-spacing:-0.02em;">
-          Paste<span style="color:#a78bfa;">Bin</span>
-        </span>
-        <button id="drawer-close-btn" type="button"
-          style="width:36px;height:36px;border-radius:10px;border:none;background:rgba(255,255,255,0.06);color:#94a3b8;cursor:pointer;display:flex;align-items:center;justify-content:center;"
-          aria-label="Close Menu">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
-            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-          </svg>
-        </button>
-      </div>
-      <nav style="display:flex;flex-direction:column;gap:4px;padding:1rem;">
+      <nav style="display:flex;flex-direction:column;gap:6px;padding:1.25rem;">
         ${linksHtml || `
-          <a href="index.html" class="mobile-drawer-link">Home</a>
-          <a href="create.html" class="mobile-drawer-link">Create Paste</a>
-          <a href="view.html" class="mobile-drawer-link">Receive Paste</a>
-          <a href="history.html" class="mobile-drawer-link">History</a>
-          <a href="docs.html" class="mobile-drawer-link">Documentation</a>
-          <a href="about.html" class="mobile-drawer-link">About</a>
+          <a href="index.html" class="mobile-drawer-link">${getVioletIcon('Home')}<span>Home</span></a>
+          <a href="create.html" class="mobile-drawer-link">${getVioletIcon('Create Paste')}<span>Create Paste</span></a>
+          <a href="view.html" class="mobile-drawer-link">${getVioletIcon('Receive Paste')}<span>Receive Paste</span></a>
+          <a href="history.html" class="mobile-drawer-link">${getVioletIcon('History')}<span>History</span></a>
+          <a href="docs.html" class="mobile-drawer-link">${getVioletIcon('Documentation')}<span>Documentation</span></a>
+          <a href="about.html" class="mobile-drawer-link">${getVioletIcon('About')}<span>About</span></a>
         `}
       </nav>
     `;
@@ -239,24 +241,27 @@ function initMobileDrawer() {
       style.id = 'mobile-drawer-styles';
       style.textContent = `
         #mobile-drawer .mobile-drawer-link {
-          display: block; padding: 0.75rem 1rem;
+          display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem;
           border-radius: 12px; font-size: 0.9rem; font-weight: 600;
           color: #cbd5e1; text-decoration: none;
           transition: background 0.18s, color 0.18s;
-          border: none; background: transparent; cursor: pointer;
+          border: none; background: rgba(30, 41, 59, 0.4); cursor: pointer;
         }
         #mobile-drawer .mobile-drawer-link:hover,
         #mobile-drawer .mobile-drawer-link.active {
-          background: rgba(139,92,246,0.16); color: #fff;
+          background: rgba(139,92,246,0.22); color: #fff; border: 1px solid rgba(139,92,246,0.35);
         }
         #mobile-drawer .mobile-drawer-link.active {
-          color: #a78bfa; font-weight: 700;
+          color: #fff; font-weight: 700;
         }
         #mobile-drawer.drawer-open {
           transform: translateX(0) !important;
         }
         #drawer-overlay.drawer-open {
           display: block !important; opacity: 1 !important;
+        }
+        #mobile-menu-btn {
+          position: relative; z-index: 100000 !important;
         }
       `;
       document.head.appendChild(style);
@@ -281,11 +286,16 @@ function initMobileDrawer() {
     menuBtn.setAttribute('aria-expanded', 'false');
   }
 
-  // Replace any previous onclick to avoid duplicates
-  menuBtn.onclick = openDrawer;
+  // Toggle open/close on menu button click
+  menuBtn.onclick = (e) => {
+    e.stopPropagation();
+    if (drawer.classList.contains('drawer-open')) {
+      closeDrawer();
+    } else {
+      openDrawer();
+    }
+  };
 
-  const closeBtn = document.getElementById('drawer-close-btn');
-  if (closeBtn) closeBtn.onclick = closeDrawer;
   overlay.onclick = closeDrawer;
 
   drawer.querySelectorAll('a').forEach(link => {
