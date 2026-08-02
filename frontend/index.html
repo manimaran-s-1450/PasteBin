@@ -486,5 +486,271 @@
   <!-- Theme & Navbar Logic -->
   <script type="module" src="components/navbar.js"></script>
   <script type="module" src="js/theme.js"></script>
+
+  <!-- ============================================
+       GUEST WELCOME POPUP MODAL
+       Shows once per session for non-logged-in users
+       ============================================ -->
+  <div id="guest-welcome-backdrop" style="
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: rgba(0, 0, 0, 0.78);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    animation: gwFadeIn 0.35s ease;
+  " aria-modal="true" role="dialog" aria-labelledby="gw-title">
+
+    <div id="guest-welcome-card" style="
+      background: linear-gradient(145deg, #0F172A 0%, #111827 60%, #0D1117 100%);
+      border: 1px solid rgba(139, 92, 246, 0.35);
+      border-radius: 28px;
+      padding: 2.75rem 2.25rem 2.25rem;
+      max-width: 460px;
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+      box-shadow:
+        0 0 0 1px rgba(139, 92, 246, 0.1),
+        0 30px 70px rgba(0, 0, 0, 0.85),
+        0 0 60px rgba(139, 92, 246, 0.12);
+      animation: gwSlideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    ">
+
+      <!-- Purple gradient top bar -->
+      <div style="
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #7C3AED, #A855F7, #EC4899, #A855F7, #7C3AED);
+        background-size: 200% 100%;
+        animation: gwShimmer 3s linear infinite;
+      "></div>
+
+      <!-- Ambient glow blobs -->
+      <div style="position: absolute; top: -60px; right: -60px; width: 180px; height: 180px; background: radial-gradient(circle, rgba(139,92,246,0.18) 0%, transparent 70%); pointer-events: none;"></div>
+      <div style="position: absolute; bottom: -40px; left: -40px; width: 140px; height: 140px; background: radial-gradient(circle, rgba(236,72,153,0.1) 0%, transparent 70%); pointer-events: none;"></div>
+
+      <!-- Logo icon -->
+      <div style="
+        width: 60px; height: 60px;
+        background: linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%);
+        border-radius: 18px;
+        display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 1.5rem;
+        box-shadow: 0 8px 24px rgba(124, 58, 237, 0.45), 0 0 0 1px rgba(139,92,246,0.3);
+      ">
+        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="16 18 22 12 16 6"></polyline>
+          <polyline points="8 6 2 12 8 18"></polyline>
+        </svg>
+      </div>
+
+      <!-- Title -->
+      <h2 id="gw-title" style="
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: #fff;
+        text-align: center;
+        margin: 0 0 0.5rem;
+        letter-spacing: -0.02em;
+        line-height: 1.2;
+      ">Welcome to <span style="background: linear-gradient(90deg, #A855F7, #EC4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">PasteBin</span></h2>
+
+      <p style="
+        font-size: 0.875rem;
+        color: #94A3B8;
+        text-align: center;
+        margin: 0 0 1.75rem;
+        line-height: 1.6;
+      ">Share code &amp; text snippets instantly with unique shareable links.</p>
+
+      <!-- Notice box -->
+      <div style="
+        background: rgba(245, 158, 11, 0.08);
+        border: 1px solid rgba(245, 158, 11, 0.25);
+        border-radius: 14px;
+        padding: 0.875rem 1rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.65rem;
+        margin-bottom: 1.75rem;
+      ">
+        <div style="
+          width: 32px; height: 32px; flex-shrink: 0;
+          background: rgba(245, 158, 11, 0.15);
+          border-radius: 9px;
+          display: flex; align-items: center; justify-content: center;
+          margin-top: 1px;
+        ">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+        </div>
+        <div>
+          <p style="font-size: 0.8rem; font-weight: 700; color: #FCD34D; margin: 0 0 0.2rem;">Without Login — History Won't Be Saved</p>
+          <p style="font-size: 0.76rem; color: #92400E; color: #D97706; margin: 0; line-height: 1.5;">
+            As a guest, your created &amp; received pastes are <strong style="color: #FCD34D;">not permanently saved</strong>. They'll disappear when you close the browser. Sign in to track and manage all your pastes.
+          </p>
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+
+        <!-- Login button -->
+        <a href="login.html" id="gw-login-btn" style="
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.6rem;
+          padding: 0.9rem 1.5rem;
+          border-radius: 16px;
+          background: linear-gradient(135deg, #7C3AED 0%, #6D28D9 50%, #5B21B6 100%);
+          color: #fff;
+          font-weight: 800;
+          font-size: 0.95rem;
+          text-decoration: none;
+          box-shadow: 0 6px 24px rgba(124, 58, 237, 0.5), 0 0 0 1px rgba(139,92,246,0.3);
+          transition: all 0.25s ease;
+          letter-spacing: 0.01em;
+          position: relative;
+          overflow: hidden;
+        " onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 10px 32px rgba(124,58,237,0.6), 0 0 0 1px rgba(139,92,246,0.4)'"
+           onmouseout="this.style.transform='';this.style.boxShadow='0 6px 24px rgba(124,58,237,0.5), 0 0 0 1px rgba(139,92,246,0.3)'">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+            <polyline points="10 17 15 12 10 7"/>
+            <line x1="15" y1="12" x2="3" y2="12"/>
+          </svg>
+          Sign In to PasteBin
+        </a>
+
+        <!-- Sign Up button -->
+        <a href="signup.html" id="gw-signup-btn" style="
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.6rem;
+          padding: 0.9rem 1.5rem;
+          border-radius: 16px;
+          background: rgba(139, 92, 246, 0.1);
+          border: 1.5px solid rgba(139, 92, 246, 0.35);
+          color: #C4B5FD;
+          font-weight: 700;
+          font-size: 0.95rem;
+          text-decoration: none;
+          transition: all 0.25s ease;
+        " onmouseover="this.style.background='rgba(139,92,246,0.2)';this.style.borderColor='rgba(139,92,246,0.55)';this.style.transform='translateY(-1px)'"
+           onmouseout="this.style.background='rgba(139,92,246,0.1)';this.style.borderColor='rgba(139,92,246,0.35)';this.style.transform=''">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+            <line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/>
+          </svg>
+          Create Free Account
+        </a>
+
+        <!-- Divider -->
+        <div style="display: flex; align-items: center; gap: 0.75rem; margin: 0.25rem 0;">
+          <div style="flex: 1; height: 1px; background: rgba(148,163,184,0.15);"></div>
+          <span style="font-size: 0.75rem; color: #475569; font-weight: 600;">or</span>
+          <div style="flex: 1; height: 1px; background: rgba(148,163,184,0.15);"></div>
+        </div>
+
+        <!-- Continue as guest -->
+        <button type="button" id="gw-guest-btn" style="
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.6rem;
+          padding: 0.75rem 1.5rem;
+          border-radius: 14px;
+          background: transparent;
+          border: 1px solid rgba(100, 116, 139, 0.3);
+          color: #64748B;
+          font-weight: 600;
+          font-size: 0.875rem;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        " onmouseover="this.style.borderColor='rgba(100,116,139,0.55)';this.style.color='#94A3B8';this.style.background='rgba(100,116,139,0.08)'"
+           onmouseout="this.style.borderColor='rgba(100,116,139,0.3)';this.style.color='#64748B';this.style.background='transparent'">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+          Continue as Guest
+          <span style="font-size: 0.7rem; color: #374151; background: rgba(239,68,68,0.15); color: #F87171; border: 1px solid rgba(239,68,68,0.2); padding: 0.1rem 0.45rem; border-radius: 6px; font-weight: 700;">No History</span>
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+
+  <style>
+    @keyframes gwFadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    @keyframes gwSlideUp {
+      from { opacity: 0; transform: translateY(30px) scale(0.96); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes gwShimmer {
+      0%   { background-position: 0% 0; }
+      100% { background-position: 200% 0; }
+    }
+  </style>
+
+  <script>
+    (function() {
+      var SHOWN_KEY = 'pastebin_welcome_shown_v1';
+      var token = localStorage.getItem('pastebin_jwt_token_v1');
+
+      // Only show for guests who haven't seen it this session
+      if (!token && !sessionStorage.getItem(SHOWN_KEY)) {
+        var backdrop = document.getElementById('guest-welcome-backdrop');
+        if (backdrop) {
+          backdrop.style.display = 'flex';
+        }
+      }
+
+      function closeModal() {
+        var backdrop = document.getElementById('guest-welcome-backdrop');
+        if (!backdrop) return;
+        backdrop.style.opacity = '0';
+        backdrop.style.transition = 'opacity 0.25s ease';
+        setTimeout(function() {
+          backdrop.style.display = 'none';
+        }, 250);
+        sessionStorage.setItem(SHOWN_KEY, '1');
+      }
+
+      var guestBtn = document.getElementById('gw-guest-btn');
+      if (guestBtn) {
+        guestBtn.addEventListener('click', closeModal);
+      }
+
+      // Close on backdrop click
+      var backdrop = document.getElementById('guest-welcome-backdrop');
+      if (backdrop) {
+        backdrop.addEventListener('click', function(e) {
+          if (e.target === backdrop) closeModal();
+        });
+      }
+
+      // Close on Escape
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeModal();
+      });
+    })();
+  </script>
+
 </body>
 </html>
