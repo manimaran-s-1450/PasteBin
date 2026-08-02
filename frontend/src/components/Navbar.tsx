@@ -146,42 +146,42 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate }) => {
             <button
               type="button"
               onClick={handleProfileDropdownToggle}
-              className={`w-8.5 h-8.5 md:w-9 md:h-9 lg:w-10 lg:h-10 rounded-full border-1.5 ${
-                theme === 'light'
-                  ? 'bg-purple-100/90 border-purple-400 text-purple-800 font-extrabold shadow-[0_2px_8px_rgba(109,40,217,0.25)]'
-                  : 'bg-purple-950/30 border-purple-500/40 text-white shadow-[0_0_12px_rgba(139,92,246,0.25)]'
-              } flex items-center justify-center font-bold text-xs md:text-sm cursor-pointer hover:scale-105 hover:border-purple-400 hover:shadow-[0_0_18px_rgba(139,92,246,0.5)] transition-all overflow-hidden p-0 outline-none`}
+              className="w-8.5 h-8.5 md:w-9 md:h-9 lg:w-10 lg:h-10 rounded-full border-1.5 border-purple-400 bg-gradient-to-br from-purple-600 to-indigo-700 text-white font-extrabold flex items-center justify-center text-xs md:text-sm cursor-pointer shadow-[0_2px_10px_rgba(124,58,237,0.35)] hover:scale-105 hover:border-purple-300 transition-all overflow-hidden p-0 outline-none"
               aria-label="User Profile Menu"
             >
               {avatarUrl ? (
                 <img src={avatarUrl} alt={displayName} className="w-full h-full object-cover rounded-full" />
               ) : (
-                <span className={theme === 'light' ? 'text-purple-900 font-black' : 'text-white'}>{initials}</span>
+                <span className="text-white font-black">{initials}</span>
               )}
             </button>
 
             {/* Glass Profile Dropdown Card */}
             {profileDropdownOpen && (
               <div 
-                className="absolute md:absolute max-md:fixed top-[calc(100%+0.75rem)] max-md:top-18 right-0 max-md:right-4 max-md:left-auto w-64 max-md:w-[calc(100vw-2rem)] max-md:max-w-[320px] bg-[#111827]/95 backdrop-blur-2xl border border-purple-500/35 rounded-2xl p-3 shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_35px_rgba(139,92,246,0.25)] flex flex-col gap-2 z-[99999] text-left"
+                className={`absolute md:absolute max-md:fixed top-[calc(100%+0.75rem)] max-md:top-18 right-0 max-md:right-4 max-md:left-auto w-64 max-md:w-[calc(100vw-2rem)] max-md:max-w-[320px] ${
+                  theme === 'light'
+                    ? 'bg-white/98 text-slate-900 border-purple-300 shadow-[0_15px_40px_rgba(0,0,0,0.15)]'
+                    : 'bg-[#111827]/95 text-white border-purple-500/35 shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_35px_rgba(139,92,246,0.25)]'
+                } backdrop-blur-2xl border rounded-2xl p-3 flex flex-col gap-2 z-[99999] text-left`}
                 onClick={(e) => e.stopPropagation()}
               >
                 {/* Header User Info */}
                 <div className="flex items-center gap-3 p-2">
-                  <div className="w-10 h-10 rounded-full border border-purple-500 bg-purple-950/50 flex items-center justify-center font-bold text-white shrink-0 overflow-hidden">
+                  <div className="w-10 h-10 rounded-full border border-purple-400 bg-gradient-to-br from-purple-600 to-indigo-700 flex items-center justify-center font-black text-white shrink-0 overflow-hidden shadow-md">
                     {avatarUrl ? (
                       <img src={avatarUrl} alt={displayName} className="w-full h-full object-cover" />
                     ) : (
-                      <span>{initials}</span>
+                      <span className="text-white font-black">{initials}</span>
                     )}
                   </div>
                   <div className="flex flex-col min-w-0">
-                    <span className="text-sm font-bold text-white truncate">{displayName}</span>
-                    <span className="text-xs text-slate-400 truncate">{email}</span>
+                    <span className={`text-sm font-bold truncate ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>{displayName}</span>
+                    <span className={`text-xs truncate ${theme === 'light' ? 'text-slate-600 font-medium' : 'text-slate-400'}`}>{email}</span>
                   </div>
                 </div>
 
-                <div className="h-px bg-slate-800 my-1" />
+                <div className={`h-px my-1 ${theme === 'light' ? 'bg-slate-200' : 'bg-slate-800'}`} />
 
                 {/* Dropdown Menu Items */}
                 <div className="flex flex-col gap-1">
