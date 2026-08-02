@@ -692,6 +692,17 @@ body.drawer-open header a:not(.mobile-drawer-link) {
   color: #FFFFFF;
 }
 
+[data-theme="light"] .nav-profile-btn {
+  background: rgba(139, 92, 246, 0.15) !important;
+  border-color: rgba(139, 92, 246, 0.5) !important;
+  color: #6D28D9 !important;
+}
+
+[data-theme="light"] .profile-avatar-fallback {
+  color: #6D28D9 !important;
+  font-weight: 800 !important;
+}
+
 @media (max-width: 991px) {
   .nav-profile-btn {
     width: 38px;

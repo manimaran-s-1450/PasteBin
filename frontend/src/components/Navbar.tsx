@@ -146,13 +146,17 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate }) => {
             <button
               type="button"
               onClick={handleProfileDropdownToggle}
-              className="w-8.5 h-8.5 md:w-9 md:h-9 lg:w-10 lg:h-10 rounded-full border-1.5 border-purple-500/40 bg-purple-950/30 flex items-center justify-center text-white font-bold text-xs md:text-sm cursor-pointer shadow-[0_0_12px_rgba(139,92,246,0.25)] hover:scale-105 hover:border-purple-400 hover:shadow-[0_0_18px_rgba(139,92,246,0.5)] transition-all overflow-hidden p-0 outline-none"
+              className={`w-8.5 h-8.5 md:w-9 md:h-9 lg:w-10 lg:h-10 rounded-full border-1.5 ${
+                theme === 'light'
+                  ? 'bg-purple-100/90 border-purple-400 text-purple-800 font-extrabold shadow-[0_2px_8px_rgba(109,40,217,0.25)]'
+                  : 'bg-purple-950/30 border-purple-500/40 text-white shadow-[0_0_12px_rgba(139,92,246,0.25)]'
+              } flex items-center justify-center font-bold text-xs md:text-sm cursor-pointer hover:scale-105 hover:border-purple-400 hover:shadow-[0_0_18px_rgba(139,92,246,0.5)] transition-all overflow-hidden p-0 outline-none`}
               aria-label="User Profile Menu"
             >
               {avatarUrl ? (
                 <img src={avatarUrl} alt={displayName} className="w-full h-full object-cover rounded-full" />
               ) : (
-                <span>{initials}</span>
+                <span className={theme === 'light' ? 'text-purple-900 font-black' : 'text-white'}>{initials}</span>
               )}
             </button>
 

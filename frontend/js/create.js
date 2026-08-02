@@ -529,77 +529,98 @@ function escapeHtml(str) {
 window.showToast = showToast;
 
 /**
- * Fetch and render top 3 recent pastes from backend MySQL API
+ * Fetch and render top 3 recent pastes strictly from user account history or session history
  */
 async function loadRecentPastes() {
   const container = document.getElementById('recent-pastes-grid');
   if (!container) return;
 
-  try {
-    const getApiBaseUrl = () => (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'))
-      ? 'http://localhost:5000/api'
-      : 'https://pastebin-production-6477.up.railway.app/api';
-    const apiUrl = `${getApiBaseUrl()}/pastes`;
-    const response = await fetch(apiUrl);
-    const resData = await response.json();
+  let userPastes = [];
+  const token = localStorage.getItem('pastebin_jwt_token_v1');
 
-    if (resData && resData.success && Array.isArray(resData.data)) {
-      const recentPastes = resData.data.slice(0, 3);
+  if (token) {
+    try {
+      const getApiBaseUrl = () => (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'))
+        ? 'http://localhost:5000/api'
+        : 'https://pastebin-production-6477.up.railway.app/api';
+      
+      const headers = { 'Authorization': `Bearer ${token}` };
+      const response = await fetch(`${getApiBaseUrl()}/pastes/my`, { headers });
+      const resData = await response.json();
 
-      if (recentPastes.length === 0) {
-        container.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 2rem; color: #94A3B8; font-size: 0.9rem;">No recent pastes found. Create your first paste above!</div>`;
-        return;
+      if (resData && resData.success && Array.isArray(resData.data)) {
+        userPastes = resData.data;
       }
-
-      container.innerHTML = recentPastes.map(p => {
-        const lang = p.language || 'Plain Text';
-        const title = p.title || 'Untitled Paste';
-        const code = p.paste_code || String(p.id);
-        const content = p.content || '';
-        const created = p.created_at ? new Date(p.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Just now';
-
-        return `
-          <article class="paste-card" data-id="${p.id}" data-code="${code}" style="margin: 0;">
-            <div class="card-header-row">
-              <span class="lang-badge">
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="16 18 22 12 16 6"></polyline>
-                  <polyline points="8 6 2 12 8 18"></polyline>
-                </svg>
-                <span>${escapeHtml(lang)}</span>
-              </span>
-
-              <span class="paste-id-badge">#${p.id}</span>
-            </div>
-
-            <div class="card-main-info">
-              <h3 class="paste-card-title" title="${escapeHtml(title)}">${escapeHtml(title)}</h3>
-              <div class="card-code-row">
-                <span class="code-tag">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-                  </svg>
-                  <span>${escapeHtml(code)}</span>
-                </span>
-                <span class="card-timestamp">${escapeHtml(created)}</span>
-              </div>
-            </div>
-
-            <div class="card-code-preview">
-              <pre><code>${escapeHtml(content)}</code></pre>
-            </div>
-
-            <div class="card-footer-actions">
-              <a href="view.html?code=${code}" class="card-action-btn view-btn" style="text-decoration:none;">
-                <span>View Paste</span>
-              </a>
-            </div>
-          </article>
-        `;
-      }).join('');
+    } catch (err) {
+      console.error('[Recent Pastes API Error]:', err);
     }
-  } catch (err) {
-    console.error('[Recent Pastes Error]:', err);
+  } else {
+    // Guest User -> Read strictly from sessionStorage history
+    try {
+      const guestStored = sessionStorage.getItem('pastebin_guest_created_v1');
+      if (guestStored) {
+        const parsed = JSON.parse(guestStored);
+        if (Array.isArray(parsed)) {
+          userPastes = parsed;
+        }
+      }
+    } catch (e) {}
   }
+
+  if (!userPastes || userPastes.length === 0) {
+    container.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 2.5rem 1rem; color: #94A3B8; font-size: 0.95rem; background: rgba(17,24,39,0.4); border: 1px dashed rgba(139,92,246,0.25); border-radius: 16px;">No pastes in your history yet. Create your first paste above!</div>`;
+    return;
+  }
+
+  // Display max 3 cards strictly matching account history count
+  const recentPastes = userPastes.slice(0, 3);
+
+  container.innerHTML = recentPastes.map(p => {
+    const lang = p.language || 'Plain Text';
+    const title = p.title || 'Untitled Paste';
+    const code = p.paste_code || p.code || String(p.id);
+    const content = p.content || '';
+    const createdDate = p.created_at || p.createdAt;
+    const created = createdDate ? new Date(createdDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Just now';
+
+    return `
+      <article class="paste-card" data-id="${p.id}" data-code="${code}" style="margin: 0;">
+        <div class="card-header-row">
+          <span class="lang-badge">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="16 18 22 12 16 6"></polyline>
+              <polyline points="8 6 2 12 8 18"></polyline>
+            </svg>
+            <span>${escapeHtml(lang)}</span>
+          </span>
+
+          <span class="paste-id-badge">#${p.id || code}</span>
+        </div>
+
+        <div class="card-main-info">
+          <h3 class="paste-card-title" title="${escapeHtml(title)}">${escapeHtml(title)}</h3>
+          <div class="card-code-row">
+            <span class="code-tag">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+              </svg>
+              <span>${escapeHtml(code)}</span>
+            </span>
+            <span class="card-timestamp">${escapeHtml(created)}</span>
+          </div>
+        </div>
+
+        <div class="card-code-preview">
+          <pre><code>${escapeHtml(content)}</code></pre>
+        </div>
+
+        <div class="card-footer-actions">
+          <a href="view.html?code=${code}" class="card-action-btn view-btn" style="text-decoration:none;">
+            <span>View Paste</span>
+          </a>
+        </div>
+      </article>
+    `;
+  }).join('');
 }
