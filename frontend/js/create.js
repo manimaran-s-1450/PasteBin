@@ -584,7 +584,7 @@ async function loadRecentPastes() {
     const created = createdDate ? new Date(createdDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Just now';
 
     return `
-      <article class="paste-card" data-id="${p.id}" data-code="${code}" style="margin: 0;">
+      <article class="paste-card" data-id="${p.id}" data-code="${code}" style="margin: 0; overflow: hidden; max-width: 100%; box-sizing: border-box; word-break: break-word;">
         <div class="card-header-row">
           <span class="lang-badge">
             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -611,13 +611,20 @@ async function loadRecentPastes() {
           </div>
         </div>
 
-        <div class="card-code-preview">
-          <pre><code>${escapeHtml(content)}</code></pre>
+        <div class="card-code-preview" style="max-height: 110px; overflow: hidden; margin-bottom: 0.25rem;">
+          <pre style="overflow: hidden; text-overflow: ellipsis;"><code>${escapeHtml(content)}</code></pre>
         </div>
 
-        <div class="card-footer-actions">
-          <a href="view.html?code=${code}" class="card-action-btn view-btn" style="text-decoration:none;">
+        <div class="card-stats-row" style="display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0; border-top: 1px solid rgba(255,255,255,0.06); font-size: 0.75rem; color: #94A3B8;">
+          <span style="display:inline-flex;align-items:center;gap:0.3rem;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> ${p.views || p.viewsCount || 1} views</span>
+          <span style="display:inline-flex;align-items:center;gap:0.3rem;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> ${p.copies || 0} copies</span>
+          <span style="display:inline-flex;align-items:center;gap:0.3rem;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg> ${p.shares || 0} shares</span>
+        </div>
+
+        <div class="card-footer-actions" style="margin-top: 0.4rem;">
+          <a href="view.html?code=${code}" class="card-action-btn view-btn" style="text-decoration:none; width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.4rem; padding: 0.55rem; border-radius: 12px; background: rgba(139, 92, 246, 0.15); border: 1px solid rgba(139, 92, 246, 0.3); color: #A78BFA; font-size: 0.85rem; font-weight: 700; transition: all 0.2s ease;">
             <span>View Paste</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
           </a>
         </div>
       </article>
