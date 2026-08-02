@@ -73,15 +73,25 @@ export const History: React.FC<HistoryProps> = ({ onEditPaste, onNavigate }) => 
     if (!deleteTargetPaste) return;
     const target = deleteTargetPaste;
     const targetId = String(target.id);
-    const targetCode = String((target as any).paste_code || (target as any).code || target.id);
+    const pasteCode = (target as any).paste_code || target.id;
+    const targetCode = String(pasteCode);
     const title = target.title;
     const token = localStorage.getItem('pastebin_jwt_token_v1');
 
     if (token) {
       try {
-        await deletePaste(target.id);
-      } catch (err) {
-        console.warn('[History Component] Delete API warning:', err);
+        const res = await deletePaste(pasteCode);
+        if (res && res.success === false) {
+          showToast(res.message || 'Failed to delete paste');
+          setDeleteTargetPaste(null);
+          return;
+        }
+      } catch (err: any) {
+        console.error('[History Component] Delete API error:', err);
+        const errorMsg = err?.message || err?.error || 'Failed to delete paste';
+        showToast(errorMsg);
+        setDeleteTargetPaste(null);
+        return;
       }
     }
 

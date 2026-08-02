@@ -189,14 +189,24 @@ async function deletePasteByCode(pasteCode, userId = null) {
   }
 
   const paste = existing[0];
+
+  // Verify ownership: if paste belongs to a user, caller must be that user
+  if (paste.user_id && String(paste.user_id) !== String(userId)) {
+    return { found: true, owner: false };
+  }
+
   const targetCode = paste.paste_code || codeStr;
+  const targetId = paste.id;
 
   // Clean up any references in received_pastes table first
   try {
-    await pool.execute(`DELETE FROM received_pastes WHERE paste_code = ?`, [targetCode]);
+    await pool.execute(
+      `DELETE FROM received_pastes WHERE paste_code = ? OR paste_id = ?`,
+      [targetCode, targetId]
+    );
   } catch (e) {}
 
-  // Delete paste from pastes table
+  // Delete paste from pastes table safely
   const deleteQuery = isNumeric
     ? `DELETE FROM pastes WHERE id = ? OR paste_code = ?`
     : `DELETE FROM pastes WHERE paste_code = ?`;

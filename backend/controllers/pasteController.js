@@ -165,6 +165,7 @@ async function getAllPastes(req, res, next) {
 async function deletePaste(req, res, next) {
   try {
     const { paste_code } = req.params;
+    const userId = req.user ? (req.user.id || req.user.user_id || req.user.google_id) : null;
 
     if (!paste_code || typeof paste_code !== 'string' || paste_code.trim() === '') {
       return res.status(400).json({
@@ -173,12 +174,26 @@ async function deletePaste(req, res, next) {
       });
     }
 
-    const result = await pasteModel.deletePasteByCode(paste_code.trim());
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: 'Authentication required'
+      });
+    }
+
+    const result = await pasteModel.deletePasteByCode(paste_code.trim(), userId);
 
     if (!result.found) {
       return res.status(404).json({
         success: false,
         message: 'Paste not found'
+      });
+    }
+
+    if (!result.owner) {
+      return res.status(403).json({
+        success: false,
+        message: 'Access Denied: You do not own this paste.'
       });
     }
 

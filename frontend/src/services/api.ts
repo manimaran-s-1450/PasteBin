@@ -147,10 +147,15 @@ export async function updatePaste(id: string, payload: UpdatePastePayload): Prom
 
 /**
  * Backend API Integration - DELETE /api/pastes/:id
+ * Sends paste_code when available, fallback to numeric id if paste_code does not exist.
  */
-export async function deletePaste(id: string): Promise<ApiResponse<boolean>> {
+export async function deletePaste(identifier: string | { paste_code?: string; id?: string }): Promise<ApiResponse<boolean>> {
+  const code = typeof identifier === 'object'
+    ? (identifier.paste_code || identifier.id || '')
+    : identifier;
+
   try {
-    const response = await apiClient.delete(`/pastes/${id}`, { headers: getAuthHeader() });
+    const response = await apiClient.delete(`/pastes/${encodeURIComponent(code)}`, { headers: getAuthHeader() });
     return response.data;
   } catch (error: any) {
     console.error('[API Error] DELETE /api/pastes/:id failed:', error);
