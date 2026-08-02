@@ -114,9 +114,10 @@ function initSwaggerDemoButton() {
   if (!btn) return;
 
   btn.addEventListener('click', () => {
-    const swaggerUrl = window.location.origin.includes('3000') || window.location.origin.includes('vercel.app')
-      ? 'http://localhost:5000/api-docs'
-      : '/api-docs';
-    window.open(swaggerUrl, '_blank');
+    const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+    const swaggerUrl = isLocal
+      ? 'http://localhost:5000/api-docs/'
+      : 'https://pastebin-production-6477.up.railway.app/api-docs/';
+    window.open(swaggerUrl, '_blank', 'noopener,noreferrer');
   });
 }

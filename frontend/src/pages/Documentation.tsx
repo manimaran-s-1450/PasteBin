@@ -254,8 +254,12 @@ export const Documentation: React.FC = () => {
                     Explore and test every REST endpoint through the interactive Swagger interface.
                   </p>
                   <button
-                    onClick={() => alert('Swagger Documentation interface ready for backend integration at /api-docs')}
-                    className="px-6 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold text-sm shadow-[0_4px_18px_rgba(139,92,246,0.45)] hover:from-purple-500 hover:to-indigo-500 transition-all flex items-center gap-2"
+                    onClick={() => {
+                      const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+                      const swaggerUrl = isLocal ? 'http://localhost:5000/api-docs/' : 'https://pastebin-production-6477.up.railway.app/api-docs/';
+                      window.open(swaggerUrl, '_blank', 'noopener,noreferrer');
+                    }}
+                    className="px-6 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold text-sm shadow-[0_4px_18px_rgba(139,92,246,0.45)] hover:from-purple-500 hover:to-indigo-500 transition-all flex items-center gap-2 cursor-pointer"
                   >
                     <span>Open Swagger Documentation</span>
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.2">
