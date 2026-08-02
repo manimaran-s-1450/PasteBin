@@ -14,10 +14,12 @@ function calculateExpiresAt(expiresIn) {
     now.setMinutes(now.getMinutes() + 10);
   } else if (lower.includes('1h') || lower.includes('1 hour')) {
     now.setHours(now.getHours() + 1);
-  } else if (lower.includes('1d') || lower.includes('1 day')) {
+  } else if (lower.includes('24h') || lower.includes('1d') || lower.includes('1 day') || lower.includes('24 hours')) {
     now.setDate(now.getDate() + 1);
-  } else if (lower.includes('1w') || lower.includes('1 week')) {
+  } else if (lower.includes('7d') || lower.includes('1w') || lower.includes('1 week') || lower.includes('7 days')) {
     now.setDate(now.getDate() + 7);
+  } else if (lower.includes('30d') || lower.includes('1m') || lower.includes('1 month') || lower.includes('30 days')) {
+    now.setDate(now.getDate() + 30);
   } else {
     return null;
   }
@@ -94,14 +96,16 @@ async function createPaste({ title, language, visibility, expires_in, content, u
 }
 
 /**
- * Retrieves a paste record by paste_code or id safely
+ * Retrieves a paste record by paste_code or id safely (excluding expired pastes)
  */
 async function findByCode(pasteCode) {
-  const isNumeric = /^\d+$/.test(String(pasteCode).trim());
+  await deleteExpiredPastes();
+  const codeStr = String(pasteCode).trim();
+  const isNumeric = /^\d+$/.test(codeStr);
   const query = isNumeric
-    ? `SELECT id, paste_code, user_id, title, language, visibility, expires_at, content, created_at FROM pastes WHERE id = ? OR paste_code = ? LIMIT 1`
-    : `SELECT id, paste_code, user_id, title, language, visibility, expires_at, content, created_at FROM pastes WHERE paste_code = ? LIMIT 1`;
-  const params = isNumeric ? [pasteCode, pasteCode] : [pasteCode];
+    ? `SELECT id, paste_code, user_id, title, language, visibility, expires_at, content, created_at FROM pastes WHERE (id = ? OR paste_code = ?) AND (expires_at IS NULL OR expires_at > NOW()) LIMIT 1`
+    : `SELECT id, paste_code, user_id, title, language, visibility, expires_at, content, created_at FROM pastes WHERE paste_code = ? AND (expires_at IS NULL OR expires_at > NOW()) LIMIT 1`;
+  const params = isNumeric ? [codeStr, codeStr] : [codeStr];
 
   const [rows] = await pool.execute(query, params);
   return rows.length > 0 ? rows[0] : null;
@@ -111,9 +115,11 @@ async function findByCode(pasteCode) {
  * Retrieves history list of all unexpired pastes ordered by newest first
  */
 async function getAllPastes() {
+  await deleteExpiredPastes();
   const query = `
     SELECT id, paste_code, user_id, title, language, visibility, expires_at, content, created_at
     FROM pastes
+    WHERE expires_at IS NULL OR expires_at > NOW()
     ORDER BY created_at DESC
   `;
   const [rows] = await pool.execute(query);
@@ -125,10 +131,11 @@ async function getAllPastes() {
  */
 async function getUserPastes(userId) {
   if (!userId) return [];
+  await deleteExpiredPastes();
   const query = `
     SELECT id, paste_code, user_id, title, language, visibility, expires_at, content, created_at
     FROM pastes
-    WHERE user_id = ?
+    WHERE user_id = ? AND (expires_at IS NULL OR expires_at > NOW())
     ORDER BY created_at DESC
   `;
   const [rows] = await pool.execute(query, [String(userId)]);
@@ -153,16 +160,17 @@ async function recordReceivedPaste(userId, pasteCode) {
 }
 
 /**
- * Retrieves history list of pastes received/viewed by an authenticated user
+ * Retrieves history list of unexpired pastes received/viewed by an authenticated user
  */
 async function getReceivedPastes(userId) {
   if (!userId) return [];
+  await deleteExpiredPastes();
   try {
     const query = `
       SELECT p.id, p.paste_code, p.user_id, p.title, p.language, p.visibility, p.expires_at, p.content, rp.viewed_at AS created_at
       FROM received_pastes rp
       JOIN pastes p ON rp.paste_code = p.paste_code
-      WHERE rp.user_id = ?
+      WHERE rp.user_id = ? AND (p.expires_at IS NULL OR p.expires_at > NOW())
       ORDER BY rp.viewed_at DESC
     `;
     const [rows] = await pool.execute(query, [String(userId)]);
