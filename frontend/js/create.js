@@ -370,11 +370,19 @@ function showSuccessModal(code = 'GT5WAQFI') {
   const visInput = document.getElementById('paste-visibility-input');
 
   const langBadge = document.getElementById('modal-badge-lang');
+  const visBadgeContainer = document.getElementById('modal-badge-vis-container');
   const visBadge = document.getElementById('modal-badge-vis');
 
   if (codeEl) codeEl.textContent = code;
   if (langBadge && langSelect) langBadge.textContent = langSelect.value || 'JavaScript';
-  if (visBadge && visInput) visBadge.textContent = visInput.value === 'private' ? 'Private' : 'Public';
+  if (visBadgeContainer) {
+    if (visInput && visInput.value === 'private') {
+      visBadgeContainer.style.display = 'inline-flex';
+      if (visBadge) visBadge.textContent = 'Private';
+    } else {
+      visBadgeContainer.style.display = 'none';
+    }
+  }
 
   if (modal) modal.classList.remove('hidden');
 }

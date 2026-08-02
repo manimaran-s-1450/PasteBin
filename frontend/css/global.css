@@ -787,6 +787,14 @@ body.drawer-open header a:not(.mobile-drawer-link) {
   border-top-color: #E2E8F0 !important;
 }
 
+/* Hide Public Badges Across All Pages */
+.badge-item.public-badge,
+.visibility-badge.public,
+.public-badge,
+.badge-public {
+  display: none !important;
+}
+
 @media (max-width: 991px) {
   .nav-profile-btn {
     width: 38px;

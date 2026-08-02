@@ -479,15 +479,14 @@ function renderPasteViewerPage(paste) {
                   ${escapeHtml(paste.language)}
                 </span>
 
-                <span class="badge-item ${paste.visibility === 'private' ? 'private-badge' : 'public-badge'}" title="Visibility">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                    ${paste.visibility === 'private' 
-                      ? '<rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path>'
-                      : '<circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line>'
-                    }
-                  </svg>
-                  ${paste.visibility === 'private' ? 'Private' : 'Public'}
-                </span>
+                ${paste.visibility === 'private' ? `
+                  <span class="badge-item private-badge" title="Visibility">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                    Private
+                  </span>
+                ` : ''}
 
                 <span class="badge-item date-badge" title="Created Date">
                   <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
